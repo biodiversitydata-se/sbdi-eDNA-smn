@@ -207,7 +207,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Share of the positive eigenvalues held by each of the first two axes</span></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>axis_share <span class="ot">&lt;-</span> pcoa<span class="sc">$</span>eig[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>] <span class="sc">/</span> <span class="fu">sum</span>(pcoa<span class="sc">$</span>eig[pcoa<span class="sc">$</span>eig <span class="sc">&gt;</span> <span class="dv">0</span>])</span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> axis_share, <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Unlike the distances, PCoA needs the full matrix of dissimilarities in memory, and its run time grows quickly with the number of samples. That is fine for the samples we use here, but for many thousands of samples you may prefer <code>el_rda()</code>, a PCA that runs directly on the long table.</p>
+<p>Unlike the distances, PCoA needs the full matrix of dissimilarities in memory, and its run time grows quickly with the number of samples. That is fine for the samples we use here, but for many thousands of samples you may prefer <code>el_rda()</code>, a PCA that runs directly on the counts table.</p>
 </section>
 <section id="prepare-colour-scales" class="level3">
 <h3 class="anchored" data-anchor-id="prepare-colour-scales">Prepare colour scales</h3>

@@ -57,7 +57,7 @@ axis_share <- pcoa$eig[1:2] / sum(pcoa$eig[pcoa$eig > 0])
 round(100 * axis_share, 1)
 ```
 
-Unlike the distances, PCoA needs the full matrix of dissimilarities in memory, and its run time grows quickly with the number of samples. That is fine for the samples we use here, but for many thousands of samples you may prefer `el_rda()`, a PCA that runs directly on the long table.
+Unlike the distances, PCoA needs the full matrix of dissimilarities in memory, and its run time grows quickly with the number of samples. That is fine for the samples we use here, but for many thousands of samples you may prefer `el_rda()`, a PCA that runs directly on the counts table.
 
 ### Prepare colour scales
 
