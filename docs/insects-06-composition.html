@@ -185,7 +185,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="define-the-barplot-function" class="level3">
 <h3 class="anchored" data-anchor-id="define-the-barplot-function">Define the barplot function</h3>
-<p>The function below identifies the most abundant taxa across the selected samples, calculates their mean relative abundance for each habitat and month, and draws stacked barplots with <a href="https://ggplot2.tidyverse.org/" target="_blank"><code>ggplot2</code></a>. <code>ggplot2</code> is made for long tables, so no wide table is needed: each row of <code>monthly</code> becomes one segment of a bar.</p>
+<p>The function below identifies the most abundant taxa across the selected samples, calculates their mean relative abundance for each habitat and month, and draws stacked barplots with <a href="https://ggplot2.tidyverse.org/" target="_blank"><code>ggplot2</code></a>. <code>ggplot2</code> draws directly from a table with one row per value: each row of <code>monthly</code> becomes one segment of a bar.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>plot_barplots <span class="ot">&lt;-</span> <span class="cf">function</span>(rank, <span class="at">top_x =</span> <span class="dv">10</span>) {</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  composition <span class="ot">&lt;-</span> <span class="fu">get_composition</span>(rank)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>

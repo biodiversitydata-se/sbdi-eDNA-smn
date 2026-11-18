@@ -183,7 +183,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="calculate-shannon-diversity-per-sample" class="level3">
 <h3 class="anchored" data-anchor-id="calculate-shannon-diversity-per-sample">Calculate Shannon diversity per sample</h3>
-<p>The Shannon index is calculated from the share <em>p</em> of each taxon in a sample, as −Σ <em>p</em> log <em>p</em>. Taxa that are absent do not contribute, so the long table holds everything we need. As in <a href="./insects-04-beta.html">step 4</a>, we work with clusters:</p>
+<p>The Shannon index is calculated from the share <em>p</em> of each taxon in a sample, as −Σ <em>p</em> log <em>p</em>. Taxa that are absent do not contribute, so the counts table holds everything we need. As in <a href="./insects-04-beta.html">step 4</a>, we work with clusters:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>alpha_ids <span class="ot">&lt;-</span> <span class="fu">duckdb_tibble</span>(<span class="at">eventID =</span> alpha_samples<span class="sc">$</span>eventID, <span class="at">.prudence =</span> <span class="st">"stingy"</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>shannon_table <span class="ot">&lt;-</span> merged<span class="sc">$</span>counts <span class="sc">|&gt;</span></span>

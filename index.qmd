@@ -5,7 +5,7 @@ format:
     toc: false
 ---
 
-Welcome to the SBDI part of the [first in-person Swedish Metabarcoding Network (SMN) meeting & hands-on workshop](https://metabarcoding.se/meeting-2026/){target="_blank"}, Uppsala, 8–9 December 2026! This tutorial demonstrates how eDNA/metabarcoding data can be accessed, processed and analysed within the [Swedish Biodiversity Data Infrastructure (SBDI)](https://biodiversitydata.se/){target="_blank"}: from downloading data from the ASV portal to exploring biodiversity patterns in R, with data kept in long format from start to end.
+Welcome to the SBDI part of the [first in-person Swedish Metabarcoding Network (SMN) meeting & hands-on workshop](https://metabarcoding.se/meeting-2026/){target="_blank"}, Uppsala, 8–9 December 2026! This tutorial demonstrates how eDNA/metabarcoding data can be accessed, processed and analysed within the [Swedish Biodiversity Data Infrastructure (SBDI)](https://biodiversitydata.se/){target="_blank"}: from downloading data from the ASV portal to exploring biodiversity patterns in R.
 
 You choose one of two alternative tracks:
 

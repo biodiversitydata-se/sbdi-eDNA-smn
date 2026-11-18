@@ -20,7 +20,7 @@ nrow(alpha_samples)
 
 ### Calculate Shannon diversity per sample
 
-The Shannon index is calculated from the share *p* of each taxon in a sample, as −Σ *p* log *p*. Taxa that are absent do not contribute, so the long table holds everything we need. As in [step 4](insects-04-beta.qmd), we work with clusters:
+The Shannon index is calculated from the share *p* of each taxon in a sample, as −Σ *p* log *p*. Taxa that are absent do not contribute, so the counts table holds everything we need. As in [step 4](insects-04-beta.qmd), we work with clusters:
 
 ```r
 alpha_ids <- duckdb_tibble(eventID = alpha_samples$eventID, .prudence = "stingy")

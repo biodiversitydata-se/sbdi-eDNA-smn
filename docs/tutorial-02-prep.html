@@ -172,10 +172,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p><em>Load and combine ASV portal data as long tables, and summarise read counts by taxonomy.</em></p>
-<section id="why-long-tables" class="level3">
-<h3 class="anchored" data-anchor-id="why-long-tables">Why long tables?</h3>
-<p>ASV data is mostly zeros, because each sample contains only a small share of all ASVs. A wide table with one column per sample has to store those zeros. A <em>long</em> table has one row per ASV in each sample where it was found, and leaves the zeros out:</p>
+<p><em>Load and combine ASV portal data, and summarise read counts by taxonomy.</em></p>
+<section id="how-the-data-look" class="level3">
+<h3 class="anchored" data-anchor-id="how-the-data-look">How the data look</h3>
+<p>The ASV portal delivers the read counts with one row per ASV and sample, without the many zeros for ASVs that were not found:</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -202,7 +202,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
-<p>This is also how the ASV portal delivers the data, so we can work with it as it is.</p>
+<p>We keep the data like that, which saves memory and works also for large datasets.</p>
 <hr>
 </section>
 <section id="load-the-datasets" class="level3">
@@ -249,7 +249,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="aggregate-counts-by-taxonomy">Aggregate counts by taxonomy</h3>
 <p>We can now sum ASV read counts at different taxonomic levels based on the taxonomic annotation:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>clades <span class="ot">&lt;-</span> <span class="fu">sum_clades_long</span>(merged<span class="sc">$</span>counts, merged<span class="sc">$</span>asvs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>This gives a long table with one row per clade and sample, at the following levels:</p>
+<p>This gives a table with one row per clade and sample, at the following levels:</p>
 <ul>
 <li>kingdom (or domain)</li>
 <li>phylum</li>

@@ -23,7 +23,7 @@ Only the available ranks work here: kingdom, phylum, class, order, family, genus
 
 ### Define the barplot function
 
-The function below identifies the most abundant taxa across the selected samples, calculates their mean relative abundance for each habitat and month, and draws stacked barplots with [`ggplot2`](https://ggplot2.tidyverse.org/){target="_blank"}. `ggplot2` is made for long tables, so no wide table is needed: each row of `monthly` becomes one segment of a bar.
+The function below identifies the most abundant taxa across the selected samples, calculates their mean relative abundance for each habitat and month, and draws stacked barplots with [`ggplot2`](https://ggplot2.tidyverse.org/){target="_blank"}. `ggplot2` draws directly from a table with one row per value: each row of `monthly` becomes one segment of a bar.
 
 ```r
 plot_barplots <- function(rank, top_x = 10) {

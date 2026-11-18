@@ -13,7 +13,7 @@ This tutorial walks through the main steps for importing and analysing ASV porta
 ### Common steps
 
 1. [Environment setup](tutorial-01-setup.qmd) — Access the workshop RStudio environment (or run locally), and choose your data
-2. [Data preparation](tutorial-02-prep.qmd) — Load, merge and aggregate data from the ASV portal as long tables
+2. [Data preparation](tutorial-02-prep.qmd) — Load, merge and aggregate data from the ASV portal
 
 ### Track A: Insects
 

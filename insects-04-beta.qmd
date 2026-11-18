@@ -9,7 +9,7 @@ format:
 
 ### Select samples
 
-We keep the rows of the long table that belong to the samples selected in [step 3](insects-03-map.qmd). `semi_join()` filters one table by another, and DuckDB does the work without reading the whole table into R:
+We keep the rows of the counts table that belong to the samples selected in [step 3](insects-03-map.qmd). `semi_join()` filters one table by another, and DuckDB does the work without reading the whole table into R:
 
 ```r
 selected <- duckdb_tibble(eventID = samples$eventID, .prudence = "stingy")
@@ -18,7 +18,7 @@ counts_selected <- merged$counts |> semi_join(selected, by = "eventID")
 
 ### Aggregate ASVs to clusters
 
-In addition to ASV taxonomy and BOLD BINs, the IBA data also include project-specific cluster assignments in the `associatedSequences` column. Most pairs of samples share few ASVs, so comparing them at ASV level says rather little. We therefore sum the reads of each cluster in each sample, which in a long table is a join followed by a grouped sum.
+In addition to ASV taxonomy and BOLD BINs, the IBA data also include project-specific cluster assignments in the `associatedSequences` column. Most pairs of samples share few ASVs, so comparing them at ASV level says rather little. We therefore sum the reads of each cluster in each sample, which is a join followed by a grouped sum.
 
 The cluster assignments are read from `loaded`, because `merge_long()` keeps only the attributes that describe the ASV itself, and `associatedSequences` is specific to each dataset:
 
@@ -43,7 +43,7 @@ bray <- cluster_counts |>
   el_vegdist("bray", samples = samples$eventID)
 ```
 
-`el_decostand()` and `el_vegdist()` work like `decostand()` and `vegdist()` in the `vegan` package, but on the long table. `samples =` makes the result follow the order of the rows in `samples`, which we rely on when plotting. The result is an ordinary `dist` object, with one value per pair of samples, that `vegan` and base R can use.
+`el_decostand()` and `el_vegdist()` work like `decostand()` and `vegdist()` in the `vegan` package, but on our table, without reading it into R. `samples =` makes the result follow the order of the rows in `samples`, which we rely on when plotting. The result is an ordinary `dist` object, with one value per pair of samples, that `vegan` and base R can use.
 
 ### Run PCoA
 

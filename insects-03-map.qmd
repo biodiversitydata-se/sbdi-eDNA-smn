@@ -72,7 +72,7 @@ habitat_cols <- c(
 
 ### Filter samples
 
-Samples with very few total reads are excluded, as their community composition is unreliable, and so are the handful with an incomplete `eventDate`. We get the sequencing depth of each sample with a query on the long table:
+Samples with very few total reads are excluded, as their community composition is unreliable, and so are the handful with an incomplete `eventDate`. We get the sequencing depth of each sample with a query on the counts table:
 
 ```r
 depth <- merged$counts |>

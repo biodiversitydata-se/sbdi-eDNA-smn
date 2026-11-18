@@ -5,11 +5,11 @@ format:
     toc: false
 ---
 
-*Load and combine ASV portal data as long tables, and summarise read counts by taxonomy.*
+*Load and combine ASV portal data, and summarise read counts by taxonomy.*
 
-### Why long tables?
+### How the data look
 
-ASV data is mostly zeros, because each sample contains only a small share of all ASVs. A wide table with one column per sample has to store those zeros. A *long* table has one row per ASV in each sample where it was found, and leaves the zeros out:
+The ASV portal delivers the read counts with one row per ASV and sample, without the many zeros for ASVs that were not found:
 
 | eventID | taxonID | organismQuantity |
 |---|---|---|
@@ -17,7 +17,7 @@ ASV data is mostly zeros, because each sample contains only a small share of all
 | sample 1 | ASV b | 14 |
 | sample 2 | ASV a | 251 |
 
-This is also how the ASV portal delivers the data, so we can work with it as it is.
+We keep the data like that, which saves memory and works also for large datasets.
 
 ---
 
@@ -97,7 +97,7 @@ We can now sum ASV read counts at different taxonomic levels based on the taxono
 clades <- sum_clades_long(merged$counts, merged$asvs)
 ```
 
-This gives a long table with one row per clade and sample, at the following levels:
+This gives a table with one row per clade and sample, at the following levels:
 
 - kingdom (or domain)
 - phylum

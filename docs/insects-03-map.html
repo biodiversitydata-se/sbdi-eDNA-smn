@@ -221,7 +221,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="filter-samples" class="level3">
 <h3 class="anchored" data-anchor-id="filter-samples">Filter samples</h3>
-<p>Samples with very few total reads are excluded, as their community composition is unreliable, and so are the handful with an incomplete <code>eventDate</code>. We get the sequencing depth of each sample with a query on the long table:</p>
+<p>Samples with very few total reads are excluded, as their community composition is unreliable, and so are the handful with an incomplete <code>eventDate</code>. We get the sequencing depth of each sample with a query on the counts table:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>depth <span class="ot">&lt;-</span> merged<span class="sc">$</span>counts <span class="sc">|&gt;</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">depth =</span> <span class="fu">sum</span>(organismQuantity, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.by =</span> eventID) <span class="sc">|&gt;</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>()</span>

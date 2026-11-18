@@ -22,7 +22,7 @@ bray <- asv_counts |>
   el_vegdist("bray", samples = events$eventID)
 ```
 
-`el_decostand()` and `el_vegdist()` work like `decostand()` and `vegdist()` in the `vegan` package, but on the long table, without reading it into R. `samples =` makes the result follow the order of the rows in `events`, which we rely on when plotting. The result is an ordinary `dist` object that `vegan` and base R can use.
+`el_decostand()` and `el_vegdist()` work like `decostand()` and `vegdist()` in the `vegan` package, but on our table, without reading it into R. `samples =` makes the result follow the order of the rows in `events`, which we rely on when plotting. The result is an ordinary `dist` object that `vegan` and base R can use.
 
 ### Run PCoA
 
