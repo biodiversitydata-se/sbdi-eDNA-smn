@@ -17,16 +17,12 @@ This tutorial walks through the main steps for importing and analysing ASV porta
 
 ### Track A: Insects
 
-*An alternative to track B.*
-
 3. [Sample mapping](insects-03-map.qmd) — Filter, pair and map samples across Sweden and habitat types
 4. [Community differences (beta diversity)](insects-04-beta.qmd) — Bray-Curtis dissimilarity and PCoA
 5. [Within-sample diversity (alpha diversity)](insects-05-alpha.qmd) — Shannon diversity across habitat types
 6. [Taxonomic composition](insects-06-composition.qmd) — Barplots across habitats and months
 
 ### Track B: Marine plankton
-
-*An alternative to track A.*
 
 3. [Sample mapping](plankton-03-map.qmd) — Map samples and their salinity across the Baltic Sea
 4. [Community differences (beta diversity)](plankton-04-beta.qmd) — Bray-Curtis dissimilarity and PCoA
