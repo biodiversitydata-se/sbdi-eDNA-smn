@@ -3,7 +3,7 @@ project:
   output-dir: docs
 
 website:
-  title: "Hands-on tutorial — SMN meeting 2026"
+  title: "SMN hands-on workshop 2026"
   navbar:
     left:
       - href: index.qmd

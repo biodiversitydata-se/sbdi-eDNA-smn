@@ -1,25 +1,15 @@
 ---
-title: "SMN meeting & hands-on workshop in Uppsala"
+title: "SMN hands-on workshop in Uppsala"
 format:
   html:
     toc: false
 ---
 
-Welcome to the tutorial for the hands-on workshop at the [first in-person Swedish Metabarcoding Network (SMN) meeting](https://metabarcoding.se/meeting-2026/){target="_blank"}, Uppsala, 8–9 December 2026! It shows how eDNA/metabarcoding data published through the [Swedish Biodiversity Data Infrastructure (SBDI)](https://biodiversitydata.se/){target="_blank"} can be downloaded from the ASV portal and explored in R.
+Tutorial for the hands-on workshop at the [first in-person Swedish Metabarcoding Network (SMN) meeting](https://metabarcoding.se/meeting-2026/){target="_blank"}: Wednesday 9 December 2026, 09:00–12:00, Evolutionsbiologiskt centrum (EBC), Uppsala.
 
-You choose one of two alternative tracks:
-
-- **Track A, insects:** COI metabarcoding data of arthropods across Swedish habitat types, from the [Insect Biome Atlas](https://www.insectbiomeatlas.org/){target="_blank"}
-- **Track B, marine plankton:** 16S metabarcoding data of bacterioplankton along the salinity gradient of the Baltic Sea
-
-## Time and place
-
-Wednesday 9 December 2026, 09:00–12:00<br>
-Evolutionsbiologiskt centrum (EBC), Norbyvägen 14, Uppsala
+You will download eDNA/metabarcoding data published through the [Swedish Biodiversity Data Infrastructure (SBDI)](https://biodiversitydata.se/){target="_blank"} from the ASV portal and explore it in R, with insects or marine plankton as alternative tracks.
 
 [Start the tutorial →](tutorial.qmd)
-
-Times may still change. See the [meeting page](https://metabarcoding.se/meeting-2026/){target="_blank"} for the full programme.
 
 ## Instructors
 - Dr. Tobias Andermann — SBDI & Uppsala University
