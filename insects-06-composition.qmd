@@ -1,5 +1,5 @@
 ---
-title: "6. Taxonomic composition"
+title: "6A. Taxonomic composition (track A: insects)"
 format:
   html:
     toc: false

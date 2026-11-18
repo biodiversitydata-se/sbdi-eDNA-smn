@@ -1,5 +1,5 @@
 ---
-title: "4. Community differences (beta diversity)"
+title: "4A. Community differences (track A: insects)"
 format:
   html:
     toc: false

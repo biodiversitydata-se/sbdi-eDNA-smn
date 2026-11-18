@@ -1,5 +1,5 @@
 ---
-title: "5. Within-sample diversity (alpha diversity)"
+title: "5A. Within-sample diversity (track A: insects)"
 format:
   html:
     toc: false

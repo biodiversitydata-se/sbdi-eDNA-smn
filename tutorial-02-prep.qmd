@@ -121,4 +121,4 @@ ASVs without a value at a level are summed as `Unclassified`. Names such as `unc
 
 ---
 
-[← Previous](tutorial-01-setup.qmd) · [Overview](tutorial.qmd) · Next: [Insects →](insects-03-map.qmd) or [Marine plankton →](plankton-03-map.qmd)
+[← Previous](tutorial-01-setup.qmd) · [Overview](tutorial.qmd) · Next, choose one track: [Track A: Insects →](insects-03-map.qmd) or [Track B: Marine plankton →](plankton-03-map.qmd)

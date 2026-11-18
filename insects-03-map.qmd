@@ -1,5 +1,5 @@
 ---
-title: "3. Sample mapping"
+title: "3A. Sample mapping (track A: insects)"
 format:
   html:
     toc: false

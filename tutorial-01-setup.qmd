@@ -29,10 +29,10 @@ library(ggplot2)
 
 ### Check access to example data {#check-access}
 
-For this tutorial, ASV portal data is pre-downloaded and available on the virtual machine. It has also been prepared once for everyone, in shared folders called *stores*. Choose the data you want to work with and set the paths:
+For this tutorial, ASV portal data is pre-downloaded and available on the virtual machine. It has also been prepared once for everyone, in shared folders called *stores*. Choose your track and set the paths:
 
 ::: {.panel-tabset}
-## Insects
+## Track A: Insects
 
 ```r
 data_path  <- "/srv/course-data/insects"
@@ -42,7 +42,7 @@ list.files(data_path)
 
 If two (IBA_CO1) zip files are listed, you are ready to [proceed](tutorial-02-prep.qmd).
 
-## Marine plankton
+## Track B: Marine plankton
 
 ```r
 data_path  <- "/srv/course-data/plankton"
@@ -119,8 +119,8 @@ In this option, example data is downloaded directly from the ASV portal.
 
 3. On the **Download** page, under **Download link**, download the two datasets of the track you have chosen:
 
-   - **Insects:** IBA_CO1_homogenate_2019_SE and IBA_CO1_lysate_2019_SE
-   - **Marine plankton:** KTH-2013-Baltic-16S and PRJEB55296-16S
+   - **Track A, insects:** IBA_CO1_homogenate_2019_SE and IBA_CO1_lysate_2019_SE
+   - **Track B, marine plankton:** KTH-2013-Baltic-16S and PRJEB55296-16S
 
 4. Place the two zip files in a folder of their own, e.g.:
 
