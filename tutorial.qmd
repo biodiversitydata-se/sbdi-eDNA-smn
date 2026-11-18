@@ -8,6 +8,7 @@ format:
 This tutorial walks through the main steps for importing and analysing ASV portal data in R. The first two steps are the same for everyone. Then you choose **one** of two alternative tracks, which follow the same steps with different data:
 
 - **Track A, insects:** COI metabarcoding data from the [Insect Biome Atlas](https://www.insectbiomeatlas.org/){target="_blank"} (IBA) project, which sampled arthropods with Malaise traps at 200 sites across six habitat types in Sweden. We combine two datasets generated with different extraction protocols, homogenate and lysate.
+
 - **Track B, marine plankton:** 16S metabarcoding data of bacterioplankton from the Baltic Sea, from a transect sampled in 2013 and monitoring stations sampled in 2019–2020, along the salinity gradient from the Bothnian Bay to the Skagerrak.
 
 ### Common steps
