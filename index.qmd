@@ -5,13 +5,28 @@ format:
     toc: false
 ---
 
-Welcome to the SBDI part of the [first in-person Swedish Metabarcoding Network (SMN) meeting & hands-on workshop](https://metabarcoding.se/meeting-2026/){target="_blank"}, Uppsala, 8–9 December 2026! This tutorial demonstrates how eDNA/metabarcoding data can be accessed, processed and analysed within the [Swedish Biodiversity Data Infrastructure (SBDI)](https://biodiversitydata.se/){target="_blank"} — from data submission and processing through to exploring arthropod biodiversity patterns across Swedish habitat types, using COI metabarcoding data from the [Insect Biome Atlas](https://www.insectbiomeatlas.org/){target="_blank"}.
+Welcome to the SBDI part of the [first in-person Swedish Metabarcoding Network (SMN) meeting & hands-on workshop](https://metabarcoding.se/meeting-2026/){target="_blank"}, Uppsala, 8–9 December 2026! This tutorial demonstrates how eDNA/metabarcoding data can be accessed, processed and analysed within the [Swedish Biodiversity Data Infrastructure (SBDI)](https://biodiversitydata.se/){target="_blank"}: from downloading data from the ASV portal to exploring biodiversity patterns in R, with data kept in long format from start to end.
+
+You choose one of two case studies:
+
+- **Insects:** COI metabarcoding data of arthropods across Swedish habitat types, from the [Insect Biome Atlas](https://www.insectbiomeatlas.org/){target="_blank"}
+- **Marine plankton:** 16S metabarcoding data of bacterioplankton along the salinity gradient of the Baltic Sea
 
 ## Agenda
 
-- Introduction: SBDI's eDNA tools and workflows (15 min; [slides](slides-intro.pdf){target="_blank"})
-- [Hands-on tutorial](tutorial.qmd): Analyse ASV portal data with R (1 h)
+Wednesday 9 December 2026, 09:00–12:00 (hands-on workshops)<br>
+Evolutionsbiologiskt centrum (EBC), Norbyvägen 14, Uppsala
+
+- **Introduction:** SBDI's eDNA tools and workflows ([slides](slides-intro.pdf){target="_blank"})
+- **[Hands-on tutorial](tutorial.qmd):** Analyse ASV portal data with R, for insects or marine plankton
+
+Times may still change. See the [meeting page](https://metabarcoding.se/meeting-2026/){target="_blank"} for the full programme.
 
 ## Instructors
-- Dr. Maria Prager — SBDI & University of Gothenburg
 - Dr. Tobias Andermann — SBDI & Uppsala University
+- Prof. Anders Andersson — SBDI & KTH SciLifeLab
+- Dr. Emma Bell — SU SciLifeLab
+- Karin Garefelt — KTH SciLifeLab
+- Krzysztof Jurdzinski — KTH SciLifeLab
+- Dr. Daniel Lundin — SBDI & Linnaeus University
+- Dr. Maria Prager — SBDI & University of Gothenburg

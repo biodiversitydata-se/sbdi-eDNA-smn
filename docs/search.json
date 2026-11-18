@@ -102,21 +102,21 @@
     "href": "index.html",
     "title": "SMN meeting & hands-on workshop in Uppsala",
     "section": "",
-    "text": "Welcome to the SBDI part of the first in-person Swedish Metabarcoding Network (SMN) meeting & hands-on workshop, Uppsala, 8–9 December 2026! This tutorial demonstrates how eDNA/metabarcoding data can be accessed, processed and analysed within the Swedish Biodiversity Data Infrastructure (SBDI) — from data submission and processing through to exploring arthropod biodiversity patterns across Swedish habitat types, using COI metabarcoding data from the Insect Biome Atlas."
+    "text": "Welcome to the SBDI part of the first in-person Swedish Metabarcoding Network (SMN) meeting & hands-on workshop, Uppsala, 8–9 December 2026! This tutorial demonstrates how eDNA/metabarcoding data can be accessed, processed and analysed within the Swedish Biodiversity Data Infrastructure (SBDI): from downloading data from the ASV portal to exploring biodiversity patterns in R, with data kept in long format from start to end.\nYou choose one of two case studies:"
   },
   {
     "objectID": "index.html#agenda",
     "href": "index.html#agenda",
     "title": "SMN meeting & hands-on workshop in Uppsala",
     "section": "Agenda",
-    "text": "Agenda\n\nIntroduction: SBDI’s eDNA tools and workflows (15 min; slides)\nHands-on tutorial: Analyse ASV portal data with R (1 h)"
+    "text": "Agenda\nWednesday 9 December 2026, 09:00–12:00 (hands-on workshops) Evolutionsbiologiskt centrum (EBC), Norbyvägen 14, Uppsala\n\nIntroduction: SBDI’s eDNA tools and workflows (slides)\nHands-on tutorial: Analyse ASV portal data with R, for insects or marine plankton\n\nTimes may still change. See the meeting page for the full programme."
   },
   {
     "objectID": "index.html#instructors",
     "href": "index.html#instructors",
     "title": "SMN meeting & hands-on workshop in Uppsala",
     "section": "Instructors",
-    "text": "Instructors\n\nDr. Maria Prager — SBDI & University of Gothenburg\nDr. Tobias Andermann — SBDI & Uppsala University"
+    "text": "Instructors\n\nDr. Tobias Andermann — SBDI & Uppsala University\nProf. Anders Andersson — SBDI & KTH SciLifeLab\nDr. Emma Bell — SU SciLifeLab\nKarin Garefelt — KTH SciLifeLab\nKrzysztof Jurdzinski — KTH SciLifeLab\nDr. Daniel Lundin — SBDI & Linnaeus University\nDr. Maria Prager — SBDI & University of Gothenburg"
   },
   {
     "objectID": "insects-04-beta.html",
