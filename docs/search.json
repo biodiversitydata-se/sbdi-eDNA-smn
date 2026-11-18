@@ -102,7 +102,7 @@
     "href": "index.html",
     "title": "SMN hands-on workshop in Uppsala",
     "section": "",
-    "text": "Tutorial for the hands-on workshop at the first in-person Swedish Metabarcoding Network (SMN) meeting: Wednesday 9 December 2026, 09:00–12:00, Evolutionsbiologiskt centrum (EBC), Uppsala.\nYou will download eDNA/metabarcoding data published through the Swedish Biodiversity Data Infrastructure (SBDI) from the ASV portal and explore it in R, with insects or marine plankton as alternative tracks.\nStart the tutorial →"
+    "text": "A hands-on tutorial for the first in-person Swedish Metabarcoding Network (SMN) meeting, held on Wednesday, 9 December 2026, from 09:00 to 12:00 at the Evolutionary Biology Centre (EBC) in Uppsala, Sweden.\nIn this workshop, you will learn how to download and explore eDNA/metabarcoding data published through the Swedish Biodiversity Data Infrastructure (SBDI). Using the SBDI ASV portal and R, you will work with real biodiversity datasets and choose between two hands-on tracks: insects or marine plankton.\nStart the tutorial →"
   },
   {
     "objectID": "index.html#instructors",
