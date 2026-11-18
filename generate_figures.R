@@ -1,7 +1,7 @@
 # Runs the tutorial code of both tracks on local copies of the data, saves the
 # figures in figures/ and prints the numbers quoted in the tutorial text.
 #
-# Run from the root of the repo, after build_vm_run.R. The environment variables
+# Run from the root of the repo, after build_tutorial_scripts.R. The environment variables
 # SMN_INSECTS and SMN_PLANKTON should point at folders with the two zip files of
 # each track, and nothing else.
 
@@ -15,7 +15,7 @@ run_track <- function(track, data_path) {
   env <- new.env(parent = globalenv())
   env$data_path <- data_path
   env$store_path <- file.path(tempdir(), paste0("store_", track))
-  code <- readLines(sprintf("vm_run_%s.R", track), encoding = "UTF-8")
+  code <- readLines(sprintf("tutorial_%s.R", track), encoding = "UTF-8")
   code <- code[!grepl("^\\?", code) & !grepl("^(data_path|store_path) *<-", code)]
   code <- code[!grepl("^plot_[a-z_]+\\(.*\\)$", code)]
   pdf(NULL)
