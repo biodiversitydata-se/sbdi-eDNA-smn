@@ -102,14 +102,14 @@
     "href": "index.html",
     "title": "SMN meeting & hands-on workshop in Uppsala",
     "section": "",
-    "text": "Welcome to the SBDI part of the first in-person Swedish Metabarcoding Network (SMN) meeting & hands-on workshop, Uppsala, 8–9 December 2026! This tutorial demonstrates how eDNA/metabarcoding data can be accessed, processed and analysed within the Swedish Biodiversity Data Infrastructure (SBDI): from downloading data from the ASV portal to exploring biodiversity patterns in R.\nYou choose one of two alternative tracks:"
+    "text": "Welcome to the tutorial for the hands-on workshop at the first in-person Swedish Metabarcoding Network (SMN) meeting, Uppsala, 8–9 December 2026! It shows how eDNA/metabarcoding data published through the Swedish Biodiversity Data Infrastructure (SBDI) can be downloaded from the ASV portal and explored in R.\nYou choose one of two alternative tracks:"
   },
   {
     "objectID": "index.html#agenda",
     "href": "index.html#agenda",
     "title": "SMN meeting & hands-on workshop in Uppsala",
     "section": "Agenda",
-    "text": "Agenda\nWednesday 9 December 2026, 09:00–12:00 (hands-on workshops) Evolutionsbiologiskt centrum (EBC), Norbyvägen 14, Uppsala\n\nIntroduction: SBDI’s eDNA tools and workflows (slides)\nHands-on tutorial: Analyse ASV portal data with R, for insects or marine plankton\n\nTimes may still change. See the meeting page for the full programme."
+    "text": "Agenda\nWednesday 9 December 2026, 09:00–12:00 (hands-on workshops) Evolutionsbiologiskt centrum (EBC), Norbyvägen 14, Uppsala\n\nIntroduction: eDNA data, tools and workflows in SBDI (slides)\nHands-on tutorial: Analyse ASV portal data with R, for insects or marine plankton\n\nTimes may still change. See the meeting page for the full programme."
   },
   {
     "objectID": "index.html#instructors",
