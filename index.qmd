@@ -5,9 +5,9 @@ format:
     toc: false
 ---
 
-A hands-on tutorial for the [first in-person Swedish Metabarcoding Network (SMN) meeting](https://metabarcoding.se/meeting-2026/){target="_blank"}, held on Wednesday, 9 December 2026, from 09:00 to 12:00 at the Evolutionary Biology Centre (EBC) in Uppsala, Sweden.
+A hands-on tutorial for the [first in-person Swedish Metabarcoding Network (SMN) meeting](https://metabarcoding.se/meeting-2026/){target="_blank"}: Wednesday 9 December 2026, 09:00–12:00, Evolutionary Biology Centre (EBC), Uppsala.
 
-In this workshop, you will learn how to download and explore eDNA/metabarcoding data published through the [Swedish Biodiversity Data Infrastructure (SBDI)](https://biodiversitydata.se/){target="_blank"}. Using the SBDI ASV portal and R, you will work with real biodiversity datasets and choose between two hands-on tracks: insects or marine plankton.
+You will download eDNA/metabarcoding data published through the [Swedish Biodiversity Data Infrastructure (SBDI)](https://biodiversitydata.se/){target="_blank"} from the ASV portal and explore them in R, in one of two tracks: insects or marine plankton.
 
 [Start the tutorial →](tutorial.qmd)
 
