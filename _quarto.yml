@@ -3,7 +3,7 @@ project:
   output-dir: docs
 
 website:
-  title: "Exploring eDNA in SBDI — SMN meeting 2026"
+  title: "SBDI tutorial — SMN meeting & hands-on workshop 2026"
   navbar:
     left:
       - href: index.qmd
