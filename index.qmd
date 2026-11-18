@@ -25,8 +25,5 @@ Times may still change. See the [meeting page](https://metabarcoding.se/meeting-
 ## Instructors
 - Dr. Tobias Andermann — SBDI & Uppsala University
 - Prof. Anders Andersson — SBDI & KTH SciLifeLab
-- Dr. Emma Bell — SU SciLifeLab
-- Karin Garefelt — KTH SciLifeLab
-- Krzysztof Jurdzinski — KTH SciLifeLab
 - Dr. Daniel Lundin — SBDI & Linnaeus University
 - Dr. Maria Prager — SBDI & University of Gothenburg
