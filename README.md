@@ -24,3 +24,8 @@ Latz, M.A.C., Andersson, A., Brugel, S., et al. (2024). [A comprehensive dataset
 - `build_tutorial_scripts.R` writes `tutorial_insects.R` and `tutorial_plankton.R` from the R code in the tutorial pages.
 - `generate_figures.R` runs both scripts on local copies of the data and saves the figures in `figures/`. Set `SMN_INSECTS` and `SMN_PLANKTON` to folders with the two zip files of each track.
 - `quarto render` builds the site in `docs/`, which GitHub Pages serves.
+
+## License
+
+This material is licensed under the Creative Commons
+Attribution 4.0 International License (CC BY 4.0).

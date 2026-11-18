@@ -12,13 +12,12 @@ You choose one of two alternative tracks:
 - **Track A, insects:** COI metabarcoding data of arthropods across Swedish habitat types, from the [Insect Biome Atlas](https://www.insectbiomeatlas.org/){target="_blank"}
 - **Track B, marine plankton:** 16S metabarcoding data of bacterioplankton along the salinity gradient of the Baltic Sea
 
-## Agenda
+## Time and place
 
-Wednesday 9 December 2026, 09:00–12:00 (hands-on workshops)<br>
+Wednesday 9 December 2026, 09:00–12:00<br>
 Evolutionsbiologiskt centrum (EBC), Norbyvägen 14, Uppsala
 
-- **Introduction:** eDNA data, tools and workflows in SBDI ([slides](slides-intro.pdf){target="_blank"})
-- **[Hands-on tutorial](tutorial.qmd):** Analyse ASV portal data with R, for insects or marine plankton
+[Start the tutorial →](tutorial.qmd)
 
 Times may still change. See the [meeting page](https://metabarcoding.se/meeting-2026/){target="_blank"} for the full programme.
 
