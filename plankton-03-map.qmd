@@ -1,0 +1,133 @@
+---
+title: "3. Sample mapping (marine plankton)"
+format:
+  html:
+    toc: false
+---
+
+*Explore the spatial and seasonal distribution of the Baltic Sea samples, and their salinity.*
+
+The two datasets are 16S metabarcoding data of bacterioplankton from the Baltic Sea: a transect sampled in July 2013 (`KTH-2013-Baltic-16S`) and monitoring stations sampled in 2019–2020 (`PRJEB55296-16S`).
+
+### Inspect contextual data
+
+Core sample-level metadata is available in `merged$events`, an ordinary data frame with one row per sample. We note which dataset each sample comes from:
+
+```r
+events <- merged$events
+dataset_labels <- c("KTH-2013-Baltic-16S" = "2013", "PRJEB55296-16S" = "2019-2020")
+events$dataset <- unname(dataset_labels[events$datasetID])
+table(events$dataset)
+```
+
+---
+
+### Check primers
+
+Datasets can only be compared at ASV level if they were sequenced with the same primers:
+
+```r
+unique(events[c("dataset", "pcr_primer_name_forward", "pcr_primer_name_reverse")])
+```
+
+Both datasets use the same primers.
+
+---
+
+### Extract temporal variables
+
+`eventDate` holds the date and time of sampling. We extract month and day of year:
+
+```r
+event_start <- lubridate::parse_date_time(
+  sub("/.*", "", events$eventDate),
+  orders = c("ymd_HMSz", "ymd_HMS", "ymd_HM", "ymd"),
+  quiet = TRUE
+)
+events$month <- lubridate::month(event_start)
+events$yday  <- lubridate::yday(event_start)
+```
+
+---
+
+### Extract salinity
+
+Salinity is one of the contextual measurements in `emof`, which has one row per measurement. The two datasets name it differently, so we first look at the names:
+
+```r
+merged$emof |>
+  filter(grepl("salinity", measurementType)) |>
+  distinct(measurementType, measurementUnit) |>
+  as.data.frame()
+```
+
+Some names end with a space, so we remove spaces at the ends before we pick out the salinity of each sample. This table is small, so we bring it into R first:
+
+```r
+salinity <- merged$emof |>
+  filter(grepl("salinity", measurementType)) |>
+  as.data.frame()
+salinity$measurementType <- trimws(salinity$measurementType)
+salinity <- salinity[salinity$measurementType %in% c("salinity", "salinity_average"), ]
+
+events$salinity <- as.numeric(salinity$measurementValue[match(events$eventID, salinity$eventID)])
+summary(events$salinity)
+```
+
+Some samples have no salinity measurement. They are drawn with the smallest point size, and left out of the comparisons with salinity below.
+
+---
+
+### Map samples
+
+Point colour shows the day of year, point size the salinity, and the shape the dataset:
+
+```r
+# Point size grows with salinity; samples without salinity get the smallest size
+point_size <- function(salinity, base, step) base + ifelse(is.na(salinity), 0, salinity / step)
+
+color_yday <- colorRampPalette(
+  c("#2c7fb8", "#addd8e", "#edf8b1", "#fa9fb5", "#2c7fb8")
+)(366)
+dataset_pch <- c("2013" = 21, "2019-2020" = 22)
+
+plot_maps <- function(dataset) {
+  in_dataset <- events[events$dataset == dataset, ]
+  newmap <- rworldmap::getMap(resolution = "low")
+  par(mfrow = c(4, 4), mar = c(2, 2, 3, 1), xpd = TRUE)
+
+  for (m in 1:12) {
+    in_month <- in_dataset[in_dataset$month %in% m, ]
+    plot(newmap, xlim = c(10, 25), ylim = c(54, 66), asp = 1, main = month.abb[m])
+    if (nrow(in_month) > 0) {
+      points(in_month$decimalLongitude, in_month$decimalLatitude,
+             pch = dataset_pch[dataset], col = "black",
+             bg = color_yday[in_month$yday], cex = point_size(in_month$salinity, 1, 20))
+    }
+  }
+
+  plot(1:366, rep(1, 366), col = color_yday, pch = "|", cex = 3,
+       axes = FALSE, xlab = "", ylab = "", ylim = c(0.9, 1.3))
+  axis(1, at = c(1, 182, 366))
+  text(183, 1.2, "Day of year", cex = 1.2)
+
+  plot(c(2, 18, 34), rep(1, 3), pch = 1, cex = 1 + c(2, 18, 34) / 20,
+       xlim = c(-5, 40), ylim = c(0.9, 1.3), axes = FALSE, xlab = "", ylab = "")
+  axis(1, at = c(2, 18, 34))
+  text(18, 1.2, "Salinity", cex = 1.2)
+}
+
+plot_maps("2019-2020")
+```
+
+The same function shows the 2013 transect:
+
+```r
+plot_maps("2013")
+```
+
+These figures have several panels and can look cramped on a laptop screen. Click **Zoom** above the Plots pane for a larger view.
+
+---
+
+[← Previous](tutorial-02-prep.qmd) · [Overview](tutorial.qmd) · [Next →](plankton-04-beta.qmd)

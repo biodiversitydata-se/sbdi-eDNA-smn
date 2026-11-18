@@ -1,0 +1,45 @@
+---
+title: "5. Within-sample diversity (marine plankton)"
+format:
+  html:
+    toc: false
+---
+
+*Examine diversity **within** each sample — alpha diversity — using the [Shannon index](https://en.wikipedia.org/wiki/Diversity_index#Shannon_index){target="_blank"}, and how it varies with salinity.*
+
+### Calculate Shannon diversity per sample
+
+The Shannon index is calculated from the share *p* of each taxon in a sample, as −Σ *p* log *p*. Taxa that are absent do not contribute, so the long table holds everything we need. We reuse `asv_counts` from [step 4](plankton-04-beta.qmd):
+
+```r
+shannon_table <- asv_counts |>
+  mutate(total = sum(quant, na.rm = TRUE), .by = sample) |>
+  mutate(p = quant / total) |>
+  mutate(p_log_p = p * log(p)) |>
+  summarise(shannon = -sum(p_log_p, na.rm = TRUE), .by = sample) |>
+  as.data.frame()
+
+events$shannon <- shannon_table$shannon[match(events$eventID, shannon_table$sample)]
+```
+
+A higher Shannon index indicates greater within-sample diversity, reflecting both the number of ASVs present and how evenly their abundances are distributed.
+
+### Plot Shannon diversity against salinity
+
+```r
+plot_shannon <- function() {
+  par(mar = c(4, 4, 2, 1))
+  plot(events$salinity, events$shannon,
+       pch = dataset_pch[events$dataset], bg = color_yday[events$yday],
+       xlab = "Salinity", ylab = "Shannon diversity")
+  legend("bottomright", bty = "n", pch = dataset_pch, legend = names(dataset_pch))
+}
+
+plot_shannon()
+```
+
+Shannon diversity shows no simple trend with salinity, and it varies more between seasons than along the gradient: winter samples (blue) tend to be more diverse than summer ones. So although salinity changes *which* bacteria are present, as the PCoA in step 4 shows, it does not change *how diverse* the communities are in any simple way.
+
+---
+
+[← Previous](plankton-04-beta.qmd) · [Overview](tutorial.qmd) · [Next →](plankton-06-composition.qmd)

@@ -1,0 +1,140 @@
+---
+title: "1. Environment setup"
+format:
+  html:
+    toc: false
+---
+
+*Set up the R environment used in the tutorial, either via the workshop cloud environment or locally on your laptop.*
+
+## Option A (recommended): Workshop RStudio environment
+
+A virtual machine running RStudio Server in PDC Cloud is available during the workshop. You will get a link, a username and a password.
+
+Resources are shared, so **avoid creating additional large objects**. The machine shuts down after the workshop, so save your work as an R script and download it via the Files pane (More → Export) before you leave.
+
+### Check required packages
+
+All required packages are pre-installed in the workshop environment. Load them and confirm that they are available:
+
+```r
+library(asvoccur)
+library(duckplyr)
+library(ecolongr)
+library(vegan)
+library(rworldmap)
+library(lubridate)
+library(ggplot2)
+```
+
+### Check access to example data {#check-access}
+
+For this tutorial, ASV portal data is pre-downloaded and available on the virtual machine. It has also been prepared once for everyone, in shared folders called *stores*. Choose the data you want to work with and set the paths:
+
+::: {.panel-tabset}
+## Insects
+
+```r
+data_path  <- "/srv/course-data/insects"
+store_path <- "/srv/course-store/insects"
+list.files(data_path)
+```
+
+If two (IBA_CO1) zip files are listed, you are ready to [proceed](tutorial-02-prep.qmd).
+
+## Marine plankton
+
+```r
+data_path  <- "/srv/course-data/plankton"
+store_path <- "/srv/course-store/plankton"
+list.files(data_path)
+```
+
+If two (16S) zip files are listed, you are ready to [proceed](tutorial-02-prep.qmd).
+:::
+
+## Option B (fallback): Run RStudio locally on your laptop
+
+You will need to install:
+
+1. [R](https://cran.r-project.org/){target="_blank"}<br>
+2. [RStudio](https://posit.co/download/rstudio-desktop/){target="_blank"}
+3. tools for compiling R packages, because `ecolongr` contains C++ code:
+   - **macOS:** run `xcode-select --install` in the Terminal
+   - **Windows:** [Rtools](https://cran.r-project.org/bin/windows/Rtools/){target="_blank"}, in the version that matches your R
+   - **Linux:** usually the `build-essential` and `r-base-dev` packages
+4. the following R packages:
+   - `remotes`
+   - `asvoccur`
+   - `duckplyr`
+   - `ecolongr`
+   - `vegan`
+   - `rworldmap`
+   - `lubridate`
+   - `ggplot2`
+
+To install and load the required R packages:
+
+```r
+# Install from CRAN
+install.packages(c(
+  "remotes",
+  "duckplyr",
+  "vegan",
+  "rworldmap",
+  "lubridate",
+  "ggplot2"
+))
+
+# Install from GitHub
+remotes::install_github("biodiversitydata-se/asvoccur")
+remotes::install_github("biodiversitydata-se/ecolongr@0.1.1")
+
+# Load
+library(asvoccur)
+library(duckplyr)
+library(ecolongr)
+library(vegan)
+library(rworldmap)
+library(lubridate)
+library(ggplot2)
+
+# Confirm versions
+packageVersion("asvoccur")  # Should say 1.3.0
+packageVersion("ecolongr")  # Should say 0.1.1
+```
+
+### Download example data from the ASV portal
+
+In this option, example data is downloaded directly from the ASV portal.
+
+1. Go to the [ASV portal start page](https://asv-portal.biodiversitydata.se/index){target="_blank"}.
+
+   Click **DOWNLOAD**. If you are not already logged in, you will be redirected to the login page.
+
+2. If you do not already have an account, either:
+   - sign in with a Google or GitHub account, or
+   - create a new SBDI account.
+
+3. On the **Download** page, under **Download link**, download the two datasets of the track you have chosen:
+
+   - **Insects:** IBA_CO1_homogenate_2019_SE and IBA_CO1_lysate_2019_SE
+   - **Marine plankton:** KTH-2013-Baltic-16S and PRJEB55296-16S
+
+4. Place the two zip files in a folder of their own, e.g.:
+
+       course-data/
+       └── insects/
+           ├── IBA_CO1_homogenate_2019_SE.zip
+           └── IBA_CO1_lysate_2019_SE.zip
+
+5. Set the paths in R and confirm access. The store is a new folder that is created in the next step:
+```r
+data_path  <- "local/path/to/course-data/insects"
+store_path <- "local/path/to/course-store/insects"
+list.files(data_path)
+```
+
+If the expected zip file(s) are listed, you are ready to [proceed](tutorial-02-prep.qmd).
+
+[Overview](tutorial.qmd) · [Next →](tutorial-02-prep.qmd)

@@ -1,0 +1,60 @@
+---
+title: "5. Within-sample diversity (alpha diversity)"
+format:
+  html:
+    toc: false
+---
+
+*Examine diversity **within** each sample — alpha diversity — using the [Shannon index](https://en.wikipedia.org/wiki/Diversity_index#Shannon_index){target="_blank"}, complementing the between-sample comparison of community composition in [step 4](insects-04-beta.qmd).*
+
+### Choose samples
+
+The extraction method affects how many taxa are detected, so mixing homogenate and lysate samples could make habitats differ only because they have different shares of each method. The pairing in [step 3](insects-03-map.qmd) does not help here, since it is about comparing samples with each other, not about the diversity within them. We therefore use all lysate samples that pass the depth and date filters:
+
+```r
+alpha_samples <- events[
+  events$depth >= 100000 & !is.na(events$yday) & grepl("lysate", events$eventID),
+]
+nrow(alpha_samples)
+```
+
+### Calculate Shannon diversity per sample
+
+The Shannon index is calculated from the share *p* of each taxon in a sample, as −Σ *p* log *p*. Taxa that are absent do not contribute, so the long table holds everything we need. As in [step 4](insects-04-beta.qmd), we work with clusters:
+
+```r
+alpha_ids <- duckdb_tibble(eventID = alpha_samples$eventID, .prudence = "stingy")
+
+shannon_table <- merged$counts |>
+  semi_join(alpha_ids, by = "eventID") |>
+  inner_join(clusters, by = "taxonID") |>
+  summarise(quant = sum(organismQuantity, na.rm = TRUE), .by = c(eventID, cluster)) |>
+  mutate(total = sum(quant, na.rm = TRUE), .by = eventID) |>
+  mutate(p = quant / total) |>
+  mutate(p_log_p = p * log(p)) |>
+  summarise(shannon = -sum(p_log_p, na.rm = TRUE), .by = eventID) |>
+  as.data.frame()
+
+alpha_samples$shannon <- shannon_table$shannon[match(alpha_samples$eventID, shannon_table$eventID)]
+```
+
+A higher Shannon index indicates greater within-sample diversity, reflecting both the number of clusters present and how evenly their abundances are distributed.
+
+### Plot Shannon diversity by habitat
+
+```r
+plot_shannon <- function() {
+  par(mar = c(7, 4, 2, 1))
+  boxplot(alpha_samples$shannon ~ alpha_samples$habitat, las = 2, xlab = "",
+          ylab = "Shannon diversity",
+          col = habitat_cols[levels(factor(alpha_samples$habitat))])
+}
+
+plot_shannon()
+```
+
+Shannon diversity is broadly similar across habitats, with overlapping distributions. This doesn't contradict the PCoA in step 4: PCoA reflects *which* taxa are present, while Shannon reflects *how many* and how evenly distributed, so habitats can differ in composition but have similar diversity levels.
+
+---
+
+[← Previous](insects-04-beta.qmd) · [Overview](tutorial.qmd) · [Next →](insects-06-composition.qmd)

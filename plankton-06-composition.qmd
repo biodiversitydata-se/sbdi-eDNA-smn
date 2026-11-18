@@ -1,0 +1,81 @@
+---
+title: "6. Taxonomic composition (marine plankton)"
+format:
+  html:
+    toc: false
+---
+
+*Summarise taxonomic composition across salinity and months using stacked barplots.*
+
+### Sum reads by taxonomy
+
+`sum_clades_long()` from [step 2](tutorial-02-prep.qmd) can be limited to one taxonomic rank. The result is small enough to bring into R. We then add the salinity and month of each sample, and group the salinity into intervals:
+
+```r
+salinity_breaks <- c(0, 3, 6, 12, 20, 35)
+
+get_composition <- function(rank) {
+  composition <- sum_clades_long(merged$counts, merged$asvs, ranks = rank) |>
+    as.data.frame()
+  composition <- merge(composition, events[c("eventID", "salinity", "month")], by = "eventID")
+  composition$salinity_class <- cut(composition$salinity, salinity_breaks, right = FALSE)
+  composition
+}
+```
+
+Only the available ranks work here: kingdom, phylum, class, order, family, genus, species and otu.
+
+### Define the barplot function
+
+The function below identifies the most abundant taxa, calculates their mean relative abundance for each salinity interval and month, and draws stacked barplots with [`ggplot2`](https://ggplot2.tidyverse.org/){target="_blank"}. `ggplot2` is made for long tables, so no wide table is needed: each row of `monthly` becomes one segment of a bar.
+
+```r
+plot_barplots <- function(rank, top_x = 10) {
+  composition <- get_composition(rank)
+  sampled <- events[!is.na(events$salinity), ]
+  sampled$salinity_class <- cut(sampled$salinity, salinity_breaks, right = FALSE)
+
+  # Absent taxa have no rows, so a mean is the sum divided by the number of samples
+  totals <- tapply(composition$norm, composition$clade, sum)
+  top <- names(sort(totals / nrow(sampled), decreasing = TRUE))[1:top_x]
+
+  monthly <- aggregate(norm ~ clade + salinity_class + month,
+                       composition[composition$clade %in% top, ], sum)
+  n_samples <- aggregate(eventID ~ salinity_class + month, sampled, length)
+  monthly <- merge(monthly, n_samples)
+  monthly$share <- monthly$norm / monthly$eventID
+
+  # Reversed levels put the most abundant taxon at the bottom of each bar
+  monthly$clade <- factor(monthly$clade, levels = rev(top))
+  monthly$month <- factor(monthly$month, levels = 1:12, labels = month.abb)
+
+  mycols <- colorRampPalette(c(
+    "#a6cee3", "#1f78b4", "#b2df8a", "#33a02c",
+    "#fb9a99", "#e31a1c", "#fdbf6f", "#ff7f00",
+    "#cab2d6", "#6a3d9a", "#ffff99", "#b15928"
+  ))
+
+  ggplot(monthly, aes(x = month, y = share, fill = clade)) +
+    geom_col(colour = "grey20", linewidth = 0.2) +
+    facet_wrap(~salinity_class, ncol = 1, labeller = label_both) +
+    scale_x_discrete(drop = FALSE) +
+    scale_fill_manual(values = setNames(mycols(top_x), top), breaks = top, name = rank) +
+    labs(x = NULL, y = "Mean share of reads") +
+    theme_bw(base_size = 12) +
+    theme(panel.grid.major.x = element_blank())
+}
+```
+
+### Example: plot top classes
+
+Plot the eight most abundant classes across salinity and months:
+
+```r
+plot_barplots(rank = "class", top_x = 8)
+```
+
+Bacteroidia and Alphaproteobacteria are common at all salinities. Acidimicrobiia and Actinomycetes are more common in the least salty water, and Cyanobacteriia increase in summer. Many reads cannot be assigned to a class (`Unclassified`). Note that these are shares of the reads, not of the number of cells. Empty months had no samples in that salinity interval.
+
+---
+
+[← Previous](plankton-05-alpha.qmd) · [Overview](tutorial.qmd)

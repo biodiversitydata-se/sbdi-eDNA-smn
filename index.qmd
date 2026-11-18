@@ -1,0 +1,17 @@
+---
+title: "Exploring eDNA in SBDI"
+format:
+  html:
+    toc: false
+---
+
+Welcome to the **Exploring eDNA in SBDI** workshop at the first in-person Swedish Metabarcoding Network (SMN) meeting & hands-on workshop, Uppsala, 8–9 December 2026! This workshop demonstrates how eDNA/metabarcoding data can be accessed, processed and analysed within the [Swedish Biodiversity Data Infrastructure (SBDI)](https://biodiversitydata.se/){target="_blank"} — from data submission and processing through to exploring arthropod biodiversity patterns across Swedish habitat types, using COI metabarcoding data from the [Insect Biome Atlas](https://www.insectbiomeatlas.org/){target="_blank"}.
+
+## Agenda
+
+- Introduction: SBDI's eDNA tools and workflows (15 min; [slides](slides-intro.pdf){target="_blank"})
+- [Hands-on tutorial](tutorial.qmd): Analyse ASV portal data with R (1 h)
+
+## Instructors
+- Dr. Maria Prager — SBDI & University of Gothenburg
+- Dr. Tobias Andermann — SBDI & Uppsala University

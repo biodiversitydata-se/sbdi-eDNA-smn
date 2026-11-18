@@ -1,0 +1,124 @@
+---
+title: "2. Data preparation"
+format:
+  html:
+    toc: false
+---
+
+*Load and combine ASV portal data as long tables, and summarise read counts by taxonomy.*
+
+### Why long tables?
+
+ASV data is mostly zeros, because each sample contains only a small share of all ASVs. A wide table with one column per sample has to store those zeros. A *long* table has one row per ASV in each sample where it was found, and leaves the zeros out:
+
+| eventID | taxonID | organismQuantity |
+|---|---|---|
+| sample 1 | ASV a | 620 |
+| sample 1 | ASV b | 14 |
+| sample 2 | ASV a | 251 |
+
+This is also how the ASV portal delivers the data, so we can work with it as it is.
+
+---
+
+### Load the datasets
+
+Load the datasets in the `data_path` folder defined in the [previous section](tutorial-01-setup.qmd):
+
+```r
+loaded <- load_long(data_path, store = store_path)
+```
+
+`load_long()` saves the datasets as compact [Parquet](https://parquet.apache.org/){target="_blank"} files in the store the first time, and later only opens them. On the workshop machine this was done once for everyone, so it takes no time. `loaded` holds one table per data type, covering all datasets.
+
+---
+
+### Merge the datasets
+
+Next, we merge the datasets in order to analyse them jointly:
+
+```r
+merged <- merge_long(loaded)
+```
+
+`merge_long()` checks that the datasets can be combined: an event that occurs in two datasets gives an error, and ASVs with different taxonomy in different datasets, for example after a re-annotation, give a warning. The `merged` object is a list:
+
+- `counts`: ASV read counts
+- `asvs`: ASV sequences and taxonomic annotations, one row per ASV
+- `emof`: dataset-specific *extended measurement or fact* contextual data
+- `events`: core sample-level metadata (*where, when, how, who*)
+- `datasets`: dataset-level metadata
+
+To see the full function documentation:
+
+```r
+?asvoccur::load_long
+?asvoccur::merge_long
+```
+
+---
+
+### Work with lazy tables
+
+`counts`, `asvs` and `emof` are *lazy* tables. They are not read into R. Instead, the query engine [DuckDB](https://duckdb.org/){target="_blank"} reads what it needs from the Parquet files when a result is requested. This keeps the memory use low, even for large datasets. `events` and `datasets` are small and are ordinary data frames.
+
+We use ordinary `dplyr` verbs through the [`duckplyr`](https://duckplyr.tidyverse.org/){target="_blank"} package. To see the size of the data:
+
+```r
+merged$counts |>
+  summarise(rows = n(), samples = n_distinct(eventID), asvs = n_distinct(taxonID)) |>
+  as.data.frame()
+```
+
+`as.data.frame()` runs the query and brings the small result into R. To look at the first rows of the tables:
+
+```r
+merged$counts |> head(3) |> as.data.frame()
+merged$asvs |> select(taxonID, phylum, order, genus, species) |> head(3) |> as.data.frame()
+```
+
+The contextual data has one row per measurement, so we can see which measurements exist:
+
+```r
+merged$emof |> distinct(measurementType, measurementUnit) |> as.data.frame()
+```
+
+ASVs shared across datasets are combined using SBDI ASV IDs. These IDs correspond to MD5 hashes of the sequences, meaning that ASVs with identical sequences are represented only once.
+
+If a query cannot be translated to DuckDB, you get an error rather than a slow copy of the whole table into R. That is deliberate, and the error message usually names the function that caused it.
+
+---
+
+### Aggregate counts by taxonomy
+
+We can now sum ASV read counts at different taxonomic levels based on the taxonomic annotation:
+
+```r
+clades <- sum_clades_long(merged$counts, merged$asvs)
+```
+
+This gives a long table with one row per clade and sample, at the following levels:
+
+- kingdom (or domain)
+- phylum
+- class
+- order
+- family
+- genus
+- species
+- otu (if available)
+
+`raw` holds the read counts and `norm` the share of the reads in the sample (relative abundance). This is again a lazy table, so we pick out what we want to look at:
+
+```r
+clades |>
+  filter(rank == "phylum") |>
+  head(3) |>
+  as.data.frame()
+```
+
+ASVs without a value at a level are summed as `Unclassified`. Names such as `unclassified.Acrididae` come from the annotation and are kept as they are.
+
+---
+
+[← Previous](tutorial-01-setup.qmd) · [Overview](tutorial.qmd) · Next: [Insects →](insects-03-map.qmd) or [Marine plankton →](plankton-03-map.qmd)
