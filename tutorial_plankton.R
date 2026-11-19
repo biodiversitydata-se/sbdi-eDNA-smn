@@ -123,13 +123,14 @@ get_composition <- function(rank) {
     as.data.frame()
   composition <- merge(composition, events[c("eventID", "salinity", "month")], by = "eventID")
   composition$salinity_class <- cut(composition$salinity, salinity_breaks, right = FALSE)
-  composition
+  composition[!is.na(composition$salinity_class), ]
 }
 
 plot_barplots <- function(rank, top_x = 10) {
   composition <- get_composition(rank)
-  sampled <- events[!is.na(events$salinity), ]
+  sampled <- events
   sampled$salinity_class <- cut(sampled$salinity, salinity_breaks, right = FALSE)
+  sampled <- sampled[!is.na(sampled$salinity_class), ]
 
   # Absent taxa have no rows, so a mean is the sum divided by the number of samples
   totals <- tapply(composition$norm, composition$clade, sum)
