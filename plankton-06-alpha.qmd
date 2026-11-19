@@ -9,7 +9,9 @@ format:
 
 ### Subsample to a common depth
 
-The more reads a sample has, the more rare taxa it reveals, so diversity partly reflects sequencing depth. We therefore first draw the same number of reads from each sample, which is called rarefying. We reuse `asv_counts` from [step 5](plankton-05-beta.qmd):
+Samples with more reads may reveal more rare taxa, affecting diversity estimates. We therefore randomly subsample each to the same number of reads (*rarefaction*).
+
+First, inspect the sequencing depth of the samples, using `asv_counts` from [step 5](plankton-05-beta.qmd):
 
 ```r
 depth <- asv_counts |>
@@ -17,23 +19,27 @@ depth <- asv_counts |>
   as.data.frame()
 summary(depth$depth)
 sort(depth$depth)[1:10]  # the shallowest samples
+```
 
+One sample has only 20 reads, and a few others have fewer than 10,000. Rarefying to the minimum depth would discard almost all information, so we choose 10,000 reads instead:
+
+```r
 set.seed(1)
 asv_rarefied <- el_rrarefy(asv_counts, depth = 10000)
 ```
 
-One sample has only 20 reads, and a few others have less than 10,000. Rarefying all samples to 20 reads would throw away almost all information, so we choose 10,000 reads instead. `el_rrarefy()` works like `rrarefy()` in `vegan`, but drops the samples that have fewer reads than `depth`, with a warning that names them. They get no Shannon value below. The draw is random, and `set.seed()` makes it the same each time you run it. Unlike the other `ecolongr` functions we use, it reads the table into R, which is fine for the number of samples here.
+`el_rrarefy()` works like `rrarefy()` in `vegan` but excludes samples below the chosen depth, with a warning. These samples will have no Shannon value. `set.seed()` makes the random subsampling reproducible.
 
-### Calculate Shannon diversity per sample
+Unlike the other `ecolongr` functions used here, `el_rrarefy()` loads the data into R, which is manageable for this dataset.
 
-The Shannon index is calculated from the share *p* of each taxon in a sample, as −Σ *p* log *p*. `el_diversity()` works like `diversity()` in `vegan` and returns one value per sample, named by sample:
+### Calculate Shannon diversity
+
+The Shannon index measures both the number of ASVs and how evenly their abundances are distributed. Higher values indicate greater within-sample diversity.
 
 ```r
 shannon <- el_diversity(asv_rarefied, "shannon")
 events$shannon <- shannon[events$eventID]
 ```
-
-A higher Shannon index indicates greater within-sample diversity, reflecting both the number of ASVs present and how evenly their abundances are distributed.
 
 ### Plot Shannon diversity against salinity
 
@@ -49,7 +55,11 @@ plot_shannon <- function() {
 plot_shannon()
 ```
 
-Shannon diversity shows no simple trend with salinity, and it varies more between seasons than along the gradient: winter samples (blue) tend to be more diverse than summer ones. So although salinity changes *which* bacteria are present, as the PCoA in step 5 shows, it does not change *how diverse* the communities are in any simple way.
+Shannon diversity shows no clear trend with salinity. Instead, it appears to vary more with season, with winter samples (blue) generally showing higher diversity than summer samples.
+
+This complements the PCoA results in step 5: salinity is associated with differences in **which bacteria are present** (beta diversity), but not with a simple change in **within-sample diversity** (alpha diversity).
+
+**Consider:** How can salinity be associated with community composition without showing a clear relationship with Shannon diversity?
 
 ---
 
