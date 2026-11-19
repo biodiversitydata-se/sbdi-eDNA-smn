@@ -40,8 +40,8 @@ Most ASVs occur in only a few samples. Long format lets us omit the many zeros, 
 
 We use two tools to work with large datasets without loading everything into R:
 
-- [**Parquet**](https://parquet.apache.org/){target="_blank"} stores data efficiently in files on disk.
-- [**DuckDB**](https://duckdb.org/){target="_blank"} analyses these files and returns only the results we request.
+- **Parquet** stores data efficiently in files on disk.
+- **DuckDB** analyses these files and returns only the results we request.
 
 Load the data from the `data_path` folder defined in the [previous section](tutorial-01-setup.qmd):
 
