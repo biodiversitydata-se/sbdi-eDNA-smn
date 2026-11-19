@@ -206,14 +206,17 @@ plot_pcoa()
 
 # --- plankton-06-alpha.qmd ---
 
-shannon_table <- asv_counts |>
-  mutate(total = sum(quant, na.rm = TRUE), .by = sample) |>
-  mutate(p = quant / total) |>
-  mutate(p_log_p = p * log(p)) |>
-  summarise(shannon = -sum(p_log_p, na.rm = TRUE), .by = sample) |>
+depth <- asv_counts |>
+  summarise(depth = sum(quant, na.rm = TRUE), .by = sample) |>
   as.data.frame()
+summary(depth$depth)
+sort(depth$depth)[1:10]  # the shallowest samples
 
-events$shannon <- shannon_table$shannon[match(events$eventID, shannon_table$sample)]
+set.seed(1)
+asv_rarefied <- el_rrarefy(asv_counts, depth = 10000)
+
+shannon <- el_diversity(asv_rarefied, "shannon")
+events$shannon <- shannon[events$eventID]
 
 plot_shannon <- function() {
   par(mar = c(4, 4, 2, 1))

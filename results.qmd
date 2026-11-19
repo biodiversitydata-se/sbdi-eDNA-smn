@@ -31,7 +31,7 @@ format:
 
 ### Within-sample diversity (alpha diversity) — Shannon index
 
-*Diversity within each of the 4,380 lysate samples, by habitat.*
+*Diversity within each of the 4,380 lysate samples, by habitat, after rarefying all samples to the same number of reads.*
 
 ![](figures/insects_6_shannon.png)
 
@@ -59,6 +59,6 @@ format:
 
 ### Within-sample diversity (alpha diversity) — Shannon index
 
-*Diversity within each sample against salinity.*
+*Diversity within each sample against salinity, after rarefying to 10,000 reads. Six samples with fewer reads are left out.*
 
 ![](figures/plankton_6_shannon.png)

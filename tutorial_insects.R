@@ -250,17 +250,17 @@ nrow(alpha_samples)
 
 alpha_ids <- duckdb_tibble(eventID = alpha_samples$eventID, .prudence = "stingy")
 
-shannon_table <- merged$counts |>
+alpha_counts <- merged$counts |>
   semi_join(alpha_ids, by = "eventID") |>
   inner_join(clusters, by = "taxonID") |>
   summarise(quant = sum(organismQuantity, na.rm = TRUE), .by = c(eventID, cluster)) |>
-  mutate(total = sum(quant, na.rm = TRUE), .by = eventID) |>
-  mutate(p = quant / total) |>
-  mutate(p_log_p = p * log(p)) |>
-  summarise(shannon = -sum(p_log_p, na.rm = TRUE), .by = eventID) |>
-  as.data.frame()
+  transmute(sample = eventID, taxon = cluster, quant)
 
-alpha_samples$shannon <- shannon_table$shannon[match(alpha_samples$eventID, shannon_table$eventID)]
+set.seed(1)
+alpha_rarefied <- el_rrarefy(alpha_counts)
+
+shannon <- el_diversity(alpha_rarefied, "shannon")
+alpha_samples$shannon <- shannon[alpha_samples$eventID]
 
 plot_shannon <- function() {
   par(mar = c(7, 4, 2, 1))

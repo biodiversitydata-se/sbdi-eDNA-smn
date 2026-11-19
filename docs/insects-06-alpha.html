@@ -195,34 +195,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>]</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(alpha_samples)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="calculate-shannon-diversity-per-sample" class="level3">
-<h3 class="anchored" data-anchor-id="calculate-shannon-diversity-per-sample">Calculate Shannon diversity per sample</h3>
-<p>The Shannon index is calculated from the share <em>p</em> of each taxon in a sample, as −Σ <em>p</em> log <em>p</em>. Taxa that are absent do not contribute, so the counts table holds everything we need. As in <a href="./insects-05-beta.html">step 5</a>, we work with clusters:</p>
+<section id="subsample-to-a-common-depth" class="level3">
+<h3 class="anchored" data-anchor-id="subsample-to-a-common-depth">Subsample to a common depth</h3>
+<p>The more reads a sample has, the more rare taxa it reveals, so diversity partly reflects sequencing depth. We therefore first draw the same number of reads from each sample, which is called rarefying. As in <a href="./insects-05-beta.html">step 5</a>, we work with clusters:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>alpha_ids <span class="ot">&lt;-</span> <span class="fu">duckdb_tibble</span>(<span class="at">eventID =</span> alpha_samples<span class="sc">$</span>eventID, <span class="at">.prudence =</span> <span class="st">"stingy"</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>shannon_table <span class="ot">&lt;-</span> merged<span class="sc">$</span>counts <span class="sc">|&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>alpha_counts <span class="ot">&lt;-</span> merged<span class="sc">$</span>counts <span class="sc">|&gt;</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">semi_join</span>(alpha_ids, <span class="at">by =</span> <span class="st">"eventID"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(clusters, <span class="at">by =</span> <span class="st">"taxonID"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">quant =</span> <span class="fu">sum</span>(organismQuantity, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.by =</span> <span class="fu">c</span>(eventID, cluster)) <span class="sc">|&gt;</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">total =</span> <span class="fu">sum</span>(quant, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.by =</span> eventID) <span class="sc">|&gt;</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">p =</span> quant <span class="sc">/</span> total) <span class="sc">|&gt;</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">p_log_p =</span> p <span class="sc">*</span> <span class="fu">log</span>(p)) <span class="sc">|&gt;</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">shannon =</span> <span class="sc">-</span><span class="fu">sum</span>(p_log_p, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.by =</span> eventID) <span class="sc">|&gt;</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>()</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>alpha_samples<span class="sc">$</span>shannon <span class="ot">&lt;-</span> shannon_table<span class="sc">$</span>shannon[<span class="fu">match</span>(alpha_samples<span class="sc">$</span>eventID, shannon_table<span class="sc">$</span>eventID)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(<span class="at">sample =</span> eventID, <span class="at">taxon =</span> cluster, quant)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>alpha_rarefied <span class="ot">&lt;-</span> <span class="fu">el_rrarefy</span>(alpha_counts)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>el_rrarefy()</code> works like <code>rrarefy()</code> in <code>vegan</code>. Without a <code>depth</code>, it uses the smallest sample total, so no sample is dropped. The draw is random, and <code>set.seed()</code> makes it the same each time you run it. Unlike the other <code>ecolongr</code> functions we use, it reads the table into R, which is fine for the number of samples here.</p>
+</section>
+<section id="calculate-shannon-diversity-per-sample" class="level3">
+<h3 class="anchored" data-anchor-id="calculate-shannon-diversity-per-sample">Calculate Shannon diversity per sample</h3>
+<p>The Shannon index is calculated from the share <em>p</em> of each taxon in a sample, as −Σ <em>p</em> log <em>p</em>. <code>el_diversity()</code> works like <code>diversity()</code> in <code>vegan</code> and returns one value per sample, named by sample:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>shannon <span class="ot">&lt;-</span> <span class="fu">el_diversity</span>(alpha_rarefied, <span class="st">"shannon"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>alpha_samples<span class="sc">$</span>shannon <span class="ot">&lt;-</span> shannon[alpha_samples<span class="sc">$</span>eventID]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>A higher Shannon index indicates greater within-sample diversity, reflecting both the number of clusters present and how evenly their abundances are distributed.</p>
 </section>
 <section id="plot-shannon-diversity-by-habitat" class="level3">
 <h3 class="anchored" data-anchor-id="plot-shannon-diversity-by-habitat">Plot Shannon diversity by habitat</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>plot_shannon <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">7</span>, <span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">1</span>))</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">boxplot</span>(alpha_samples<span class="sc">$</span>shannon <span class="sc">~</span> alpha_samples<span class="sc">$</span>habitat, <span class="at">las =</span> <span class="dv">2</span>, <span class="at">xlab =</span> <span class="st">""</span>,</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">ylab =</span> <span class="st">"Shannon diversity"</span>,</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">col =</span> habitat_cols[<span class="fu">levels</span>(<span class="fu">factor</span>(alpha_samples<span class="sc">$</span>habitat))])</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_shannon</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>plot_shannon <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">7</span>, <span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">1</span>))</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">boxplot</span>(alpha_samples<span class="sc">$</span>shannon <span class="sc">~</span> alpha_samples<span class="sc">$</span>habitat, <span class="at">las =</span> <span class="dv">2</span>, <span class="at">xlab =</span> <span class="st">""</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">ylab =</span> <span class="st">"Shannon diversity"</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">col =</span> habitat_cols[<span class="fu">levels</span>(<span class="fu">factor</span>(alpha_samples<span class="sc">$</span>habitat))])</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_shannon</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Shannon diversity is broadly similar across habitats, with overlapping distributions. This doesn’t contradict the PCoA in step 5: PCoA reflects <em>which</em> taxa are present, while Shannon reflects <em>how many</em> and how evenly distributed, so habitats can differ in composition but have similar diversity levels.</p>
 <hr>
 <p><a href="./insects-05-beta.html">← Previous</a> · <a href="./tutorial.html">Overview</a></p>

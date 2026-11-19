@@ -18,24 +18,32 @@ alpha_samples <- events[
 nrow(alpha_samples)
 ```
 
-### Calculate Shannon diversity per sample
+### Subsample to a common depth
 
-The Shannon index is calculated from the share *p* of each taxon in a sample, as −Σ *p* log *p*. Taxa that are absent do not contribute, so the counts table holds everything we need. As in [step 5](insects-05-beta.qmd), we work with clusters:
+The more reads a sample has, the more rare taxa it reveals, so diversity partly reflects sequencing depth. We therefore first draw the same number of reads from each sample, which is called rarefying. As in [step 5](insects-05-beta.qmd), we work with clusters:
 
 ```r
 alpha_ids <- duckdb_tibble(eventID = alpha_samples$eventID, .prudence = "stingy")
 
-shannon_table <- merged$counts |>
+alpha_counts <- merged$counts |>
   semi_join(alpha_ids, by = "eventID") |>
   inner_join(clusters, by = "taxonID") |>
   summarise(quant = sum(organismQuantity, na.rm = TRUE), .by = c(eventID, cluster)) |>
-  mutate(total = sum(quant, na.rm = TRUE), .by = eventID) |>
-  mutate(p = quant / total) |>
-  mutate(p_log_p = p * log(p)) |>
-  summarise(shannon = -sum(p_log_p, na.rm = TRUE), .by = eventID) |>
-  as.data.frame()
+  transmute(sample = eventID, taxon = cluster, quant)
 
-alpha_samples$shannon <- shannon_table$shannon[match(alpha_samples$eventID, shannon_table$eventID)]
+set.seed(1)
+alpha_rarefied <- el_rrarefy(alpha_counts)
+```
+
+`el_rrarefy()` works like `rrarefy()` in `vegan`. Without a `depth`, it uses the smallest sample total, so no sample is dropped. The draw is random, and `set.seed()` makes it the same each time you run it. Unlike the other `ecolongr` functions we use, it reads the table into R, which is fine for the number of samples here.
+
+### Calculate Shannon diversity per sample
+
+The Shannon index is calculated from the share *p* of each taxon in a sample, as −Σ *p* log *p*. `el_diversity()` works like `diversity()` in `vegan` and returns one value per sample, named by sample:
+
+```r
+shannon <- el_diversity(alpha_rarefied, "shannon")
+alpha_samples$shannon <- shannon[alpha_samples$eventID]
 ```
 
 A higher Shannon index indicates greater within-sample diversity, reflecting both the number of clusters present and how evenly their abundances are distributed.
