@@ -59,7 +59,9 @@ If you only change text outside R code blocks, run:
 quarto render
 ```
 
-This updates the website without rerunning the analyses. If `quarto` is not found, use the copy included in RStudio, for example `/Applications/RStudio.app/Contents/Resources/app/quarto/bin/quarto` on macOS.
+This updates the website without rerunning the analyses.
+
+Note for macOS: Quarto may be included with RStudio but not available in your terminal's PATH. If `quarto render` is not found, use the Quarto executable bundled with RStudio or add it to your PATH.
 
 ### Publishing
 
