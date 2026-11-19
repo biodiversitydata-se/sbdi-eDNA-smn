@@ -186,18 +186,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p><em>Explore the spatial distribution of samples and their associated habitat types across Sweden.</em></p>
-<section id="inspect-contextual-data" class="level3">
-<h3 class="anchored" data-anchor-id="inspect-contextual-data">Inspect contextual data</h3>
-<p>Core sample-level metadata is available in <code>merged$events</code>, an ordinary data frame with one row per sample:</p>
+<p><em>Explore where and when samples were collected, and which habitats they represent.</em></p>
+<section id="inspect-sample-metadata" class="level3">
+<h3 class="anchored" data-anchor-id="inspect-sample-metadata">Inspect sample metadata</h3>
+<p><code>merged$events</code> contains one row per sample, including location, date and environmental information:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>events <span class="ot">&lt;-</span> merged<span class="sc">$</span>events</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(events)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <hr>
 </section>
-<section id="extract-temporal-variables" class="level3">
-<h3 class="anchored" data-anchor-id="extract-temporal-variables">Extract temporal variables</h3>
-<p>Latitude and longitude can be used directly, whereas <code>eventDate</code> requires some preparation because dates in these two datasets are stored as <code>start/end</code> intervals. We therefore first extract the start of each interval before calculating month and day of year.</p>
-<p>A few records only contain a year and no exact date. These cannot be assigned a month or day of year, so they are left as <code>NA</code>. We exclude these records below when filtering the samples used in the analyses.</p>
+<section id="prepare-dates" class="level3">
+<h3 class="anchored" data-anchor-id="prepare-dates">Prepare dates</h3>
+<p>The two datasets store dates as <code>start/end</code> intervals. We extract the start date to calculate month and day of year.</p>
+<p>Records containing only a year cannot be assigned a month or day and will be excluded when filtering samples.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>event_start <span class="ot">&lt;-</span> lubridate<span class="sc">::</span><span class="fu">parse_date_time</span>(</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sub</span>(<span class="st">"/.*"</span>, <span class="st">""</span>, events<span class="sc">$</span>eventDate),</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">orders =</span> <span class="fu">c</span>(<span class="st">"ymd_HMSz"</span>, <span class="st">"ymd_HMS"</span>, <span class="st">"ymd"</span>),</span>
@@ -208,11 +208,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>events<span class="sc">$</span>date  <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(event_start)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <hr>
 </section>
-<section id="extract-habitat-type" class="level3">
-<h3 class="anchored" data-anchor-id="extract-habitat-type">Extract habitat type</h3>
-<p>The <code>env_local_scale</code> column contains habitat type classifications based on the <a href="https://sites.google.com/site/environmentontology/" target="_blank">Environment Ontology</a> (ENVO). We first inspect the unique values:</p>
+<section id="prepare-habitat-types" class="level3">
+<h3 class="anchored" data-anchor-id="prepare-habitat-types">Prepare habitat types</h3>
+<p>The <code>env_local_scale</code> column contains habitat classifications from the <a href="https://sites.google.com/site/environmentontology/" target="_blank">Environment Ontology</a> (ENVO).</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(events<span class="sc">$</span>env_local_scale)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>For plotting, we create short labels and assign a colour to each habitat:</p>
+<p>We assign shorter labels and colours for plotting:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>habitat_map <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"forested area [ENVO:00000111]"</span>    <span class="ot">=</span> <span class="st">"forest"</span>,</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"area of cropland [ENVO:01000892]"</span> <span class="ot">=</span> <span class="st">"cropland"</span>,</span>
@@ -235,55 +235,58 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="filter-samples" class="level3">
 <h3 class="anchored" data-anchor-id="filter-samples">Filter samples</h3>
-<p>Samples with very few total reads are excluded, as their community composition is unreliable, and so are the handful with an incomplete <code>eventDate</code>. We get the sequencing depth of each sample with a query on the counts table:</p>
+<p>Samples with very few reads may give unreliable estimates of community composition. We therefore exclude samples with fewer than 100,000 reads, as well as those without a complete date.</p>
+<p>First, calculate the total read count per sample:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>depth <span class="ot">&lt;-</span> merged<span class="sc">$</span>counts <span class="sc">|&gt;</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">depth =</span> <span class="fu">sum</span>(organismQuantity, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.by =</span> eventID) <span class="sc">|&gt;</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>()</span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>events <span class="ot">&lt;-</span> <span class="fu">merge</span>(events, depth, <span class="at">by =</span> <span class="st">"eventID"</span>)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(events<span class="sc">$</span>depth)  <span class="co"># inspect before picking a threshold</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>samples <span class="ot">&lt;-</span> events[events<span class="sc">$</span>depth <span class="sc">&gt;=</span> <span class="dv">100000</span> <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(events<span class="sc">$</span>yday), ]</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(samples)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><code>100000</code> is a reasonable depth threshold here. Check the <code>summary()</code> output above and adjust it if it excludes far more or fewer samples than expected for your dataset.</p>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(events<span class="sc">$</span>depth)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Then apply the filters:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>samples <span class="ot">&lt;-</span> events[events<span class="sc">$</span>depth <span class="sc">&gt;=</span> <span class="dv">100000</span> <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(events<span class="sc">$</span>yday), ]</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(samples)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The threshold of 100,000 reads is used for these datasets. Check the depth summary before applying a different threshold to other data.</p>
 <hr>
 </section>
-<section id="pair-the-two-extraction-methods" class="level3">
-<h3 class="anchored" data-anchor-id="pair-the-two-extraction-methods">Pair the two extraction methods</h3>
-<p>The two datasets differ in size (homogenate: ~860 samples; lysate: ~4,550), and they do not cover the same places and dates. To compare the extraction methods fairly, we keep only samples from site and date combinations that occur in both, so that differences between the methods are not mixed up with differences between sites and seasons:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>samples<span class="sc">$</span>method <span class="ot">&lt;-</span> <span class="fu">sub</span>(<span class="st">":.*"</span>, <span class="st">""</span>, samples<span class="sc">$</span>eventID)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>samples<span class="sc">$</span>site_date <span class="ot">&lt;-</span> <span class="fu">paste</span>(samples<span class="sc">$</span>locationID, samples<span class="sc">$</span>date)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>shared <span class="ot">&lt;-</span> <span class="fu">Reduce</span>(intersect, <span class="fu">split</span>(samples<span class="sc">$</span>site_date, samples<span class="sc">$</span>method))</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>samples <span class="ot">&lt;-</span> samples[samples<span class="sc">$</span>site_date <span class="sc">%in%</span> shared, ]</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(samples<span class="sc">$</span>method)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>From here on, <code>samples</code> is the fixed set of samples used throughout the rest of the tutorial. Each site and date occurs twice, once per extraction method. Remember this if you interpret habitat or season, since the two samples of a pair are not independent.</p>
+<section id="match-extraction-methods" class="level3">
+<h3 class="anchored" data-anchor-id="match-extraction-methods">Match extraction methods</h3>
+<p>The two datasets use different extraction methods (<em>homogenate</em> and <em>lysate</em>) and differ in sample coverage.</p>
+<p>To compare the methods fairly, we retain only site–date combinations represented by both methods. This avoids confounding extraction method with location or season.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>samples<span class="sc">$</span>method <span class="ot">&lt;-</span> <span class="fu">sub</span>(<span class="st">":.*"</span>, <span class="st">""</span>, samples<span class="sc">$</span>eventID)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>samples<span class="sc">$</span>site_date <span class="ot">&lt;-</span> <span class="fu">paste</span>(samples<span class="sc">$</span>locationID, samples<span class="sc">$</span>date)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>shared <span class="ot">&lt;-</span> <span class="fu">Reduce</span>(intersect, <span class="fu">split</span>(samples<span class="sc">$</span>site_date, samples<span class="sc">$</span>method))</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>samples <span class="ot">&lt;-</span> samples[samples<span class="sc">$</span>site_date <span class="sc">%in%</span> shared, ]</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(samples<span class="sc">$</span>method)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>We use these matched samples throughout the remaining analyses. Each site–date combination has one sample per extraction method, so paired samples are not independent.</p>
 <hr>
 </section>
 <section id="map-samples" class="level3">
 <h3 class="anchored" data-anchor-id="map-samples">Map samples</h3>
-<p>We define a function that plots monthly maps of the study area, showing where and when samples were collected, with point colour indicating habitat type:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>plot_monthly_maps <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  newmap <span class="ot">&lt;-</span> rworldmap<span class="sc">::</span><span class="fu">getMap</span>(<span class="at">resolution =</span> <span class="st">"low"</span>)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">1</span>), <span class="at">xpd =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (m <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>) {</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    in_month <span class="ot">&lt;-</span> samples[samples<span class="sc">$</span>month <span class="sc">==</span> m, ]</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plot</span>(newmap, <span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">25</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">55</span>, <span class="dv">70</span>), <span class="at">asp =</span> <span class="dv">1</span>, <span class="at">main =</span> month.abb[m])</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">nrow</span>(in_month) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">points</span>(in_month<span class="sc">$</span>decimalLongitude, in_month<span class="sc">$</span>decimalLatitude, <span class="at">pch =</span> <span class="dv">21</span>,</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>             <span class="at">col =</span> <span class="st">"black"</span>, <span class="at">bg =</span> habitat_cols[in_month<span class="sc">$</span>habitat], <span class="at">cex =</span> <span class="fl">1.5</span>)</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot.new</span>()</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">legend</span>(<span class="st">"left"</span>, <span class="at">bty =</span> <span class="st">"n"</span>, <span class="at">legend =</span> <span class="fu">names</span>(habitat_cols),</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>         <span class="at">pt.bg =</span> habitat_cols, <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">pt.cex =</span> <span class="fl">1.6</span>, <span class="at">cex =</span> <span class="fl">1.1</span>,</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>         <span class="at">title =</span> <span class="st">"Habitat"</span>)</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_monthly_maps</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>This figure has several panels and can look cramped on a laptop screen. Click <strong>Zoom</strong> above the Plots pane for a larger view. Points also overlap since paired samples share a location, and nearby sites (~10–15 km apart) can coincide at this scale, so it looks sparser than the actual sample count.</p>
+<p>Plot the samples by month, coloured by habitat:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>plot_monthly_maps <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  newmap <span class="ot">&lt;-</span> rworldmap<span class="sc">::</span><span class="fu">getMap</span>(<span class="at">resolution =</span> <span class="st">"low"</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">1</span>), <span class="at">xpd =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (m <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>) {</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    in_month <span class="ot">&lt;-</span> samples[samples<span class="sc">$</span>month <span class="sc">==</span> m, ]</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plot</span>(newmap, <span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">25</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">55</span>, <span class="dv">70</span>), <span class="at">asp =</span> <span class="dv">1</span>, <span class="at">main =</span> month.abb[m])</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">nrow</span>(in_month) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">points</span>(in_month<span class="sc">$</span>decimalLongitude, in_month<span class="sc">$</span>decimalLatitude, <span class="at">pch =</span> <span class="dv">21</span>,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>             <span class="at">col =</span> <span class="st">"black"</span>, <span class="at">bg =</span> habitat_cols[in_month<span class="sc">$</span>habitat], <span class="at">cex =</span> <span class="fl">1.5</span>)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot.new</span>()</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">legend</span>(<span class="st">"left"</span>, <span class="at">bty =</span> <span class="st">"n"</span>, <span class="at">legend =</span> <span class="fu">names</span>(habitat_cols),</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>         <span class="at">pt.bg =</span> habitat_cols, <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">pt.cex =</span> <span class="fl">1.6</span>, <span class="at">cex =</span> <span class="fl">1.1</span>,</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>         <span class="at">title =</span> <span class="st">"Habitat"</span>)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_monthly_maps</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Click <strong>Zoom</strong> in RStudio’s Plots pane for a larger view. Paired samples overlap, and nearby sites may also appear as a single point at this scale.</p>
+<p><strong>Consider:</strong> Are the samples evenly distributed across Sweden, habitats and seasons? How might this affect the conclusions we can draw?</p>
 <hr>
 <p><a href="./tutorial-02-prep.html">← Previous</a> · <a href="./tutorial.html">Overview</a> · <a href="./insects-04-composition.html">Next →</a></p>
 

@@ -5,11 +5,11 @@ format:
     toc: false
 ---
 
-*Explore the spatial distribution of samples and their associated habitat types across Sweden.*
+*Explore where and when samples were collected, and which habitats they represent.*
 
-### Inspect contextual data
+### Inspect sample metadata
 
-Core sample-level metadata is available in `merged$events`, an ordinary data frame with one row per sample:
+`merged$events` contains one row per sample, including location, date and environmental information:
 
 ```r
 events <- merged$events
@@ -18,11 +18,11 @@ colnames(events)
 
 ---
 
-### Extract temporal variables
+### Prepare dates
 
-Latitude and longitude can be used directly, whereas `eventDate` requires some preparation because dates in these two datasets are stored as `start/end` intervals. We therefore first extract the start of each interval before calculating month and day of year.
+The two datasets store dates as `start/end` intervals. We extract the start date to calculate month and day of year.
 
-A few records only contain a year and no exact date. These cannot be assigned a month or day of year, so they are left as `NA`. We exclude these records below when filtering the samples used in the analyses.
+Records containing only a year cannot be assigned a month or day and will be excluded when filtering samples.
 
 ```r
 event_start <- lubridate::parse_date_time(
@@ -37,15 +37,15 @@ events$date  <- as.Date(event_start)
 
 ---
 
-### Extract habitat type
+### Prepare habitat types
 
-The `env_local_scale` column contains habitat type classifications based on the [Environment Ontology](https://sites.google.com/site/environmentontology/){target="_blank"} (ENVO). We first inspect the unique values:
+The `env_local_scale` column contains habitat classifications from the [Environment Ontology](https://sites.google.com/site/environmentontology/){target="_blank"} (ENVO).
 
 ```r
 unique(events$env_local_scale)
 ```
 
-For plotting, we create short labels and assign a colour to each habitat:
+We assign shorter labels and colours for plotting:
 
 ```r
 habitat_map <- c(
@@ -72,7 +72,9 @@ habitat_cols <- c(
 
 ### Filter samples
 
-Samples with very few total reads are excluded, as their community composition is unreliable, and so are the handful with an incomplete `eventDate`. We get the sequencing depth of each sample with a query on the counts table:
+Samples with very few reads may give unreliable estimates of community composition. We therefore exclude samples with fewer than 100,000 reads, as well as those without a complete date.
+
+First, calculate the total read count per sample:
 
 ```r
 depth <- merged$counts |>
@@ -80,19 +82,25 @@ depth <- merged$counts |>
   as.data.frame()
 
 events <- merge(events, depth, by = "eventID")
-summary(events$depth)  # inspect before picking a threshold
+summary(events$depth)
+```
 
+Then apply the filters:
+
+```r
 samples <- events[events$depth >= 100000 & !is.na(events$yday), ]
 nrow(samples)
 ```
 
-`100000` is a reasonable depth threshold here. Check the `summary()` output above and adjust it if it excludes far more or fewer samples than expected for your dataset.
+The threshold of 100,000 reads is used for these datasets. Check the depth summary before applying a different threshold to other data.
 
 ---
 
-### Pair the two extraction methods
+### Match extraction methods
 
-The two datasets differ in size (homogenate: ~860 samples; lysate: ~4,550), and they do not cover the same places and dates. To compare the extraction methods fairly, we keep only samples from site and date combinations that occur in both, so that differences between the methods are not mixed up with differences between sites and seasons:
+The two datasets use different extraction methods (*homogenate* and *lysate*) and differ in sample coverage.
+
+To compare the methods fairly, we retain only site–date combinations represented by both methods. This avoids confounding extraction method with location or season.
 
 ```r
 samples$method <- sub(":.*", "", samples$eventID)
@@ -103,13 +111,13 @@ samples <- samples[samples$site_date %in% shared, ]
 table(samples$method)
 ```
 
-From here on, `samples` is the fixed set of samples used throughout the rest of the tutorial. Each site and date occurs twice, once per extraction method. Remember this if you interpret habitat or season, since the two samples of a pair are not independent.
+We use these matched samples throughout the remaining analyses. Each site–date combination has one sample per extraction method, so paired samples are not independent.
 
 ---
 
 ### Map samples
 
-We define a function that plots monthly maps of the study area, showing where and when samples were collected, with point colour indicating habitat type:
+Plot the samples by month, coloured by habitat:
 
 ```r
 plot_monthly_maps <- function() {
@@ -134,7 +142,9 @@ plot_monthly_maps <- function() {
 plot_monthly_maps()
 ```
 
-This figure has several panels and can look cramped on a laptop screen. Click **Zoom** above the Plots pane for a larger view. Points also overlap since paired samples share a location, and nearby sites (~10–15 km apart) can coincide at this scale, so it looks sparser than the actual sample count.
+Click **Zoom** in RStudio's Plots pane for a larger view. Paired samples overlap, and nearby sites may also appear as a single point at this scale.
+
+**Consider:** Are the samples evenly distributed across Sweden, habitats and seasons? How might this affect the conclusions we can draw?
 
 ---
 

@@ -84,7 +84,7 @@ depth <- merged$counts |>
   as.data.frame()
 
 events <- merge(events, depth, by = "eventID")
-summary(events$depth)  # inspect before picking a threshold
+summary(events$depth)
 
 samples <- events[events$depth >= 100000 & !is.na(events$yday), ]
 nrow(samples)
