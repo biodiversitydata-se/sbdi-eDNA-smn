@@ -190,61 +190,59 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="how-the-data-look" class="level3">
 <h3 class="anchored" data-anchor-id="how-the-data-look">How the data look</h3>
 <p>ASV read counts are often stored in <em>wide</em> format, with one row per ASV and one column per sample. The ASV portal instead uses <em>long</em> format, with one row per ASV–sample combination.</p>
-<div class="quarto-layout-panel" data-layout-ncol="2">
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="format-compare">
+<div>
 <p><strong>Wide</strong></p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
-<th style="text-align: left;">ASV</th>
+<th>taxonID</th>
 <th style="text-align: right;">sample 1</th>
 <th style="text-align: right;">sample 2</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">ASV a</td>
+<td>ASV a</td>
 <td style="text-align: right;">620</td>
 <td style="text-align: right;">251</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">ASV b</td>
+<td>ASV b</td>
 <td style="text-align: right;">14</td>
 <td style="text-align: right;">0</td>
 </tr>
 </tbody>
 </table>
 </div>
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div>
 <p><strong>Long</strong></p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
-<th style="text-align: left;">eventID</th>
-<th style="text-align: left;">taxonID</th>
+<th>eventID</th>
+<th>taxonID</th>
 <th style="text-align: right;">organismQuantity</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">sample 1</td>
-<td style="text-align: left;">ASV a</td>
+<td>sample 1</td>
+<td>ASV a</td>
 <td style="text-align: right;">620</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">sample 1</td>
-<td style="text-align: left;">ASV b</td>
+<td>sample 1</td>
+<td>ASV b</td>
 <td style="text-align: right;">14</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">sample 2</td>
-<td style="text-align: left;">ASV a</td>
+<td>sample 2</td>
+<td>ASV a</td>
 <td style="text-align: right;">251</td>
 </tr>
 </tbody>
 </table>
-</div>
 </div>
 </div>
 <p>Most ASVs occur in only a few samples. Long format lets us omit the many zeros, making it suitable for large datasets.</p>

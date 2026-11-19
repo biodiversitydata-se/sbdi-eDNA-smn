@@ -16,3 +16,13 @@
 .navbar-partner-logo.logo-nfcore { height: 26px; }
 /* The SBDI symbol sits low and to the left in its image */
 .navbar-partner-logo.logo-sbdi { position: relative; top: -5px; left: 3px; }
+
+/* Wide and long example tables side by side, at their natural width */
+.format-compare {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 4rem;
+}
+.format-compare table {
+  width: auto;
+}

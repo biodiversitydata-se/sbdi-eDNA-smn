@@ -11,11 +11,11 @@ format:
 
 ASV read counts are often stored in *wide* format, with one row per ASV and one column per sample. The ASV portal instead uses *long* format, with one row per ASV–sample combination.
 
-:::: {layout-ncol=2}
+:::: {.format-compare}
 ::: {}
 **Wide**
 
-| ASV | sample 1 | sample 2 |
+| taxonID | sample 1 | sample 2 |
 |---|---:|---:|
 | ASV a | 620 | 251 |
 | ASV b | 14 | 0 |
