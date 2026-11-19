@@ -9,19 +9,41 @@ format:
 
 ### How the data look
 
-A typical ASV table is *wide*: one row per ASV and one column per sample, with the number of reads in each cell. Most ASVs are found in only a few samples, so most cells are zeros. The ASV portal delivers the read counts in *long* format instead: one row per ASV and sample, without the zeros for ASVs that were not found:
+ASV read counts are often stored in *wide* format, with one row per ASV and one column per sample. The ASV portal instead provides the data in *long* format, with one row per ASV–sample combination. The tables below show the same data in both formats.
+
+:::: {layout-ncol=2}
+::: {}
+**Wide**
+
+| ASV | sample 1 | sample 2 |
+|---|---|---|
+| ASV a | 620 | 251 |
+| ASV b | 14 | 0 |
+:::
+
+::: {}
+**Long**
 
 | eventID | taxonID | organismQuantity |
 |---|---|---|
 | sample 1 | ASV a | 620 |
 | sample 1 | ASV b | 14 |
 | sample 2 | ASV a | 251 |
+:::
+::::
 
-We keep the data like that, which saves memory and works also for large datasets.
+Most ASVs occur in only a few samples, so a wide table has many zeros. In long format, combinations with zero reads are simply left out. We keep this format because it works well with large datasets.
 
 ---
 
 ### Load the datasets
+
+Large datasets can be difficult to work with if everything must fit into R's memory. We avoid this with two tools:
+
+- [**Parquet**](https://parquet.apache.org/){target="_blank"} is a file format that stores data efficiently on disk.
+- [**DuckDB**](https://duckdb.org/){target="_blank"} is a database engine that can analyse these files without loading everything into R.
+
+So the data go from the ASV portal's ZIP files, to Parquet files on disk, to DuckDB, and only the results we ask for end up in R.
 
 Load the datasets in the `data_path` folder defined in the [previous section](tutorial-01-setup.qmd):
 
@@ -29,7 +51,7 @@ Load the datasets in the `data_path` folder defined in the [previous section](tu
 loaded <- load_long(data_path, store = store_path)
 ```
 
-`load_long()` saves the datasets as compact [Parquet](https://parquet.apache.org/){target="_blank"} files in the store the first time, and later only opens them. On the workshop machine this was done once for everyone, so it takes no time. `loaded` holds one table per data type, covering all datasets.
+`load_long()` saves the datasets as Parquet files in the store the first time it runs. Later runs reuse these files. On the workshop machine this was done once for everyone, so this step is fast. `loaded` contains one table per data type, covering all datasets.
 
 ---
 
@@ -70,7 +92,9 @@ To see the full function documentation:
 
 ### Work with lazy tables
 
-`counts`, `asvs` and `emof` are *lazy* tables. They are not read into R. Instead, the query engine [DuckDB](https://duckdb.org/){target="_blank"} reads what it needs from the Parquet files when a result is requested. This keeps the memory use low, even for large datasets. `events`, `datasets` and `iasvs` are small and are ordinary data frames. To see which parts are lazy, and the columns of a lazy table, without reading any data into R:
+The large tables (`counts`, `asvs` and `emof`) are *lazy*. This means that R does not load their contents. Instead, DuckDB reads the necessary data from the Parquet files when we request a result. The smaller tables (`events`, `datasets` and `iasvs`) are ordinary R data frames.
+
+We can inspect the tables without loading the large ones into memory:
 
 ```r
 sapply(merged, \(x) class(x)[1])  # lazy tables are "prudent_duckplyr_df"
@@ -86,7 +110,7 @@ merged$counts |>
   as.data.frame()
 ```
 
-`as.data.frame()` runs the query and brings the small result into R. To look at the first rows of the tables:
+`as.data.frame()` runs the query and brings the result into R. By summarising or selecting rows first, we avoid loading the entire table. To look at the first rows of the tables:
 
 ```r
 merged$counts |> head(3) |> as.data.frame()

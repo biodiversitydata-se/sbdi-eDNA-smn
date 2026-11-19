@@ -189,41 +189,78 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><em>Load and combine ASV portal data, and summarise read counts by taxonomy.</em></p>
 <section id="how-the-data-look" class="level3">
 <h3 class="anchored" data-anchor-id="how-the-data-look">How the data look</h3>
-<p>A typical ASV table is <em>wide</em>: one row per ASV and one column per sample, with the number of reads in each cell. Most ASVs are found in only a few samples, so most cells are zeros. The ASV portal delivers the read counts in <em>long</em> format instead: one row per ASV and sample, without the zeros for ASVs that were not found:</p>
+<p>ASV read counts are often stored in <em>wide</em> format, with one row per ASV and one column per sample. The ASV portal instead provides the data in <em>long</em> format, with one row per ASV–sample combination. The tables below show the same data in both formats.</p>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><strong>Wide</strong></p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
-<th>eventID</th>
-<th>taxonID</th>
-<th>organismQuantity</th>
+<th style="text-align: left;">ASV</th>
+<th style="text-align: left;">sample 1</th>
+<th style="text-align: left;">sample 2</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>sample 1</td>
-<td>ASV a</td>
-<td>620</td>
+<td style="text-align: left;">ASV a</td>
+<td style="text-align: left;">620</td>
+<td style="text-align: left;">251</td>
 </tr>
 <tr class="even">
-<td>sample 1</td>
-<td>ASV b</td>
-<td>14</td>
-</tr>
-<tr class="odd">
-<td>sample 2</td>
-<td>ASV a</td>
-<td>251</td>
+<td style="text-align: left;">ASV b</td>
+<td style="text-align: left;">14</td>
+<td style="text-align: left;">0</td>
 </tr>
 </tbody>
 </table>
-<p>We keep the data like that, which saves memory and works also for large datasets.</p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><strong>Long</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">eventID</th>
+<th style="text-align: left;">taxonID</th>
+<th style="text-align: left;">organismQuantity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">sample 1</td>
+<td style="text-align: left;">ASV a</td>
+<td style="text-align: left;">620</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">sample 1</td>
+<td style="text-align: left;">ASV b</td>
+<td style="text-align: left;">14</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">sample 2</td>
+<td style="text-align: left;">ASV a</td>
+<td style="text-align: left;">251</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Most ASVs occur in only a few samples, so a wide table has many zeros. In long format, combinations with zero reads are simply left out. We keep this format because it works well with large datasets.</p>
 <hr>
 </section>
 <section id="load-the-datasets" class="level3">
 <h3 class="anchored" data-anchor-id="load-the-datasets">Load the datasets</h3>
+<p>Large datasets can be difficult to work with if everything must fit into R’s memory. We avoid this with two tools:</p>
+<ul>
+<li><a href="https://parquet.apache.org/" target="_blank"><strong>Parquet</strong></a> is a file format that stores data efficiently on disk.</li>
+<li><a href="https://duckdb.org/" target="_blank"><strong>DuckDB</strong></a> is a database engine that can analyse these files without loading everything into R.</li>
+</ul>
+<p>So the data go from the ASV portal’s ZIP files, to Parquet files on disk, to DuckDB, and only the results we ask for end up in R.</p>
 <p>Load the datasets in the <code>data_path</code> folder defined in the <a href="./tutorial-01-setup.html">previous section</a>:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>loaded <span class="ot">&lt;-</span> <span class="fu">load_long</span>(data_path, <span class="at">store =</span> store_path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><code>load_long()</code> saves the datasets as compact <a href="https://parquet.apache.org/" target="_blank">Parquet</a> files in the store the first time, and later only opens them. On the workshop machine this was done once for everyone, so it takes no time. <code>loaded</code> holds one table per data type, covering all datasets.</p>
+<p><code>load_long()</code> saves the datasets as Parquet files in the store the first time it runs. Later runs reuse these files. On the workshop machine this was done once for everyone, so this step is fast. <code>loaded</code> contains one table per data type, covering all datasets.</p>
 <hr>
 </section>
 <section id="merge-the-datasets" class="level3">
@@ -250,7 +287,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="work-with-lazy-tables" class="level3">
 <h3 class="anchored" data-anchor-id="work-with-lazy-tables">Work with lazy tables</h3>
-<p><code>counts</code>, <code>asvs</code> and <code>emof</code> are <em>lazy</em> tables. They are not read into R. Instead, the query engine <a href="https://duckdb.org/" target="_blank">DuckDB</a> reads what it needs from the Parquet files when a result is requested. This keeps the memory use low, even for large datasets. <code>events</code>, <code>datasets</code> and <code>iasvs</code> are small and are ordinary data frames. To see which parts are lazy, and the columns of a lazy table, without reading any data into R:</p>
+<p>The large tables (<code>counts</code>, <code>asvs</code> and <code>emof</code>) are <em>lazy</em>. This means that R does not load their contents. Instead, DuckDB reads the necessary data from the Parquet files when we request a result. The smaller tables (<code>events</code>, <code>datasets</code> and <code>iasvs</code>) are ordinary R data frames.</p>
+<p>We can inspect the tables without loading the large ones into memory:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(merged, \(x) <span class="fu">class</span>(x)[<span class="dv">1</span>])  <span class="co"># lazy tables are "prudent_duckplyr_df"</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(merged<span class="sc">$</span>asvs)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(merged<span class="sc">$</span>events)                <span class="co"># an ordinary data frame: samples and columns</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -258,7 +296,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>merged<span class="sc">$</span>counts <span class="sc">|&gt;</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">rows =</span> <span class="fu">n</span>(), <span class="at">samples =</span> <span class="fu">n_distinct</span>(eventID), <span class="at">asvs =</span> <span class="fu">n_distinct</span>(taxonID)) <span class="sc">|&gt;</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><code>as.data.frame()</code> runs the query and brings the small result into R. To look at the first rows of the tables:</p>
+<p><code>as.data.frame()</code> runs the query and brings the result into R. By summarising or selecting rows first, we avoid loading the entire table. To look at the first rows of the tables:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>merged<span class="sc">$</span>counts <span class="sc">|&gt;</span> <span class="fu">head</span>(<span class="dv">3</span>) <span class="sc">|&gt;</span> <span class="fu">as.data.frame</span>()</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>merged<span class="sc">$</span>asvs <span class="sc">|&gt;</span> <span class="fu">select</span>(taxonID, phylum, order, genus, species) <span class="sc">|&gt;</span> <span class="fu">head</span>(<span class="dv">3</span>) <span class="sc">|&gt;</span> <span class="fu">as.data.frame</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>The contextual data has one row per measurement, so we can see which measurements exist:</p>
