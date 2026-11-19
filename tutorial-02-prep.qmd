@@ -9,7 +9,7 @@ format:
 
 ### How the data look
 
-The ASV portal delivers the read counts with one row per ASV and sample, without the many zeros for ASVs that were not found:
+A typical ASV table is *wide*: one row per ASV and one column per sample, with the number of reads in each cell. Most ASVs are found in only a few samples, so most cells are zeros. The ASV portal delivers the read counts in *long* format instead: one row per ASV and sample, without the zeros for ASVs that were not found:
 
 | eventID | taxonID | organismQuantity |
 |---|---|---|
@@ -48,6 +48,16 @@ merged <- merge_long(loaded)
 - `emof`: dataset-specific *extended measurement or fact* contextual data
 - `events`: core sample-level metadata (*where, when, how, who*)
 - `datasets`: dataset-level metadata
+- `iasvs`: inconsistent ASVs, i.e. ASVs whose taxonomy differs between datasets, or `NULL` if there are none
+
+RStudio's Environment pane cannot show the lazy tables described below, so it may look as if `merged` only has `counts`. Use `names()` to see all parts:
+
+```r
+names(loaded)
+names(merged)
+```
+
+The two lists share five elements. `loaded` also has `store`, the path to the Parquet files, and `merged` has `iasvs`.
 
 To see the full function documentation:
 
@@ -60,7 +70,13 @@ To see the full function documentation:
 
 ### Work with lazy tables
 
-`counts`, `asvs` and `emof` are *lazy* tables. They are not read into R. Instead, the query engine [DuckDB](https://duckdb.org/){target="_blank"} reads what it needs from the Parquet files when a result is requested. This keeps the memory use low, even for large datasets. `events` and `datasets` are small and are ordinary data frames.
+`counts`, `asvs` and `emof` are *lazy* tables. They are not read into R. Instead, the query engine [DuckDB](https://duckdb.org/){target="_blank"} reads what it needs from the Parquet files when a result is requested. This keeps the memory use low, even for large datasets. `events`, `datasets` and `iasvs` are small and are ordinary data frames. To see which parts are lazy, and the columns of a lazy table, without reading any data into R:
+
+```r
+sapply(merged, \(x) class(x)[1])  # lazy tables are "prudent_duckplyr_df"
+colnames(merged$asvs)
+dim(merged$events)                # an ordinary data frame: samples and columns
+```
 
 We use ordinary `dplyr` verbs through the [`duckplyr`](https://duckplyr.tidyverse.org/){target="_blank"} package. To see the size of the data:
 
