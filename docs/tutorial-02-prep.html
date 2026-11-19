@@ -252,8 +252,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="load-the-datasets">Load the datasets</h3>
 <p>We use two tools to work with large datasets without loading everything into R:</p>
 <ul>
-<li><strong>Parquet</strong> stores data efficiently in files on disk.</li>
-<li><strong>DuckDB</strong> analyses these files and returns only the results we request.</li>
+<li><strong>Parquet</strong> is a file format for storing data efficiently on disk.</li>
+<li><strong>DuckDB</strong> lets us analyse these files without loading the entire dataset into R.</li>
 </ul>
 <p>Load the data from the <code>data_path</code> folder defined in the <a href="./tutorial-01-setup.html">previous section</a>:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>loaded <span class="ot">&lt;-</span> <span class="fu">load_long</span>(data_path, <span class="at">store =</span> store_path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
