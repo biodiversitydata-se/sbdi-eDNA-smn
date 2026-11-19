@@ -186,26 +186,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p><em>Summarise taxonomic composition across habitats and months using stacked barplots.</em></p>
+<p><em>Compare the relative abundance of insect groups across habitats and months.</em></p>
 <section id="select-samples" class="level3">
 <h3 class="anchored" data-anchor-id="select-samples">Select samples</h3>
-<p>We keep the rows of the counts table that belong to the samples selected in <a href="./insects-03-map.html">step 3</a>. <code>semi_join()</code> filters one table by another, and DuckDB does the work without reading the whole table into R:</p>
+<p>We use the matched samples selected in <a href="./insects-03-map.html">step 3</a> throughout this analysis. <code>semi_join()</code> keeps only their rows in the counts table, without loading the full table into R:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>selected <span class="ot">&lt;-</span> <span class="fu">duckdb_tibble</span>(<span class="at">eventID =</span> samples<span class="sc">$</span>eventID, <span class="at">.prudence =</span> <span class="st">"stingy"</span>)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>counts_selected <span class="ot">&lt;-</span> merged<span class="sc">$</span>counts <span class="sc">|&gt;</span> <span class="fu">semi_join</span>(selected, <span class="at">by =</span> <span class="st">"eventID"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="sum-reads-by-taxonomy" class="level3">
 <h3 class="anchored" data-anchor-id="sum-reads-by-taxonomy">Sum reads by taxonomy</h3>
-<p><code>sum_clades_long()</code> from <a href="./tutorial-02-prep.html">step 2</a> can be limited to one taxonomic rank and to these samples. The result is small enough to bring into R. We then add the habitat and month of each sample:</p>
+<p>We use <code>sum_clades_long()</code> from <a href="./tutorial-02-prep.html">step 2</a> to aggregate reads at a chosen taxonomic rank, then add habitat and month:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>get_composition <span class="ot">&lt;-</span> <span class="cf">function</span>(rank) {</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  composition <span class="ot">&lt;-</span> <span class="fu">sum_clades_long</span>(counts_selected, merged<span class="sc">$</span>asvs, <span class="at">ranks =</span> rank) <span class="sc">|&gt;</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.data.frame</span>()</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">merge</span>(composition, samples[<span class="fu">c</span>(<span class="st">"eventID"</span>, <span class="st">"habitat"</span>, <span class="st">"month"</span>)], <span class="at">by =</span> <span class="st">"eventID"</span>)</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Only the available ranks work here: kingdom, phylum, class, order, family, genus, species and otu.</p>
+<p>Available ranks are kingdom, phylum, class, order, family, genus, species and otu.</p>
 </section>
-<section id="define-the-barplot-function" class="level3">
-<h3 class="anchored" data-anchor-id="define-the-barplot-function">Define the barplot function</h3>
-<p>The function below identifies the most abundant taxa across the selected samples, calculates their mean relative abundance for each habitat and month, and draws stacked barplots with <a href="https://ggplot2.tidyverse.org/" target="_blank"><code>ggplot2</code></a>. <code>ggplot2</code> draws directly from a table with one row per value: each row of <code>monthly</code> becomes one segment of a bar.</p>
+<section id="plot-taxonomic-composition" class="level3">
+<h3 class="anchored" data-anchor-id="plot-taxonomic-composition">Plot taxonomic composition</h3>
+<p>The function below selects the most abundant taxa across all selected samples and plots their <strong>mean share of reads</strong> for each habitat and month using <a href="https://ggplot2.tidyverse.org/" target="_blank"><code>ggplot2</code></a>.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>plot_barplots <span class="ot">&lt;-</span> <span class="cf">function</span>(rank, <span class="at">top_x =</span> <span class="dv">10</span>) {</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  composition <span class="ot">&lt;-</span> <span class="fu">get_composition</span>(rank)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -238,13 +238,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
 <span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>())</span>
 <span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The same paired sample set selected in <a href="./insects-03-map.html">step 3</a> is used both to select the most abundant taxa and to calculate the habitat-by-month averages.</p>
 </section>
 <section id="example-plot-top-orders" class="level3">
 <h3 class="anchored" data-anchor-id="example-plot-top-orders">Example: plot top orders</h3>
-<p>Plot the eight most abundant orders across habitats and months:</p>
+<p>Plot the eight most abundant orders:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_barplots</span>(<span class="at">rank =</span> <span class="st">"order"</span>, <span class="at">top_x =</span> <span class="dv">8</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Flies (Diptera) dominate the reads in all habitats, especially in the alpine samples and early in the season. Note that these are shares of the reads, not of the number of individuals or the biomass. Empty months had no selected samples in that habitat.</p>
+<p>Each bar shows the mean relative abundance of these orders among samples from a given habitat and month. Flies (Diptera) dominate the reads, especially in alpine habitats and early in the season.</p>
+<p>These are <strong>shares of sequencing reads</strong>, not estimates of the number of individuals or biomass. Empty months indicate that no selected samples were available in that habitat.</p>
+<p><strong>Consider:</strong> How does taxonomic composition vary across habitats and seasons? Could differences in read abundance reflect factors other than the abundance of organisms?</p>
 <hr>
 <p><a href="./insects-03-map.html">← Previous</a> · <a href="./tutorial.html">Overview</a> · <a href="./insects-05-beta.html">Next →</a></p>
 

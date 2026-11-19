@@ -5,11 +5,11 @@ format:
     toc: false
 ---
 
-*Summarise taxonomic composition across habitats and months using stacked barplots.*
+*Compare the relative abundance of insect groups across habitats and months.*
 
 ### Select samples
 
-We keep the rows of the counts table that belong to the samples selected in [step 3](insects-03-map.qmd). `semi_join()` filters one table by another, and DuckDB does the work without reading the whole table into R:
+We use the matched samples selected in [step 3](insects-03-map.qmd) throughout this analysis. `semi_join()` keeps only their rows in the counts table, without loading the full table into R:
 
 ```r
 selected <- duckdb_tibble(eventID = samples$eventID, .prudence = "stingy")
@@ -18,7 +18,7 @@ counts_selected <- merged$counts |> semi_join(selected, by = "eventID")
 
 ### Sum reads by taxonomy
 
-`sum_clades_long()` from [step 2](tutorial-02-prep.qmd) can be limited to one taxonomic rank and to these samples. The result is small enough to bring into R. We then add the habitat and month of each sample:
+We use `sum_clades_long()` from [step 2](tutorial-02-prep.qmd) to aggregate reads at a chosen taxonomic rank, then add habitat and month:
 
 ```r
 get_composition <- function(rank) {
@@ -28,11 +28,11 @@ get_composition <- function(rank) {
 }
 ```
 
-Only the available ranks work here: kingdom, phylum, class, order, family, genus, species and otu.
+Available ranks are kingdom, phylum, class, order, family, genus, species and otu.
 
-### Define the barplot function
+### Plot taxonomic composition
 
-The function below identifies the most abundant taxa across the selected samples, calculates their mean relative abundance for each habitat and month, and draws stacked barplots with [`ggplot2`](https://ggplot2.tidyverse.org/){target="_blank"}. `ggplot2` draws directly from a table with one row per value: each row of `monthly` becomes one segment of a bar.
+The function below selects the most abundant taxa across all selected samples and plots their **mean share of reads** for each habitat and month using [`ggplot2`](https://ggplot2.tidyverse.org/){target="_blank"}.
 
 ```r
 plot_barplots <- function(rank, top_x = 10) {
@@ -69,17 +69,19 @@ plot_barplots <- function(rank, top_x = 10) {
 }
 ```
 
-The same paired sample set selected in [step 3](insects-03-map.qmd) is used both to select the most abundant taxa and to calculate the habitat-by-month averages.
-
 ### Example: plot top orders
 
-Plot the eight most abundant orders across habitats and months:
+Plot the eight most abundant orders:
 
 ```r
 plot_barplots(rank = "order", top_x = 8)
 ```
 
-Flies (Diptera) dominate the reads in all habitats, especially in the alpine samples and early in the season. Note that these are shares of the reads, not of the number of individuals or the biomass. Empty months had no selected samples in that habitat.
+Each bar shows the mean relative abundance of these orders among samples from a given habitat and month. Flies (Diptera) dominate the reads, especially in alpine habitats and early in the season.
+
+These are **shares of sequencing reads**, not estimates of the number of individuals or biomass. Empty months indicate that no selected samples were available in that habitat.
+
+**Consider:** How does taxonomic composition vary across habitats and seasons? Could differences in read abundance reflect factors other than the abundance of organisms?
 
 ---
 
