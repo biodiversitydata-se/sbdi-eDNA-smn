@@ -19,6 +19,8 @@ The website is built with [Quarto](https://quarto.org/). The tutorial pages are 
 
 The files `tutorial_insects.R` and `tutorial_plankton.R` contain the R code from each track, in the same order as on the website. They are generated automatically for running or testing an entire track on the workshop machine. Do not edit them manually.
 
+The scripts are built from the code in steps 2–6. Step 1 is not included: the package and data path lines at the top of each script are defined in `build_tutorial_scripts.R`, so update them there if you change the packages in step 1.
+
 The figures in `figures/` are also generated automatically by running the tutorial code on real data.
 
 ## Building the site
