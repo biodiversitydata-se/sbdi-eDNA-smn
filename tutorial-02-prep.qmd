@@ -9,14 +9,14 @@ format:
 
 ### How the data look
 
-ASV read counts are often stored in *wide* format, with one row per ASV and one column per sample. The ASV portal instead provides the data in *long* format, with one row per ASV–sample combination. The tables below show the same data in both formats.
+ASV read counts are often stored in *wide* format, with one row per ASV and one column per sample. The ASV portal instead uses *long* format, with one row per ASV–sample combination.
 
 :::: {layout-ncol=2}
 ::: {}
 **Wide**
 
 | ASV | sample 1 | sample 2 |
-|---|---|---|
+|---|---:|---:|
 | ASV a | 620 | 251 |
 | ASV b | 14 | 0 |
 :::
@@ -25,63 +25,61 @@ ASV read counts are often stored in *wide* format, with one row per ASV and one 
 **Long**
 
 | eventID | taxonID | organismQuantity |
-|---|---|---|
+|---|---|---:|
 | sample 1 | ASV a | 620 |
 | sample 1 | ASV b | 14 |
 | sample 2 | ASV a | 251 |
 :::
 ::::
 
-Most ASVs occur in only a few samples, so a wide table has many zeros. In long format, combinations with zero reads are simply left out. We keep this format because it works well with large datasets.
+Most ASVs occur in only a few samples. Long format lets us omit the many zeros, making it suitable for large datasets.
 
 ---
 
 ### Load the datasets
 
-Large datasets can be difficult to work with if everything must fit into R's memory. We avoid this with two tools:
+We use two tools to work with large datasets without loading everything into R:
 
-- [**Parquet**](https://parquet.apache.org/){target="_blank"} is a file format that stores data efficiently on disk.
-- [**DuckDB**](https://duckdb.org/){target="_blank"} is a database engine that can analyse these files without loading everything into R.
+- [**Parquet**](https://parquet.apache.org/){target="_blank"} stores data efficiently in files on disk.
+- [**DuckDB**](https://duckdb.org/){target="_blank"} analyses these files and returns only the results we request.
 
-So the data go from the ASV portal's ZIP files, to Parquet files on disk, to DuckDB, and only the results we ask for end up in R.
-
-Load the datasets in the `data_path` folder defined in the [previous section](tutorial-01-setup.qmd):
+Load the data from the `data_path` folder defined in the [previous section](tutorial-01-setup.qmd):
 
 ```r
 loaded <- load_long(data_path, store = store_path)
 ```
 
-`load_long()` saves the datasets as Parquet files in the store the first time it runs. Later runs reuse these files. On the workshop machine this was done once for everyone, so this step is fast. `loaded` contains one table per data type, covering all datasets.
+`load_long()` converts the data to Parquet files on the first run and reuses them later. These files are already prepared on the workshop machine. `loaded` contains one table per data type, covering all datasets.
 
 ---
 
 ### Merge the datasets
 
-Next, we merge the datasets in order to analyse them jointly:
+Merge the datasets for joint analysis:
 
 ```r
 merged <- merge_long(loaded)
 ```
 
-`merge_long()` checks that the datasets can be combined: an event that occurs in two datasets gives an error, and ASVs with different taxonomy in different datasets, for example after a re-annotation, give a warning. The `merged` object is a list:
+`merge_long()` checks for duplicate events (error) and conflicting ASV taxonomy between datasets (warning). The resulting `merged` list contains:
 
 - `counts`: ASV read counts
-- `asvs`: ASV sequences and taxonomic annotations, one row per ASV
-- `emof`: dataset-specific *extended measurement or fact* contextual data
-- `events`: core sample-level metadata (*where, when, how, who*)
-- `datasets`: dataset-level metadata
-- `iasvs`: inconsistent ASVs, i.e. ASVs whose taxonomy differs between datasets, or `NULL` if there are none
+- `asvs`: ASV sequences and taxonomy, one row per ASV
+- `emof`: contextual measurements (*extended measurement or fact*)
+- `events`: sample metadata (*where, when, how, who*)
+- `datasets`: dataset metadata
+- `iasvs`: ASVs with conflicting taxonomy, or `NULL` if none
 
-RStudio's Environment pane cannot show the lazy tables described below, so it may look as if `merged` only has `counts`. Use `names()` to see all parts:
+Some tables may not appear in RStudio's Environment pane. Use `names()` to see all elements:
 
 ```r
 names(loaded)
 names(merged)
 ```
 
-The two lists share five elements. `loaded` also has `store`, the path to the Parquet files, and `merged` has `iasvs`.
+Instead of `iasvs`, `loaded` contains `store`, the path to the Parquet files.
 
-To see the full function documentation:
+For function documentation:
 
 ```r
 ?asvoccur::load_long
@@ -92,9 +90,9 @@ To see the full function documentation:
 
 ### Work with lazy tables
 
-The large tables (`counts`, `asvs` and `emof`) are *lazy*. This means that R does not load their contents. Instead, DuckDB reads the necessary data from the Parquet files when we request a result. The smaller tables (`events`, `datasets` and `iasvs`) are ordinary R data frames.
+The large tables (`counts`, `asvs` and `emof`) are *lazy*: DuckDB reads data from the Parquet files only when needed. The smaller tables (`events`, `datasets` and `iasvs`) are ordinary R data frames.
 
-We can inspect the tables without loading the large ones into memory:
+Inspect the tables:
 
 ```r
 sapply(merged, \(x) class(x)[1])  # lazy tables are "prudent_duckplyr_df"
@@ -102,7 +100,7 @@ colnames(merged$asvs)
 dim(merged$events)                # an ordinary data frame: samples and columns
 ```
 
-We use ordinary `dplyr` verbs through the [`duckplyr`](https://duckplyr.tidyverse.org/){target="_blank"} package. To see the size of the data:
+We use familiar `dplyr` commands through the [`duckplyr`](https://duckplyr.tidyverse.org/){target="_blank"} package. For example, count the rows, samples and ASVs:
 
 ```r
 merged$counts |>
@@ -110,45 +108,41 @@ merged$counts |>
   as.data.frame()
 ```
 
-`as.data.frame()` runs the query and brings the result into R. By summarising or selecting rows first, we avoid loading the entire table. To look at the first rows of the tables:
+`as.data.frame()` executes the query and brings the result into R. Summarising or selecting rows first avoids loading the entire table.
+
+Inspect a few rows:
 
 ```r
 merged$counts |> head(3) |> as.data.frame()
 merged$asvs |> select(taxonID, phylum, order, genus, species) |> head(3) |> as.data.frame()
 ```
 
-The contextual data has one row per measurement, so we can see which measurements exist:
+See which contextual measurements are available:
 
 ```r
 merged$emof |> distinct(measurementType, measurementUnit) |> as.data.frame()
 ```
 
-ASVs shared across datasets are combined using SBDI ASV IDs. These IDs correspond to MD5 hashes of the sequences, meaning that ASVs with identical sequences are represented only once.
+ASVs with identical sequences are combined across datasets using SBDI ASV IDs (MD5 hashes of the sequences).
 
-If a query cannot be translated to DuckDB, you get an error rather than a slow copy of the whole table into R. That is deliberate, and the error message usually names the function that caused it.
+If a query cannot be translated to DuckDB, it gives an error rather than silently loading the entire table into R.
 
 ---
 
 ### Aggregate counts by taxonomy
 
-We can now sum ASV read counts at different taxonomic levels based on the taxonomic annotation:
+Sum ASV read counts at different taxonomic levels:
 
 ```r
 clades <- sum_clades_long(merged$counts, merged$asvs)
 ```
 
-This gives a table with one row per clade and sample, at the following levels:
+The result has one row per clade and sample, at levels from kingdom (or domain) to species, including `otu` if available:
 
-- kingdom (or domain)
-- phylum
-- class
-- order
-- family
-- genus
-- species
-- otu (if available)
+- `raw`: read counts
+- `norm`: proportion of reads in the sample (relative abundance)
 
-`raw` holds the read counts and `norm` the share of the reads in the sample (relative abundance). This is again a lazy table, so we pick out what we want to look at:
+The result is also lazy. To inspect phylum-level counts:
 
 ```r
 clades |>
@@ -157,7 +151,7 @@ clades |>
   as.data.frame()
 ```
 
-ASVs without a value at a level are summed as `Unclassified`. Names such as `unclassified.Acrididae` come from the annotation and are kept as they are.
+ASVs missing an annotation at a given level are grouped as `Unclassified`. Existing annotation names such as `unclassified.Acrididae` are preserved.
 
 ---
 
