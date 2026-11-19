@@ -18,8 +18,15 @@ loaded <- load_long(data_path, store = store_path)
 
 merged <- merge_long(loaded)
 
+names(loaded)
+names(merged)
+
 ?asvoccur::load_long
 ?asvoccur::merge_long
+
+sapply(merged, \(x) class(x)[1])  # lazy tables are "prudent_duckplyr_df"
+colnames(merged$asvs)
+dim(merged$events)                # an ordinary data frame: samples and columns
 
 merged$counts |>
   summarise(rows = n(), samples = n_distinct(eventID), asvs = n_distinct(taxonID)) |>

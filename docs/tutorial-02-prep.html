@@ -189,7 +189,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><em>Load and combine ASV portal data, and summarise read counts by taxonomy.</em></p>
 <section id="how-the-data-look" class="level3">
 <h3 class="anchored" data-anchor-id="how-the-data-look">How the data look</h3>
-<p>The ASV portal delivers the read counts with one row per ASV and sample, without the many zeros for ASVs that were not found:</p>
+<p>A typical ASV table is <em>wide</em>: one row per ASV and one column per sample, with the number of reads in each cell. Most ASVs are found in only a few samples, so most cells are zeros. The ASV portal delivers the read counts in <em>long</em> format instead: one row per ASV and sample, without the zeros for ASVs that were not found:</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -237,24 +237,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><code>emof</code>: dataset-specific <em>extended measurement or fact</em> contextual data</li>
 <li><code>events</code>: core sample-level metadata (<em>where, when, how, who</em>)</li>
 <li><code>datasets</code>: dataset-level metadata</li>
+<li><code>iasvs</code>: inconsistent ASVs, i.e.&nbsp;ASVs whose taxonomy differs between datasets, or <code>NULL</code> if there are none</li>
 </ul>
+<p>RStudio’s Environment pane cannot show the lazy tables described below, so it may look as if <code>merged</code> only has <code>counts</code>. Use <code>names()</code> to see all parts:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(loaded)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(merged)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The two lists share five elements. <code>loaded</code> also has <code>store</code>, the path to the Parquet files, and <code>merged</code> has <code>iasvs</code>.</p>
 <p>To see the full function documentation:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>?asvoccur<span class="sc">::</span>load_long</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>?asvoccur<span class="sc">::</span>merge_long</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>?asvoccur<span class="sc">::</span>load_long</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>?asvoccur<span class="sc">::</span>merge_long</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <hr>
 </section>
 <section id="work-with-lazy-tables" class="level3">
 <h3 class="anchored" data-anchor-id="work-with-lazy-tables">Work with lazy tables</h3>
-<p><code>counts</code>, <code>asvs</code> and <code>emof</code> are <em>lazy</em> tables. They are not read into R. Instead, the query engine <a href="https://duckdb.org/" target="_blank">DuckDB</a> reads what it needs from the Parquet files when a result is requested. This keeps the memory use low, even for large datasets. <code>events</code> and <code>datasets</code> are small and are ordinary data frames.</p>
+<p><code>counts</code>, <code>asvs</code> and <code>emof</code> are <em>lazy</em> tables. They are not read into R. Instead, the query engine <a href="https://duckdb.org/" target="_blank">DuckDB</a> reads what it needs from the Parquet files when a result is requested. This keeps the memory use low, even for large datasets. <code>events</code>, <code>datasets</code> and <code>iasvs</code> are small and are ordinary data frames. To see which parts are lazy, and the columns of a lazy table, without reading any data into R:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(merged, \(x) <span class="fu">class</span>(x)[<span class="dv">1</span>])  <span class="co"># lazy tables are "prudent_duckplyr_df"</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(merged<span class="sc">$</span>asvs)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(merged<span class="sc">$</span>events)                <span class="co"># an ordinary data frame: samples and columns</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>We use ordinary <code>dplyr</code> verbs through the <a href="https://duckplyr.tidyverse.org/" target="_blank"><code>duckplyr</code></a> package. To see the size of the data:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>merged<span class="sc">$</span>counts <span class="sc">|&gt;</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">rows =</span> <span class="fu">n</span>(), <span class="at">samples =</span> <span class="fu">n_distinct</span>(eventID), <span class="at">asvs =</span> <span class="fu">n_distinct</span>(taxonID)) <span class="sc">|&gt;</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>merged<span class="sc">$</span>counts <span class="sc">|&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">rows =</span> <span class="fu">n</span>(), <span class="at">samples =</span> <span class="fu">n_distinct</span>(eventID), <span class="at">asvs =</span> <span class="fu">n_distinct</span>(taxonID)) <span class="sc">|&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>as.data.frame()</code> runs the query and brings the small result into R. To look at the first rows of the tables:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>merged<span class="sc">$</span>counts <span class="sc">|&gt;</span> <span class="fu">head</span>(<span class="dv">3</span>) <span class="sc">|&gt;</span> <span class="fu">as.data.frame</span>()</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>merged<span class="sc">$</span>asvs <span class="sc">|&gt;</span> <span class="fu">select</span>(taxonID, phylum, order, genus, species) <span class="sc">|&gt;</span> <span class="fu">head</span>(<span class="dv">3</span>) <span class="sc">|&gt;</span> <span class="fu">as.data.frame</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>merged<span class="sc">$</span>counts <span class="sc">|&gt;</span> <span class="fu">head</span>(<span class="dv">3</span>) <span class="sc">|&gt;</span> <span class="fu">as.data.frame</span>()</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>merged<span class="sc">$</span>asvs <span class="sc">|&gt;</span> <span class="fu">select</span>(taxonID, phylum, order, genus, species) <span class="sc">|&gt;</span> <span class="fu">head</span>(<span class="dv">3</span>) <span class="sc">|&gt;</span> <span class="fu">as.data.frame</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>The contextual data has one row per measurement, so we can see which measurements exist:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>merged<span class="sc">$</span>emof <span class="sc">|&gt;</span> <span class="fu">distinct</span>(measurementType, measurementUnit) <span class="sc">|&gt;</span> <span class="fu">as.data.frame</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>merged<span class="sc">$</span>emof <span class="sc">|&gt;</span> <span class="fu">distinct</span>(measurementType, measurementUnit) <span class="sc">|&gt;</span> <span class="fu">as.data.frame</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>ASVs shared across datasets are combined using SBDI ASV IDs. These IDs correspond to MD5 hashes of the sequences, meaning that ASVs with identical sequences are represented only once.</p>
 <p>If a query cannot be translated to DuckDB, you get an error rather than a slow copy of the whole table into R. That is deliberate, and the error message usually names the function that caused it.</p>
 <hr>
@@ -262,7 +270,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="aggregate-counts-by-taxonomy" class="level3">
 <h3 class="anchored" data-anchor-id="aggregate-counts-by-taxonomy">Aggregate counts by taxonomy</h3>
 <p>We can now sum ASV read counts at different taxonomic levels based on the taxonomic annotation:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>clades <span class="ot">&lt;-</span> <span class="fu">sum_clades_long</span>(merged<span class="sc">$</span>counts, merged<span class="sc">$</span>asvs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>clades <span class="ot">&lt;-</span> <span class="fu">sum_clades_long</span>(merged<span class="sc">$</span>counts, merged<span class="sc">$</span>asvs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>This gives a table with one row per clade and sample, at the following levels:</p>
 <ul>
 <li>kingdom (or domain)</li>
@@ -275,10 +283,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>otu (if available)</li>
 </ul>
 <p><code>raw</code> holds the read counts and <code>norm</code> the share of the reads in the sample (relative abundance). This is again a lazy table, so we pick out what we want to look at:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>clades <span class="sc">|&gt;</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(rank <span class="sc">==</span> <span class="st">"phylum"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">3</span>) <span class="sc">|&gt;</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>clades <span class="sc">|&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(rank <span class="sc">==</span> <span class="st">"phylum"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">3</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>ASVs without a value at a level are summed as <code>Unclassified</code>. Names such as <code>unclassified.Acrididae</code> come from the annotation and are kept as they are.</p>
 <hr>
 <p><a href="./tutorial-01-setup.html">← Previous</a> · <a href="./tutorial.html">Overview</a> · Next, choose one track: <a href="./insects-03-map.html">Track A: Insects →</a> or <a href="./plankton-03-map.html">Track B: Marine plankton →</a></p>
