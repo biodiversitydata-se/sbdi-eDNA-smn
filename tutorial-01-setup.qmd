@@ -17,7 +17,7 @@ All packages and datasets are already prepared, so no installation or downloadin
 The machine is shared and will shut down after the workshop.
 
 - Avoid creating unnecessary large objects.
-- Save your code as an R script and download it before you leave (Files → More → Export).
+- If you want to keep your code, save it as an R script and download it before you leave (Files → More → Export).
 :::
 
 ### Choose your track
