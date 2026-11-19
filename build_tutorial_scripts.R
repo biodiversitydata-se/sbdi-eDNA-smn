@@ -25,7 +25,7 @@ libraries <- c(
 for (track in c("insects", "plankton")) {
   steps <- c(
     "tutorial-02-prep.qmd",
-    sprintf("%s-%02d-%s.qmd", track, 3:6, c("map", "beta", "alpha", "composition"))
+    sprintf("%s-%02d-%s.qmd", track, 3:6, c("map", "composition", "beta", "alpha"))
   )
   header <- c(
     sprintf("# Step-by-step tutorial code for the %s track, to paste into RStudio on the workshop VM.", track),

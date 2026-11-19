@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>6A. Taxonomic composition (track A: insects) – SMN hands-on workshop 2026</title>
+<title>6B. Within-sample diversity (track B: marine plankton) – SMN hands-on workshop 2026</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -155,7 +155,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">6A. Taxonomic composition (track A: insects)</h1>
+<h1 class="title">6B. Within-sample diversity (track B: marine plankton)</h1>
 </div>
 
 
@@ -172,61 +172,34 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p><em>Summarise taxonomic composition across habitats and months using stacked barplots.</em></p>
-<section id="sum-reads-by-taxonomy" class="level3">
-<h3 class="anchored" data-anchor-id="sum-reads-by-taxonomy">Sum reads by taxonomy</h3>
-<p><code>sum_clades_long()</code> from <a href="./tutorial-02-prep.html">step 2</a> can be limited to one taxonomic rank and to the samples selected in <a href="./insects-03-map.html">step 3</a>. The result is small enough to bring into R. We then add the habitat and month of each sample:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>get_composition <span class="ot">&lt;-</span> <span class="cf">function</span>(rank) {</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  composition <span class="ot">&lt;-</span> <span class="fu">sum_clades_long</span>(counts_selected, merged<span class="sc">$</span>asvs, <span class="at">ranks =</span> rank) <span class="sc">|&gt;</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.data.frame</span>()</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">merge</span>(composition, samples[<span class="fu">c</span>(<span class="st">"eventID"</span>, <span class="st">"habitat"</span>, <span class="st">"month"</span>)], <span class="at">by =</span> <span class="st">"eventID"</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Only the available ranks work here: kingdom, phylum, class, order, family, genus, species and otu.</p>
+<p><em>Examine diversity <strong>within</strong> each sample — alpha diversity — using the <a href="https://en.wikipedia.org/wiki/Diversity_index#Shannon_index" target="_blank">Shannon index</a>, and how it varies with salinity.</em></p>
+<section id="calculate-shannon-diversity-per-sample" class="level3">
+<h3 class="anchored" data-anchor-id="calculate-shannon-diversity-per-sample">Calculate Shannon diversity per sample</h3>
+<p>The Shannon index is calculated from the share <em>p</em> of each taxon in a sample, as −Σ <em>p</em> log <em>p</em>. Taxa that are absent do not contribute, so the counts table holds everything we need. We reuse <code>asv_counts</code> from <a href="./plankton-05-beta.html">step 5</a>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>shannon_table <span class="ot">&lt;-</span> asv_counts <span class="sc">|&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">total =</span> <span class="fu">sum</span>(quant, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.by =</span> sample) <span class="sc">|&gt;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">p =</span> quant <span class="sc">/</span> total) <span class="sc">|&gt;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">p_log_p =</span> p <span class="sc">*</span> <span class="fu">log</span>(p)) <span class="sc">|&gt;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">shannon =</span> <span class="sc">-</span><span class="fu">sum</span>(p_log_p, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.by =</span> sample) <span class="sc">|&gt;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>()</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>events<span class="sc">$</span>shannon <span class="ot">&lt;-</span> shannon_table<span class="sc">$</span>shannon[<span class="fu">match</span>(events<span class="sc">$</span>eventID, shannon_table<span class="sc">$</span>sample)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>A higher Shannon index indicates greater within-sample diversity, reflecting both the number of ASVs present and how evenly their abundances are distributed.</p>
 </section>
-<section id="define-the-barplot-function" class="level3">
-<h3 class="anchored" data-anchor-id="define-the-barplot-function">Define the barplot function</h3>
-<p>The function below identifies the most abundant taxa across the selected samples, calculates their mean relative abundance for each habitat and month, and draws stacked barplots with <a href="https://ggplot2.tidyverse.org/" target="_blank"><code>ggplot2</code></a>. <code>ggplot2</code> draws directly from a table with one row per value: each row of <code>monthly</code> becomes one segment of a bar.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>plot_barplots <span class="ot">&lt;-</span> <span class="cf">function</span>(rank, <span class="at">top_x =</span> <span class="dv">10</span>) {</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  composition <span class="ot">&lt;-</span> <span class="fu">get_composition</span>(rank)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Absent taxa have no rows, so a mean is the sum divided by the number of samples</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  totals <span class="ot">&lt;-</span> <span class="fu">tapply</span>(composition<span class="sc">$</span>norm, composition<span class="sc">$</span>clade, sum)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  top <span class="ot">&lt;-</span> <span class="fu">names</span>(<span class="fu">sort</span>(totals <span class="sc">/</span> <span class="fu">nrow</span>(samples), <span class="at">decreasing =</span> <span class="cn">TRUE</span>))[<span class="dv">1</span><span class="sc">:</span>top_x]</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  monthly <span class="ot">&lt;-</span> <span class="fu">aggregate</span>(norm <span class="sc">~</span> clade <span class="sc">+</span> habitat <span class="sc">+</span> month, composition[composition<span class="sc">$</span>clade <span class="sc">%in%</span> top, ], sum)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  n_samples <span class="ot">&lt;-</span> <span class="fu">aggregate</span>(eventID <span class="sc">~</span> habitat <span class="sc">+</span> month, samples, length)</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  monthly <span class="ot">&lt;-</span> <span class="fu">merge</span>(monthly, n_samples)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  monthly<span class="sc">$</span>share <span class="ot">&lt;-</span> monthly<span class="sc">$</span>norm <span class="sc">/</span> monthly<span class="sc">$</span>eventID</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Reversed levels put the most abundant taxon at the bottom of each bar</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  monthly<span class="sc">$</span>clade <span class="ot">&lt;-</span> <span class="fu">factor</span>(monthly<span class="sc">$</span>clade, <span class="at">levels =</span> <span class="fu">rev</span>(top))</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  monthly<span class="sc">$</span>month <span class="ot">&lt;-</span> <span class="fu">factor</span>(monthly<span class="sc">$</span>month, <span class="at">levels =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>, <span class="at">labels =</span> month.abb)</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  monthly<span class="sc">$</span>habitat <span class="ot">&lt;-</span> <span class="fu">factor</span>(monthly<span class="sc">$</span>habitat, <span class="at">levels =</span> <span class="fu">names</span>(habitat_cols))</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  mycols <span class="ot">&lt;-</span> <span class="fu">colorRampPalette</span>(<span class="fu">c</span>(</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"#a6cee3"</span>, <span class="st">"#1f78b4"</span>, <span class="st">"#b2df8a"</span>, <span class="st">"#33a02c"</span>,</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">"#fb9a99"</span>, <span class="st">"#e31a1c"</span>, <span class="st">"#fdbf6f"</span>, <span class="st">"#ff7f00"</span>,</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">"#cab2d6"</span>, <span class="st">"#6a3d9a"</span>, <span class="st">"#ffff99"</span>, <span class="st">"#b15928"</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  ))</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(monthly, <span class="fu">aes</span>(<span class="at">x =</span> month, <span class="at">y =</span> share, <span class="at">fill =</span> clade)) <span class="sc">+</span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_col</span>(<span class="at">colour =</span> <span class="st">"grey20"</span>, <span class="at">linewidth =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">facet_wrap</span>(<span class="sc">~</span>habitat, <span class="at">ncol =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_x_discrete</span>(<span class="at">drop =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">setNames</span>(<span class="fu">mycols</span>(top_x), top), <span class="at">breaks =</span> top, <span class="at">name =</span> rank) <span class="sc">+</span></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Mean share of reads"</span>) <span class="sc">+</span></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>())</span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The same paired sample set selected in <a href="./insects-03-map.html">step 3</a> is used both to select the most abundant taxa and to calculate the habitat-by-month averages.</p>
-</section>
-<section id="example-plot-top-orders" class="level3">
-<h3 class="anchored" data-anchor-id="example-plot-top-orders">Example: plot top orders</h3>
-<p>Plot the eight most abundant orders across habitats and months:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_barplots</span>(<span class="at">rank =</span> <span class="st">"order"</span>, <span class="at">top_x =</span> <span class="dv">8</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Flies (Diptera) dominate the reads in all habitats, especially in the alpine samples and early in the season. Note that these are shares of the reads, not of the number of individuals or the biomass. Empty months had no selected samples in that habitat.</p>
+<section id="plot-shannon-diversity-against-salinity" class="level3">
+<h3 class="anchored" data-anchor-id="plot-shannon-diversity-against-salinity">Plot Shannon diversity against salinity</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>plot_shannon <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">1</span>))</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(events<span class="sc">$</span>salinity, events<span class="sc">$</span>shannon,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">pch =</span> dataset_pch[events<span class="sc">$</span>dataset], <span class="at">bg =</span> color_yday[events<span class="sc">$</span>yday],</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> <span class="st">"Salinity"</span>, <span class="at">ylab =</span> <span class="st">"Shannon diversity"</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">legend</span>(<span class="st">"bottomright"</span>, <span class="at">bty =</span> <span class="st">"n"</span>, <span class="at">pch =</span> dataset_pch, <span class="at">legend =</span> <span class="fu">names</span>(dataset_pch))</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_shannon</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Shannon diversity shows no simple trend with salinity, and it varies more between seasons than along the gradient: winter samples (blue) tend to be more diverse than summer ones. So although salinity changes <em>which</em> bacteria are present, as the PCoA in step 5 shows, it does not change <em>how diverse</em> the communities are in any simple way.</p>
 <hr>
-<p><a href="./insects-05-alpha.html">← Previous</a> · <a href="./tutorial.html">Overview</a></p>
+<p><a href="./plankton-05-beta.html">← Previous</a> · <a href="./tutorial.html">Overview</a></p>
 
 
 </section>

@@ -34,9 +34,9 @@ save_png <- function(name, plot_fun, ...) {
 
 ins <- run_track("insects", Sys.getenv("SMN_INSECTS"))
 save_png("insects_3_map.png", ins$plot_monthly_maps, width = 1100, height = 950)
-save_png("insects_4_pcoa.png", ins$plot_pcoa, width = 1200, height = 1000, res = 110)
-save_png("insects_5_shannon.png", ins$plot_shannon, width = 800, height = 650, res = 110)
-ggplot2::ggsave(fig("insects_6_barplots.png"), ins$plot_barplots(rank = "order", top_x = 8),
+save_png("insects_5_pcoa.png", ins$plot_pcoa, width = 1200, height = 1000, res = 110)
+save_png("insects_6_shannon.png", ins$plot_shannon, width = 800, height = 650, res = 110)
+ggplot2::ggsave(fig("insects_4_barplots.png"), ins$plot_barplots(rank = "order", top_x = 8),
                 width = 9, height = 8, dpi = 130)
 
 cat("\n=== Insects\nPaired samples per method:\n")
@@ -54,9 +54,9 @@ print(round(sapply(split(ins$alpha_samples$shannon, ins$alpha_samples$habitat), 
 plk <- run_track("plankton", Sys.getenv("SMN_PLANKTON"))
 save_png("plankton_3_map_2019_2020.png", function() plk$plot_maps("2019-2020"), width = 1100, height = 950)
 save_png("plankton_3_map_2013.png", function() plk$plot_maps("2013"), width = 1100, height = 950)
-save_png("plankton_4_pcoa.png", plk$plot_pcoa, width = 1200, height = 700, res = 110)
-save_png("plankton_5_shannon.png", plk$plot_shannon, width = 800, height = 650, res = 110)
-ggplot2::ggsave(fig("plankton_6_barplots.png"), plk$plot_barplots(rank = "class", top_x = 8),
+save_png("plankton_5_pcoa.png", plk$plot_pcoa, width = 1200, height = 700, res = 110)
+save_png("plankton_6_shannon.png", plk$plot_shannon, width = 800, height = 650, res = 110)
+ggplot2::ggsave(fig("plankton_4_barplots.png"), plk$plot_barplots(rank = "class", top_x = 8),
                 width = 9, height = 10, dpi = 130)
 
 cat("\n=== Marine plankton\nSamples per dataset:\n")

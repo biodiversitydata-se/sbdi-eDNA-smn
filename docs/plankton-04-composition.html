@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>4B. Community differences (track B: marine plankton) – SMN hands-on workshop 2026</title>
+<title>4B. Taxonomic composition (track B: marine plankton) – SMN hands-on workshop 2026</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -155,7 +155,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">4B. Community differences (track B: marine plankton)</h1>
+<h1 class="title">4B. Taxonomic composition (track B: marine plankton)</h1>
 </div>
 
 
@@ -172,64 +172,66 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p><em>Analyse differences in community composition between samples — beta diversity — using Bray-Curtis dissimilarity and Principal Coordinates Analysis (PCoA).</em></p>
-<section id="calculate-bray-curtis-dissimilarity" class="level3">
-<h3 class="anchored" data-anchor-id="calculate-bray-curtis-dissimilarity">Calculate Bray-Curtis dissimilarity</h3>
-<p>Bray-Curtis dissimilarity compares the abundances of taxa in two samples, from 0 for identical communities to 1 for communities with nothing in common. Both datasets use the same primers, so we can compare them at ASV level.</p>
-<p>We give the columns the names that <a href="https://github.com/biodiversitydata-se/ecolongr" target="_blank"><code>ecolongr</code></a> expects by default, turn the counts into relative abundances so that sequencing depth does not affect the comparison, and calculate the dissimilarities:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>asv_counts <span class="ot">&lt;-</span> merged<span class="sc">$</span>counts <span class="sc">|&gt;</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(<span class="at">sample =</span> eventID, <span class="at">taxon =</span> taxonID, <span class="at">quant =</span> organismQuantity)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>bray <span class="ot">&lt;-</span> asv_counts <span class="sc">|&gt;</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">el_decostand</span>(<span class="st">"total"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">el_vegdist</span>(<span class="st">"bray"</span>, <span class="at">samples =</span> events<span class="sc">$</span>eventID)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><code>el_decostand()</code> and <code>el_vegdist()</code> work like <code>decostand()</code> and <code>vegdist()</code> in the <code>vegan</code> package, but on our table, without reading it into R. <code>samples =</code> makes the result follow the order of the rows in <code>events</code>, which we rely on when plotting. The result is an ordinary <code>dist</code> object that <code>vegan</code> and base R can use.</p>
+<p><em>Summarise taxonomic composition across salinity and months using stacked barplots.</em></p>
+<section id="sum-reads-by-taxonomy" class="level3">
+<h3 class="anchored" data-anchor-id="sum-reads-by-taxonomy">Sum reads by taxonomy</h3>
+<p><code>sum_clades_long()</code> from <a href="./tutorial-02-prep.html">step 2</a> can be limited to one taxonomic rank. The result is small enough to bring into R. We then add the salinity and month of each sample, and group the salinity into intervals:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>salinity_breaks <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">3</span>, <span class="dv">6</span>, <span class="dv">12</span>, <span class="dv">20</span>, <span class="dv">35</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>get_composition <span class="ot">&lt;-</span> <span class="cf">function</span>(rank) {</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  composition <span class="ot">&lt;-</span> <span class="fu">sum_clades_long</span>(merged<span class="sc">$</span>counts, merged<span class="sc">$</span>asvs, <span class="at">ranks =</span> rank) <span class="sc">|&gt;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.data.frame</span>()</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  composition <span class="ot">&lt;-</span> <span class="fu">merge</span>(composition, events[<span class="fu">c</span>(<span class="st">"eventID"</span>, <span class="st">"salinity"</span>, <span class="st">"month"</span>)], <span class="at">by =</span> <span class="st">"eventID"</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  composition<span class="sc">$</span>salinity_class <span class="ot">&lt;-</span> <span class="fu">cut</span>(composition<span class="sc">$</span>salinity, salinity_breaks, <span class="at">right =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  composition</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Only the available ranks work here: kingdom, phylum, class, order, family, genus, species and otu.</p>
 </section>
-<section id="run-pcoa" class="level3">
-<h3 class="anchored" data-anchor-id="run-pcoa">Run PCoA</h3>
-<p>Principal Coordinates Analysis (PCoA) represents the dissimilarities among samples in a smaller number of dimensions:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pcoa <span class="ot">&lt;-</span> <span class="fu">cmdscale</span>(bray, <span class="at">k =</span> <span class="dv">2</span>, <span class="at">eig =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Share of the positive eigenvalues held by each of the first two axes</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>axis_share <span class="ot">&lt;-</span> pcoa<span class="sc">$</span>eig[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>] <span class="sc">/</span> <span class="fu">sum</span>(pcoa<span class="sc">$</span>eig[pcoa<span class="sc">$</span>eig <span class="sc">&gt;</span> <span class="dv">0</span>])</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> axis_share, <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="define-the-barplot-function" class="level3">
+<h3 class="anchored" data-anchor-id="define-the-barplot-function">Define the barplot function</h3>
+<p>The function below identifies the most abundant taxa, calculates their mean relative abundance for each salinity interval and month, and draws stacked barplots with <a href="https://ggplot2.tidyverse.org/" target="_blank"><code>ggplot2</code></a>. <code>ggplot2</code> draws directly from a table with one row per value: each row of <code>monthly</code> becomes one segment of a bar.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>plot_barplots <span class="ot">&lt;-</span> <span class="cf">function</span>(rank, <span class="at">top_x =</span> <span class="dv">10</span>) {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  composition <span class="ot">&lt;-</span> <span class="fu">get_composition</span>(rank)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  sampled <span class="ot">&lt;-</span> events[<span class="sc">!</span><span class="fu">is.na</span>(events<span class="sc">$</span>salinity), ]</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  sampled<span class="sc">$</span>salinity_class <span class="ot">&lt;-</span> <span class="fu">cut</span>(sampled<span class="sc">$</span>salinity, salinity_breaks, <span class="at">right =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Absent taxa have no rows, so a mean is the sum divided by the number of samples</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  totals <span class="ot">&lt;-</span> <span class="fu">tapply</span>(composition<span class="sc">$</span>norm, composition<span class="sc">$</span>clade, sum)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  top <span class="ot">&lt;-</span> <span class="fu">names</span>(<span class="fu">sort</span>(totals <span class="sc">/</span> <span class="fu">nrow</span>(sampled), <span class="at">decreasing =</span> <span class="cn">TRUE</span>))[<span class="dv">1</span><span class="sc">:</span>top_x]</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  monthly <span class="ot">&lt;-</span> <span class="fu">aggregate</span>(norm <span class="sc">~</span> clade <span class="sc">+</span> salinity_class <span class="sc">+</span> month,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                       composition[composition<span class="sc">$</span>clade <span class="sc">%in%</span> top, ], sum)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  n_samples <span class="ot">&lt;-</span> <span class="fu">aggregate</span>(eventID <span class="sc">~</span> salinity_class <span class="sc">+</span> month, sampled, length)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  monthly <span class="ot">&lt;-</span> <span class="fu">merge</span>(monthly, n_samples)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  monthly<span class="sc">$</span>share <span class="ot">&lt;-</span> monthly<span class="sc">$</span>norm <span class="sc">/</span> monthly<span class="sc">$</span>eventID</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Reversed levels put the most abundant taxon at the bottom of each bar</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  monthly<span class="sc">$</span>clade <span class="ot">&lt;-</span> <span class="fu">factor</span>(monthly<span class="sc">$</span>clade, <span class="at">levels =</span> <span class="fu">rev</span>(top))</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  monthly<span class="sc">$</span>month <span class="ot">&lt;-</span> <span class="fu">factor</span>(monthly<span class="sc">$</span>month, <span class="at">levels =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>, <span class="at">labels =</span> month.abb)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  mycols <span class="ot">&lt;-</span> <span class="fu">colorRampPalette</span>(<span class="fu">c</span>(</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    <span class="st">"#a6cee3"</span>, <span class="st">"#1f78b4"</span>, <span class="st">"#b2df8a"</span>, <span class="st">"#33a02c"</span>,</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">"#fb9a99"</span>, <span class="st">"#e31a1c"</span>, <span class="st">"#fdbf6f"</span>, <span class="st">"#ff7f00"</span>,</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">"#cab2d6"</span>, <span class="st">"#6a3d9a"</span>, <span class="st">"#ffff99"</span>, <span class="st">"#b15928"</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  ))</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(monthly, <span class="fu">aes</span>(<span class="at">x =</span> month, <span class="at">y =</span> share, <span class="at">fill =</span> clade)) <span class="sc">+</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_col</span>(<span class="at">colour =</span> <span class="st">"grey20"</span>, <span class="at">linewidth =</span> <span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">facet_wrap</span>(<span class="sc">~</span>salinity_class, <span class="at">ncol =</span> <span class="dv">1</span>, <span class="at">labeller =</span> label_both) <span class="sc">+</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_x_discrete</span>(<span class="at">drop =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">setNames</span>(<span class="fu">mycols</span>(top_x), top), <span class="at">breaks =</span> top, <span class="at">name =</span> rank) <span class="sc">+</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Mean share of reads"</span>) <span class="sc">+</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>())</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="plot-pcoa-results" class="level3">
-<h3 class="anchored" data-anchor-id="plot-pcoa-results">Plot PCoA results</h3>
-<p>We plot the PCoA once per dataset, with all samples in grey in the background. Colour shows the day of year and size the salinity, as on the maps:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>plot_pcoa <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  xlab <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"PC1 ("</span>, <span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> axis_share[<span class="dv">1</span>]), <span class="st">"%)"</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  ylab <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"PC2 ("</span>, <span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> axis_share[<span class="dv">2</span>]), <span class="st">"%)"</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> pcoa<span class="sc">$</span>points[, <span class="dv">1</span>]</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> pcoa<span class="sc">$</span>points[, <span class="dv">2</span>]</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>), <span class="dv">2</span>, <span class="dv">2</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>), <span class="at">heights =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">1</span>))</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">1</span>))</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (dataset <span class="cf">in</span> <span class="fu">c</span>(<span class="st">"2019-2020"</span>, <span class="st">"2013"</span>)) {</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    ix <span class="ot">&lt;-</span> events<span class="sc">$</span>dataset <span class="sc">==</span> dataset</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plot</span>(x, y, <span class="at">col =</span> <span class="st">"grey85"</span>, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">cex =</span> <span class="fl">0.8</span>,</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>         <span class="at">xlab =</span> xlab, <span class="at">ylab =</span> ylab, <span class="at">main =</span> dataset)</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">points</span>(x[ix], y[ix], <span class="at">pch =</span> dataset_pch[dataset], <span class="at">col =</span> <span class="st">"black"</span>,</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>           <span class="at">bg =</span> color_yday[events<span class="sc">$</span>yday[ix]], <span class="at">cex =</span> <span class="fu">point_size</span>(events<span class="sc">$</span>salinity[ix], <span class="fl">0.8</span>, <span class="dv">15</span>))</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">366</span>, <span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">366</span>), <span class="at">col =</span> color_yday, <span class="at">pch =</span> <span class="st">"|"</span>, <span class="at">cex =</span> <span class="dv">3</span>,</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>       <span class="at">axes =</span> <span class="cn">FALSE</span>, <span class="at">xlab =</span> <span class="st">""</span>, <span class="at">ylab =</span> <span class="st">""</span>, <span class="at">ylim =</span> <span class="fu">c</span>(<span class="fl">0.9</span>, <span class="fl">1.3</span>))</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">axis</span>(<span class="dv">1</span>, <span class="at">at =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">182</span>, <span class="dv">366</span>))</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">text</span>(<span class="dv">183</span>, <span class="fl">1.2</span>, <span class="st">"Day of year"</span>)</span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">18</span>, <span class="dv">34</span>), <span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">3</span>), <span class="at">pch =</span> <span class="dv">1</span>, <span class="at">cex =</span> <span class="fl">0.8</span> <span class="sc">+</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">18</span>, <span class="dv">34</span>) <span class="sc">/</span> <span class="dv">15</span>,</span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">5</span>, <span class="dv">40</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="fl">0.9</span>, <span class="fl">1.3</span>), <span class="at">axes =</span> <span class="cn">FALSE</span>, <span class="at">xlab =</span> <span class="st">""</span>, <span class="at">ylab =</span> <span class="st">""</span>)</span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">axis</span>(<span class="dv">1</span>, <span class="at">at =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">18</span>, <span class="dv">34</span>))</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">text</span>(<span class="dv">18</span>, <span class="fl">1.2</span>, <span class="st">"Salinity"</span>)</span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pcoa</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The first axis explains about a third of the variation and follows salinity: the samples from the brackish Baltic Sea are on the left, and those from the saltier Kattegat and Skagerrak on the right. Within each group, the second axis follows the season. The samples from the 2013 transect fall in the same pattern as the later ones, which suggests that the two datasets can be compared.</p>
+<section id="example-plot-top-classes" class="level3">
+<h3 class="anchored" data-anchor-id="example-plot-top-classes">Example: plot top classes</h3>
+<p>Plot the eight most abundant classes across salinity and months:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_barplots</span>(<span class="at">rank =</span> <span class="st">"class"</span>, <span class="at">top_x =</span> <span class="dv">8</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Bacteroidia and Alphaproteobacteria are common at all salinities. Acidimicrobiia and Actinomycetes are more common in the least salty water, and Cyanobacteriia increase in summer. Many reads cannot be assigned to a class (<code>Unclassified</code>). Note that these are shares of the reads, not of the number of cells. Empty months had no samples in that salinity interval.</p>
 <hr>
-<p><a href="./plankton-03-map.html">← Previous</a> · <a href="./tutorial.html">Overview</a> · <a href="./plankton-05-alpha.html">Next →</a></p>
+<p><a href="./plankton-03-map.html">← Previous</a> · <a href="./tutorial.html">Overview</a> · <a href="./plankton-05-beta.html">Next →</a></p>
 
 
 </section>

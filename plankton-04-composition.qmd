@@ -1,5 +1,5 @@
 ---
-title: "6B. Taxonomic composition (track B: marine plankton)"
+title: "4B. Taxonomic composition (track B: marine plankton)"
 format:
   html:
     toc: false
@@ -78,4 +78,4 @@ Bacteroidia and Alphaproteobacteria are common at all salinities. Acidimicrobiia
 
 ---
 
-[← Previous](plankton-05-alpha.qmd) · [Overview](tutorial.qmd)
+[← Previous](plankton-03-map.qmd) · [Overview](tutorial.qmd) · [Next →](plankton-05-beta.qmd)

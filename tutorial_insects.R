@@ -110,10 +110,53 @@ plot_monthly_maps <- function() {
 
 plot_monthly_maps()
 
-# --- insects-04-beta.qmd ---
+# --- insects-04-composition.qmd ---
 
 selected <- duckdb_tibble(eventID = samples$eventID, .prudence = "stingy")
 counts_selected <- merged$counts |> semi_join(selected, by = "eventID")
+
+get_composition <- function(rank) {
+  composition <- sum_clades_long(counts_selected, merged$asvs, ranks = rank) |>
+    as.data.frame()
+  merge(composition, samples[c("eventID", "habitat", "month")], by = "eventID")
+}
+
+plot_barplots <- function(rank, top_x = 10) {
+  composition <- get_composition(rank)
+
+  # Absent taxa have no rows, so a mean is the sum divided by the number of samples
+  totals <- tapply(composition$norm, composition$clade, sum)
+  top <- names(sort(totals / nrow(samples), decreasing = TRUE))[1:top_x]
+
+  monthly <- aggregate(norm ~ clade + habitat + month, composition[composition$clade %in% top, ], sum)
+  n_samples <- aggregate(eventID ~ habitat + month, samples, length)
+  monthly <- merge(monthly, n_samples)
+  monthly$share <- monthly$norm / monthly$eventID
+
+  # Reversed levels put the most abundant taxon at the bottom of each bar
+  monthly$clade <- factor(monthly$clade, levels = rev(top))
+  monthly$month <- factor(monthly$month, levels = 1:12, labels = month.abb)
+  monthly$habitat <- factor(monthly$habitat, levels = names(habitat_cols))
+
+  mycols <- colorRampPalette(c(
+    "#a6cee3", "#1f78b4", "#b2df8a", "#33a02c",
+    "#fb9a99", "#e31a1c", "#fdbf6f", "#ff7f00",
+    "#cab2d6", "#6a3d9a", "#ffff99", "#b15928"
+  ))
+
+  ggplot(monthly, aes(x = month, y = share, fill = clade)) +
+    geom_col(colour = "grey20", linewidth = 0.2) +
+    facet_wrap(~habitat, ncol = 2) +
+    scale_x_discrete(drop = FALSE) +
+    scale_fill_manual(values = setNames(mycols(top_x), top), breaks = top, name = rank) +
+    labs(x = NULL, y = "Mean share of reads") +
+    theme_bw(base_size = 12) +
+    theme(panel.grid.major.x = element_blank())
+}
+
+plot_barplots(rank = "order", top_x = 8)
+
+# --- insects-05-beta.qmd ---
 
 clusters <- loaded$asvs |> distinct(taxonID, cluster = associatedSequences)
 
@@ -195,7 +238,7 @@ plot_pcoa <- function() {
 
 plot_pcoa()
 
-# --- insects-05-alpha.qmd ---
+# --- insects-06-alpha.qmd ---
 
 alpha_samples <- events[
   events$depth >= 100000 & !is.na(events$yday) & grepl("lysate", events$eventID),
@@ -224,47 +267,4 @@ plot_shannon <- function() {
 }
 
 plot_shannon()
-
-# --- insects-06-composition.qmd ---
-
-get_composition <- function(rank) {
-  composition <- sum_clades_long(counts_selected, merged$asvs, ranks = rank) |>
-    as.data.frame()
-  merge(composition, samples[c("eventID", "habitat", "month")], by = "eventID")
-}
-
-plot_barplots <- function(rank, top_x = 10) {
-  composition <- get_composition(rank)
-
-  # Absent taxa have no rows, so a mean is the sum divided by the number of samples
-  totals <- tapply(composition$norm, composition$clade, sum)
-  top <- names(sort(totals / nrow(samples), decreasing = TRUE))[1:top_x]
-
-  monthly <- aggregate(norm ~ clade + habitat + month, composition[composition$clade %in% top, ], sum)
-  n_samples <- aggregate(eventID ~ habitat + month, samples, length)
-  monthly <- merge(monthly, n_samples)
-  monthly$share <- monthly$norm / monthly$eventID
-
-  # Reversed levels put the most abundant taxon at the bottom of each bar
-  monthly$clade <- factor(monthly$clade, levels = rev(top))
-  monthly$month <- factor(monthly$month, levels = 1:12, labels = month.abb)
-  monthly$habitat <- factor(monthly$habitat, levels = names(habitat_cols))
-
-  mycols <- colorRampPalette(c(
-    "#a6cee3", "#1f78b4", "#b2df8a", "#33a02c",
-    "#fb9a99", "#e31a1c", "#fdbf6f", "#ff7f00",
-    "#cab2d6", "#6a3d9a", "#ffff99", "#b15928"
-  ))
-
-  ggplot(monthly, aes(x = month, y = share, fill = clade)) +
-    geom_col(colour = "grey20", linewidth = 0.2) +
-    facet_wrap(~habitat, ncol = 2) +
-    scale_x_discrete(drop = FALSE) +
-    scale_fill_manual(values = setNames(mycols(top_x), top), breaks = top, name = rank) +
-    labs(x = NULL, y = "Mean share of reads") +
-    theme_bw(base_size = 12) +
-    theme(panel.grid.major.x = element_blank())
-}
-
-plot_barplots(rank = "order", top_x = 8)
 

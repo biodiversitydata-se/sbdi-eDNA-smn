@@ -1,5 +1,5 @@
 ---
-title: "4A. Community differences (track A: insects)"
+title: "5A. Community differences (track A: insects)"
 format:
   html:
     toc: false
@@ -7,14 +7,7 @@ format:
 
 *Analyse differences in community composition between samples — beta diversity — using Bray-Curtis dissimilarity and Principal Coordinates Analysis (PCoA).*
 
-### Select samples
-
-We keep the rows of the counts table that belong to the samples selected in [step 3](insects-03-map.qmd). `semi_join()` filters one table by another, and DuckDB does the work without reading the whole table into R:
-
-```r
-selected <- duckdb_tibble(eventID = samples$eventID, .prudence = "stingy")
-counts_selected <- merged$counts |> semi_join(selected, by = "eventID")
-```
+We use `counts_selected`, the read counts of the samples selected in [step 3](insects-03-map.qmd), from [step 4](insects-04-composition.qmd).
 
 ### Aggregate ASVs to clusters
 
@@ -142,4 +135,4 @@ The first two PCoA axes explain only about 10% of the variation together, so the
 
 ---
 
-[← Previous](insects-03-map.qmd) · [Overview](tutorial.qmd) · [Next →](insects-05-alpha.qmd)
+[← Previous](insects-04-composition.qmd) · [Overview](tutorial.qmd) · [Next →](insects-06-alpha.qmd)

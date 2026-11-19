@@ -106,74 +106,7 @@ plot_maps("2019-2020")
 
 plot_maps("2013")
 
-# --- plankton-04-beta.qmd ---
-
-asv_counts <- merged$counts |>
-  transmute(sample = eventID, taxon = taxonID, quant = organismQuantity)
-
-bray <- asv_counts |>
-  el_decostand("total") |>
-  el_vegdist("bray", samples = events$eventID)
-
-pcoa <- cmdscale(bray, k = 2, eig = TRUE)
-
-# Share of the positive eigenvalues held by each of the first two axes
-axis_share <- pcoa$eig[1:2] / sum(pcoa$eig[pcoa$eig > 0])
-round(100 * axis_share, 1)
-
-plot_pcoa <- function() {
-  xlab <- paste0("PC1 (", round(100 * axis_share[1]), "%)")
-  ylab <- paste0("PC2 (", round(100 * axis_share[2]), "%)")
-  x <- pcoa$points[, 1]
-  y <- pcoa$points[, 2]
-
-  layout(matrix(c(1, 2, 3, 4), 2, 2, byrow = TRUE), heights = c(4, 1))
-  par(mar = c(4, 4, 2, 1))
-
-  for (dataset in c("2019-2020", "2013")) {
-    ix <- events$dataset == dataset
-    plot(x, y, col = "grey85", pch = 16, cex = 0.8,
-         xlab = xlab, ylab = ylab, main = dataset)
-    points(x[ix], y[ix], pch = dataset_pch[dataset], col = "black",
-           bg = color_yday[events$yday[ix]], cex = point_size(events$salinity[ix], 0.8, 15))
-  }
-
-  par(mar = c(3, 2, 1, 2))
-  plot(1:366, rep(1, 366), col = color_yday, pch = "|", cex = 3,
-       axes = FALSE, xlab = "", ylab = "", ylim = c(0.9, 1.3))
-  axis(1, at = c(1, 182, 366))
-  text(183, 1.2, "Day of year")
-
-  plot(c(2, 18, 34), rep(1, 3), pch = 1, cex = 0.8 + c(2, 18, 34) / 15,
-       xlim = c(-5, 40), ylim = c(0.9, 1.3), axes = FALSE, xlab = "", ylab = "")
-  axis(1, at = c(2, 18, 34))
-  text(18, 1.2, "Salinity")
-}
-
-plot_pcoa()
-
-# --- plankton-05-alpha.qmd ---
-
-shannon_table <- asv_counts |>
-  mutate(total = sum(quant, na.rm = TRUE), .by = sample) |>
-  mutate(p = quant / total) |>
-  mutate(p_log_p = p * log(p)) |>
-  summarise(shannon = -sum(p_log_p, na.rm = TRUE), .by = sample) |>
-  as.data.frame()
-
-events$shannon <- shannon_table$shannon[match(events$eventID, shannon_table$sample)]
-
-plot_shannon <- function() {
-  par(mar = c(4, 4, 2, 1))
-  plot(events$salinity, events$shannon,
-       pch = dataset_pch[events$dataset], bg = color_yday[events$yday],
-       xlab = "Salinity", ylab = "Shannon diversity")
-  legend("bottomright", bty = "n", pch = dataset_pch, legend = names(dataset_pch))
-}
-
-plot_shannon()
-
-# --- plankton-06-composition.qmd ---
+# --- plankton-04-composition.qmd ---
 
 salinity_breaks <- c(0, 3, 6, 12, 20, 35)
 
@@ -221,4 +154,71 @@ plot_barplots <- function(rank, top_x = 10) {
 }
 
 plot_barplots(rank = "class", top_x = 8)
+
+# --- plankton-05-beta.qmd ---
+
+asv_counts <- merged$counts |>
+  transmute(sample = eventID, taxon = taxonID, quant = organismQuantity)
+
+bray <- asv_counts |>
+  el_decostand("total") |>
+  el_vegdist("bray", samples = events$eventID)
+
+pcoa <- cmdscale(bray, k = 2, eig = TRUE)
+
+# Share of the positive eigenvalues held by each of the first two axes
+axis_share <- pcoa$eig[1:2] / sum(pcoa$eig[pcoa$eig > 0])
+round(100 * axis_share, 1)
+
+plot_pcoa <- function() {
+  xlab <- paste0("PC1 (", round(100 * axis_share[1]), "%)")
+  ylab <- paste0("PC2 (", round(100 * axis_share[2]), "%)")
+  x <- pcoa$points[, 1]
+  y <- pcoa$points[, 2]
+
+  layout(matrix(c(1, 2, 3, 4), 2, 2, byrow = TRUE), heights = c(4, 1))
+  par(mar = c(4, 4, 2, 1))
+
+  for (dataset in c("2019-2020", "2013")) {
+    ix <- events$dataset == dataset
+    plot(x, y, col = "grey85", pch = 16, cex = 0.8,
+         xlab = xlab, ylab = ylab, main = dataset)
+    points(x[ix], y[ix], pch = dataset_pch[dataset], col = "black",
+           bg = color_yday[events$yday[ix]], cex = point_size(events$salinity[ix], 0.8, 15))
+  }
+
+  par(mar = c(3, 2, 1, 2))
+  plot(1:366, rep(1, 366), col = color_yday, pch = "|", cex = 3,
+       axes = FALSE, xlab = "", ylab = "", ylim = c(0.9, 1.3))
+  axis(1, at = c(1, 182, 366))
+  text(183, 1.2, "Day of year")
+
+  plot(c(2, 18, 34), rep(1, 3), pch = 1, cex = 0.8 + c(2, 18, 34) / 15,
+       xlim = c(-5, 40), ylim = c(0.9, 1.3), axes = FALSE, xlab = "", ylab = "")
+  axis(1, at = c(2, 18, 34))
+  text(18, 1.2, "Salinity")
+}
+
+plot_pcoa()
+
+# --- plankton-06-alpha.qmd ---
+
+shannon_table <- asv_counts |>
+  mutate(total = sum(quant, na.rm = TRUE), .by = sample) |>
+  mutate(p = quant / total) |>
+  mutate(p_log_p = p * log(p)) |>
+  summarise(shannon = -sum(p_log_p, na.rm = TRUE), .by = sample) |>
+  as.data.frame()
+
+events$shannon <- shannon_table$shannon[match(events$eventID, shannon_table$sample)]
+
+plot_shannon <- function() {
+  par(mar = c(4, 4, 2, 1))
+  plot(events$salinity, events$shannon,
+       pch = dataset_pch[events$dataset], bg = color_yday[events$yday],
+       xlab = "Salinity", ylab = "Shannon diversity")
+  legend("bottomright", bty = "n", pch = dataset_pch, legend = names(dataset_pch))
+}
+
+plot_shannon()
 

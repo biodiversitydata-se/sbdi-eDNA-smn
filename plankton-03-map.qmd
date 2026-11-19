@@ -130,4 +130,4 @@ These figures have several panels and can look cramped on a laptop screen. Click
 
 ---
 
-[← Previous](tutorial-02-prep.qmd) · [Overview](tutorial.qmd) · [Next →](plankton-04-beta.qmd)
+[← Previous](tutorial-02-prep.qmd) · [Overview](tutorial.qmd) · [Next →](plankton-04-composition.qmd)

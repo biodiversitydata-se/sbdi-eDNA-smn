@@ -17,23 +17,23 @@ format:
 
 ![](figures/insects_3_map.png)
 
+### Taxonomic composition by habitat
+
+*Mean monthly share of reads of the most common insect orders in each habitat type.*
+
+![](figures/insects_4_barplots.png)
+
 ### Community differences — beta diversity (PCoA)
 
 *Principal Coordinates Analysis (Bray-Curtis dissimilarity) of cluster-level community composition of the paired samples, coloured by year-day, habitat, latitude and extraction method. In a PERMANOVA with all four variables, habitat explains about 3.7% of the variation, sampling date 2.2%, latitude 1.7% and extraction method 1.5%, while about 90% remains unexplained. The test does not take the pairing of the samples into account, so it is descriptive.*
 
-![](figures/insects_4_pcoa.png)
+![](figures/insects_5_pcoa.png)
 
 ### Within-sample diversity (alpha diversity) — Shannon index
 
 *Diversity within each of the 4,380 lysate samples, by habitat.*
 
-![](figures/insects_5_shannon.png)
-
-### Taxonomic composition by habitat
-
-*Mean monthly share of reads of the most common insect orders in each habitat type.*
-
-![](figures/insects_6_barplots.png)
+![](figures/insects_6_shannon.png)
 
 ## Marine plankton
 
@@ -45,20 +45,20 @@ format:
 
 ![](figures/plankton_3_map_2019_2020.png)
 
+### Taxonomic composition by salinity
+
+*Mean monthly share of reads of the most common bacterial classes in five salinity intervals.*
+
+![](figures/plankton_4_barplots.png)
+
 ### Community differences — beta diversity (PCoA)
 
 *Principal Coordinates Analysis (Bray-Curtis dissimilarity) of ASV-level community composition. The first axis holds about a third of the variation and follows salinity closely (correlation 0.96).*
 
-![](figures/plankton_4_pcoa.png)
+![](figures/plankton_5_pcoa.png)
 
 ### Within-sample diversity (alpha diversity) — Shannon index
 
 *Diversity within each sample against salinity.*
 
-![](figures/plankton_5_shannon.png)
-
-### Taxonomic composition by salinity
-
-*Mean monthly share of reads of the most common bacterial classes in five salinity intervals.*
-
-![](figures/plankton_6_barplots.png)
+![](figures/plankton_6_shannon.png)

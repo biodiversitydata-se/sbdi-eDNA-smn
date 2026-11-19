@@ -1,11 +1,11 @@
 ---
-title: "5A. Within-sample diversity (track A: insects)"
+title: "6A. Within-sample diversity (track A: insects)"
 format:
   html:
     toc: false
 ---
 
-*Examine diversity **within** each sample — alpha diversity — using the [Shannon index](https://en.wikipedia.org/wiki/Diversity_index#Shannon_index){target="_blank"}, complementing the between-sample comparison of community composition in [step 4](insects-04-beta.qmd).*
+*Examine diversity **within** each sample — alpha diversity — using the [Shannon index](https://en.wikipedia.org/wiki/Diversity_index#Shannon_index){target="_blank"}, complementing the between-sample comparison of community composition in [step 5](insects-05-beta.qmd).*
 
 ### Choose samples
 
@@ -20,7 +20,7 @@ nrow(alpha_samples)
 
 ### Calculate Shannon diversity per sample
 
-The Shannon index is calculated from the share *p* of each taxon in a sample, as −Σ *p* log *p*. Taxa that are absent do not contribute, so the counts table holds everything we need. As in [step 4](insects-04-beta.qmd), we work with clusters:
+The Shannon index is calculated from the share *p* of each taxon in a sample, as −Σ *p* log *p*. Taxa that are absent do not contribute, so the counts table holds everything we need. As in [step 5](insects-05-beta.qmd), we work with clusters:
 
 ```r
 alpha_ids <- duckdb_tibble(eventID = alpha_samples$eventID, .prudence = "stingy")
@@ -53,8 +53,8 @@ plot_shannon <- function() {
 plot_shannon()
 ```
 
-Shannon diversity is broadly similar across habitats, with overlapping distributions. This doesn't contradict the PCoA in step 4: PCoA reflects *which* taxa are present, while Shannon reflects *how many* and how evenly distributed, so habitats can differ in composition but have similar diversity levels.
+Shannon diversity is broadly similar across habitats, with overlapping distributions. This doesn't contradict the PCoA in step 5: PCoA reflects *which* taxa are present, while Shannon reflects *how many* and how evenly distributed, so habitats can differ in composition but have similar diversity levels.
 
 ---
 
-[← Previous](insects-04-beta.qmd) · [Overview](tutorial.qmd) · [Next →](insects-06-composition.qmd)
+[← Previous](insects-05-beta.qmd) · [Overview](tutorial.qmd)

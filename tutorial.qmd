@@ -19,16 +19,16 @@ This tutorial walks through the main steps for importing and analysing ASV porta
 ### Track A: Insects
 
 3. [Sample mapping](insects-03-map.qmd) — Filter, pair and map samples across Sweden and habitat types
-4. [Community differences (beta diversity)](insects-04-beta.qmd) — Bray-Curtis dissimilarity and PCoA
-5. [Within-sample diversity (alpha diversity)](insects-05-alpha.qmd) — Shannon diversity across habitat types
-6. [Taxonomic composition](insects-06-composition.qmd) — Barplots across habitats and months
+4. [Taxonomic composition](insects-04-composition.qmd) — Barplots across habitats and months
+5. [Community differences (beta diversity)](insects-05-beta.qmd) — Bray-Curtis dissimilarity and PCoA
+6. [Within-sample diversity (alpha diversity)](insects-06-alpha.qmd) — Shannon diversity across habitat types
 
 ### Track B: Marine plankton
 
 3. [Sample mapping](plankton-03-map.qmd) — Map samples and their salinity across the Baltic Sea
-4. [Community differences (beta diversity)](plankton-04-beta.qmd) — Bray-Curtis dissimilarity and PCoA
-5. [Within-sample diversity (alpha diversity)](plankton-05-alpha.qmd) — Shannon diversity along the salinity gradient
-6. [Taxonomic composition](plankton-06-composition.qmd) — Barplots across salinity and months
+4. [Taxonomic composition](plankton-04-composition.qmd) — Barplots across salinity and months
+5. [Community differences (beta diversity)](plankton-05-beta.qmd) — Bray-Curtis dissimilarity and PCoA
+6. [Within-sample diversity (alpha diversity)](plankton-06-alpha.qmd) — Shannon diversity along the salinity gradient
 
 [Get started →](tutorial-01-setup.qmd)
 

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>4A. Community differences (track A: insects) – SMN hands-on workshop 2026</title>
+<title>5A. Community differences (track A: insects) – SMN hands-on workshop 2026</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -155,7 +155,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">4A. Community differences (track A: insects)</h1>
+<h1 class="title">5A. Community differences (track A: insects)</h1>
 </div>
 
 
@@ -173,113 +173,108 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p><em>Analyse differences in community composition between samples — beta diversity — using Bray-Curtis dissimilarity and Principal Coordinates Analysis (PCoA).</em></p>
-<section id="select-samples" class="level3">
-<h3 class="anchored" data-anchor-id="select-samples">Select samples</h3>
-<p>We keep the rows of the counts table that belong to the samples selected in <a href="./insects-03-map.html">step 3</a>. <code>semi_join()</code> filters one table by another, and DuckDB does the work without reading the whole table into R:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>selected <span class="ot">&lt;-</span> <span class="fu">duckdb_tibble</span>(<span class="at">eventID =</span> samples<span class="sc">$</span>eventID, <span class="at">.prudence =</span> <span class="st">"stingy"</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>counts_selected <span class="ot">&lt;-</span> merged<span class="sc">$</span>counts <span class="sc">|&gt;</span> <span class="fu">semi_join</span>(selected, <span class="at">by =</span> <span class="st">"eventID"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
+<p>We use <code>counts_selected</code>, the read counts of the samples selected in <a href="./insects-03-map.html">step 3</a>, from <a href="./insects-04-composition.html">step 4</a>.</p>
 <section id="aggregate-asvs-to-clusters" class="level3">
 <h3 class="anchored" data-anchor-id="aggregate-asvs-to-clusters">Aggregate ASVs to clusters</h3>
 <p>In addition to ASV taxonomy and BOLD BINs, the IBA data also include project-specific cluster assignments in the <code>associatedSequences</code> column. Most pairs of samples share few ASVs, so comparing them at ASV level says rather little. We therefore sum the reads of each cluster in each sample, which is a join followed by a grouped sum.</p>
 <p>The cluster assignments are read from <code>loaded</code>, because <code>merge_long()</code> keeps only the attributes that describe the ASV itself, and <code>associatedSequences</code> is specific to each dataset:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>clusters <span class="ot">&lt;-</span> loaded<span class="sc">$</span>asvs <span class="sc">|&gt;</span> <span class="fu">distinct</span>(taxonID, <span class="at">cluster =</span> associatedSequences)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>cluster_counts <span class="ot">&lt;-</span> counts_selected <span class="sc">|&gt;</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(clusters, <span class="at">by =</span> <span class="st">"taxonID"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">quant =</span> <span class="fu">sum</span>(organismQuantity, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.by =</span> <span class="fu">c</span>(eventID, cluster)) <span class="sc">|&gt;</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(<span class="at">sample =</span> eventID, <span class="at">taxon =</span> cluster, quant)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>clusters <span class="ot">&lt;-</span> loaded<span class="sc">$</span>asvs <span class="sc">|&gt;</span> <span class="fu">distinct</span>(taxonID, <span class="at">cluster =</span> associatedSequences)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>cluster_counts <span class="ot">&lt;-</span> counts_selected <span class="sc">|&gt;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(clusters, <span class="at">by =</span> <span class="st">"taxonID"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">quant =</span> <span class="fu">sum</span>(organismQuantity, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.by =</span> <span class="fu">c</span>(eventID, cluster)) <span class="sc">|&gt;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(<span class="at">sample =</span> eventID, <span class="at">taxon =</span> cluster, quant)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>The new names, <code>sample</code>, <code>taxon</code> and <code>quant</code>, are the ones that <a href="https://github.com/biodiversitydata-se/ecolongr" target="_blank"><code>ecolongr</code></a> expects by default. Nothing has been computed yet: <code>cluster_counts</code> is still a query.</p>
 </section>
 <section id="calculate-bray-curtis-dissimilarity" class="level3">
 <h3 class="anchored" data-anchor-id="calculate-bray-curtis-dissimilarity">Calculate Bray-Curtis dissimilarity</h3>
 <p>Bray-Curtis dissimilarity compares the abundances of taxa in two samples, from 0 for identical communities to 1 for communities with nothing in common. We first turn the counts into relative abundances, so that sequencing depth does not affect the comparison, and then calculate the dissimilarities:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>bray <span class="ot">&lt;-</span> cluster_counts <span class="sc">|&gt;</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">el_decostand</span>(<span class="st">"total"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">el_vegdist</span>(<span class="st">"bray"</span>, <span class="at">samples =</span> samples<span class="sc">$</span>eventID)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>bray <span class="ot">&lt;-</span> cluster_counts <span class="sc">|&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">el_decostand</span>(<span class="st">"total"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">el_vegdist</span>(<span class="st">"bray"</span>, <span class="at">samples =</span> samples<span class="sc">$</span>eventID)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>el_decostand()</code> and <code>el_vegdist()</code> work like <code>decostand()</code> and <code>vegdist()</code> in the <code>vegan</code> package, but on our table, without reading it into R. <code>samples =</code> makes the result follow the order of the rows in <code>samples</code>, which we rely on when plotting. The result is an ordinary <code>dist</code> object, with one value per pair of samples, that <code>vegan</code> and base R can use.</p>
 </section>
 <section id="run-pcoa" class="level3">
 <h3 class="anchored" data-anchor-id="run-pcoa">Run PCoA</h3>
 <p>Principal Coordinates Analysis (PCoA) represents the dissimilarities among samples in a smaller number of dimensions:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pcoa <span class="ot">&lt;-</span> <span class="fu">cmdscale</span>(bray, <span class="at">k =</span> <span class="dv">2</span>, <span class="at">eig =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Share of the positive eigenvalues held by each of the first two axes</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>axis_share <span class="ot">&lt;-</span> pcoa<span class="sc">$</span>eig[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>] <span class="sc">/</span> <span class="fu">sum</span>(pcoa<span class="sc">$</span>eig[pcoa<span class="sc">$</span>eig <span class="sc">&gt;</span> <span class="dv">0</span>])</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> axis_share, <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>pcoa <span class="ot">&lt;-</span> <span class="fu">cmdscale</span>(bray, <span class="at">k =</span> <span class="dv">2</span>, <span class="at">eig =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Share of the positive eigenvalues held by each of the first two axes</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>axis_share <span class="ot">&lt;-</span> pcoa<span class="sc">$</span>eig[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>] <span class="sc">/</span> <span class="fu">sum</span>(pcoa<span class="sc">$</span>eig[pcoa<span class="sc">$</span>eig <span class="sc">&gt;</span> <span class="dv">0</span>])</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> axis_share, <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Unlike the distances, PCoA needs the full matrix of dissimilarities in memory, and its run time grows quickly with the number of samples. That is fine for the samples we use here, but for many thousands of samples you may prefer <code>el_rda()</code>, a PCA that runs directly on the counts table.</p>
 </section>
 <section id="prepare-colour-scales" class="level3">
 <h3 class="anchored" data-anchor-id="prepare-colour-scales">Prepare colour scales</h3>
 <p><code>habitat_cols</code> was already created in <a href="./insects-03-map.html">step 3</a>. We add continuous colour scales for sampling date and latitude, plus colours for the two extraction methods:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>ramp <span class="ot">&lt;-</span> <span class="fu">colorRampPalette</span>(<span class="fu">rev</span>(<span class="fu">c</span>(</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"#D73027"</span>, <span class="st">"#FC8D59"</span>, <span class="st">"#FEE090"</span>, <span class="st">"#FFFFBF"</span>, <span class="st">"#E0F3F8"</span>, <span class="st">"#91BFDB"</span>, <span class="st">"#4575B4"</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>)))</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>yday_range <span class="ot">&lt;-</span> <span class="fu">min</span>(samples<span class="sc">$</span>yday)<span class="sc">:</span><span class="fu">max</span>(samples<span class="sc">$</span>yday)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>color_yday <span class="ot">&lt;-</span> <span class="fu">ramp</span>(<span class="fu">length</span>(yday_range))</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>yday_index <span class="ot">&lt;-</span> samples<span class="sc">$</span>yday <span class="sc">-</span> <span class="fu">min</span>(yday_range) <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>lat_range <span class="ot">&lt;-</span> <span class="fu">floor</span>(<span class="fu">min</span>(samples<span class="sc">$</span>decimalLatitude))<span class="sc">:</span><span class="fu">ceiling</span>(<span class="fu">max</span>(samples<span class="sc">$</span>decimalLatitude))</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>color_lat <span class="ot">&lt;-</span> <span class="fu">ramp</span>(<span class="fu">length</span>(lat_range))</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>lat_index <span class="ot">&lt;-</span> <span class="fu">round</span>(samples<span class="sc">$</span>decimalLatitude) <span class="sc">-</span> <span class="fu">min</span>(lat_range) <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>method_cols <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">IBA_CO1_homogenate_2019_SE =</span> <span class="st">"#e76f51"</span>,</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">IBA_CO1_lysate_2019_SE =</span> <span class="st">"#2a9d8f"</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>method_labs <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">IBA_CO1_homogenate_2019_SE =</span> <span class="st">"homogenate"</span>,</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">IBA_CO1_lysate_2019_SE =</span> <span class="st">"lysate"</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>ramp <span class="ot">&lt;-</span> <span class="fu">colorRampPalette</span>(<span class="fu">rev</span>(<span class="fu">c</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"#D73027"</span>, <span class="st">"#FC8D59"</span>, <span class="st">"#FEE090"</span>, <span class="st">"#FFFFBF"</span>, <span class="st">"#E0F3F8"</span>, <span class="st">"#91BFDB"</span>, <span class="st">"#4575B4"</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>)))</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>yday_range <span class="ot">&lt;-</span> <span class="fu">min</span>(samples<span class="sc">$</span>yday)<span class="sc">:</span><span class="fu">max</span>(samples<span class="sc">$</span>yday)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>color_yday <span class="ot">&lt;-</span> <span class="fu">ramp</span>(<span class="fu">length</span>(yday_range))</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>yday_index <span class="ot">&lt;-</span> samples<span class="sc">$</span>yday <span class="sc">-</span> <span class="fu">min</span>(yday_range) <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>lat_range <span class="ot">&lt;-</span> <span class="fu">floor</span>(<span class="fu">min</span>(samples<span class="sc">$</span>decimalLatitude))<span class="sc">:</span><span class="fu">ceiling</span>(<span class="fu">max</span>(samples<span class="sc">$</span>decimalLatitude))</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>color_lat <span class="ot">&lt;-</span> <span class="fu">ramp</span>(<span class="fu">length</span>(lat_range))</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>lat_index <span class="ot">&lt;-</span> <span class="fu">round</span>(samples<span class="sc">$</span>decimalLatitude) <span class="sc">-</span> <span class="fu">min</span>(lat_range) <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>method_cols <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">IBA_CO1_homogenate_2019_SE =</span> <span class="st">"#e76f51"</span>,</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">IBA_CO1_lysate_2019_SE =</span> <span class="st">"#2a9d8f"</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>method_labs <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">IBA_CO1_homogenate_2019_SE =</span> <span class="st">"homogenate"</span>,</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">IBA_CO1_lysate_2019_SE =</span> <span class="st">"lysate"</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>For the legends, latitude is shown at 2-degree intervals and sampling date by month:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>lat_ticks <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">ceiling</span>(<span class="fu">min</span>(lat_range) <span class="sc">/</span> <span class="dv">2</span>) <span class="sc">*</span> <span class="dv">2</span>, <span class="fu">max</span>(lat_range), <span class="at">by =</span> <span class="dv">2</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>month_ticks  <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">tapply</span>(samples<span class="sc">$</span>yday, samples<span class="sc">$</span>month, min))</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>month_labels <span class="ot">&lt;-</span> month.abb[<span class="fu">as.integer</span>(<span class="fu">names</span>(month_ticks))]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>lat_ticks <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">ceiling</span>(<span class="fu">min</span>(lat_range) <span class="sc">/</span> <span class="dv">2</span>) <span class="sc">*</span> <span class="dv">2</span>, <span class="fu">max</span>(lat_range), <span class="at">by =</span> <span class="dv">2</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>month_ticks  <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">tapply</span>(samples<span class="sc">$</span>yday, samples<span class="sc">$</span>month, min))</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>month_labels <span class="ot">&lt;-</span> month.abb[<span class="fu">as.integer</span>(<span class="fu">names</span>(month_ticks))]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="plot-pcoa-results" class="level3">
 <h3 class="anchored" data-anchor-id="plot-pcoa-results">Plot PCoA results</h3>
 <p>We plot the same PCoA four times, colouring samples by sampling date, habitat, latitude and extraction method:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>plot_pcoa <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  xlab <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"PC1 ("</span>, <span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> axis_share[<span class="dv">1</span>]), <span class="st">"%)"</span>)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  ylab <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"PC2 ("</span>, <span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> axis_share[<span class="dv">2</span>]), <span class="st">"%)"</span>)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> pcoa<span class="sc">$</span>points[, <span class="dv">1</span>]</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> pcoa<span class="sc">$</span>points[, <span class="dv">2</span>]</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">6</span>), <span class="at">xpd =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Panel: colour by year-day</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(x, y, <span class="at">col =</span> <span class="st">"black"</span>, <span class="at">bg =</span> color_yday[yday_index], <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">cex =</span> <span class="dv">1</span>,</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> xlab, <span class="at">ylab =</span> ylab, <span class="at">main =</span> <span class="st">"Colour by year-day"</span>)</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">legend</span>(<span class="st">"bottomleft"</span>, <span class="at">bty =</span> <span class="st">"n"</span>, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">cex =</span> <span class="dv">1</span>, <span class="at">inset =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>),</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>         <span class="at">col =</span> color_yday[month_ticks <span class="sc">-</span> <span class="fu">min</span>(yday_range) <span class="sc">+</span> <span class="dv">1</span>],</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>         <span class="at">legend =</span> month_labels)</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Panel: colour by habitat</span></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(x, y, <span class="at">col =</span> <span class="st">"black"</span>, <span class="at">bg =</span> habitat_cols[samples<span class="sc">$</span>habitat], <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">cex =</span> <span class="dv">1</span>,</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> xlab, <span class="at">ylab =</span> ylab, <span class="at">main =</span> <span class="st">"Colour by habitat"</span>)</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">legend</span>(<span class="st">"bottomleft"</span>, <span class="at">bty =</span> <span class="st">"n"</span>, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">cex =</span> <span class="dv">1</span>, <span class="at">inset =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>),</span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>         <span class="at">col =</span> habitat_cols, <span class="at">legend =</span> <span class="fu">names</span>(habitat_cols))</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Panel: colour by latitude</span></span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(x, y, <span class="at">col =</span> <span class="st">"black"</span>, <span class="at">bg =</span> color_lat[lat_index], <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">cex =</span> <span class="dv">1</span>,</span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> xlab, <span class="at">ylab =</span> ylab, <span class="at">main =</span> <span class="st">"Colour by latitude"</span>)</span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">legend</span>(<span class="st">"bottomleft"</span>, <span class="at">bty =</span> <span class="st">"n"</span>, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">cex =</span> <span class="dv">1</span>, <span class="at">inset =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>),</span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>         <span class="at">col =</span> color_lat[lat_ticks <span class="sc">-</span> <span class="fu">min</span>(lat_range) <span class="sc">+</span> <span class="dv">1</span>],</span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>         <span class="at">legend =</span> lat_ticks)</span>
-<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Panel: colour by extraction method</span></span>
-<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(x, y, <span class="at">col =</span> <span class="st">"black"</span>, <span class="at">bg =</span> method_cols[samples<span class="sc">$</span>method], <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">cex =</span> <span class="dv">1</span>,</span>
-<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> xlab, <span class="at">ylab =</span> ylab, <span class="at">main =</span> <span class="st">"Colour by extraction method"</span>)</span>
-<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">legend</span>(<span class="st">"bottomleft"</span>, <span class="at">bty =</span> <span class="st">"n"</span>, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">cex =</span> <span class="dv">1</span>, <span class="at">inset =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>),</span>
-<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>         <span class="at">col =</span> method_cols, <span class="at">legend =</span> method_labs)</span>
-<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pcoa</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>plot_pcoa <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  xlab <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"PC1 ("</span>, <span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> axis_share[<span class="dv">1</span>]), <span class="st">"%)"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  ylab <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"PC2 ("</span>, <span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> axis_share[<span class="dv">2</span>]), <span class="st">"%)"</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> pcoa<span class="sc">$</span>points[, <span class="dv">1</span>]</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> pcoa<span class="sc">$</span>points[, <span class="dv">2</span>]</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">6</span>), <span class="at">xpd =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Panel: colour by year-day</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(x, y, <span class="at">col =</span> <span class="st">"black"</span>, <span class="at">bg =</span> color_yday[yday_index], <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">cex =</span> <span class="dv">1</span>,</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> xlab, <span class="at">ylab =</span> ylab, <span class="at">main =</span> <span class="st">"Colour by year-day"</span>)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">legend</span>(<span class="st">"bottomleft"</span>, <span class="at">bty =</span> <span class="st">"n"</span>, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">cex =</span> <span class="dv">1</span>, <span class="at">inset =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>         <span class="at">col =</span> color_yday[month_ticks <span class="sc">-</span> <span class="fu">min</span>(yday_range) <span class="sc">+</span> <span class="dv">1</span>],</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>         <span class="at">legend =</span> month_labels)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Panel: colour by habitat</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(x, y, <span class="at">col =</span> <span class="st">"black"</span>, <span class="at">bg =</span> habitat_cols[samples<span class="sc">$</span>habitat], <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">cex =</span> <span class="dv">1</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> xlab, <span class="at">ylab =</span> ylab, <span class="at">main =</span> <span class="st">"Colour by habitat"</span>)</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">legend</span>(<span class="st">"bottomleft"</span>, <span class="at">bty =</span> <span class="st">"n"</span>, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">cex =</span> <span class="dv">1</span>, <span class="at">inset =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>         <span class="at">col =</span> habitat_cols, <span class="at">legend =</span> <span class="fu">names</span>(habitat_cols))</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Panel: colour by latitude</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(x, y, <span class="at">col =</span> <span class="st">"black"</span>, <span class="at">bg =</span> color_lat[lat_index], <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">cex =</span> <span class="dv">1</span>,</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> xlab, <span class="at">ylab =</span> ylab, <span class="at">main =</span> <span class="st">"Colour by latitude"</span>)</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">legend</span>(<span class="st">"bottomleft"</span>, <span class="at">bty =</span> <span class="st">"n"</span>, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">cex =</span> <span class="dv">1</span>, <span class="at">inset =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>         <span class="at">col =</span> color_lat[lat_ticks <span class="sc">-</span> <span class="fu">min</span>(lat_range) <span class="sc">+</span> <span class="dv">1</span>],</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>         <span class="at">legend =</span> lat_ticks)</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Panel: colour by extraction method</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(x, y, <span class="at">col =</span> <span class="st">"black"</span>, <span class="at">bg =</span> method_cols[samples<span class="sc">$</span>method], <span class="at">pch =</span> <span class="dv">21</span>, <span class="at">cex =</span> <span class="dv">1</span>,</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> xlab, <span class="at">ylab =</span> ylab, <span class="at">main =</span> <span class="st">"Colour by extraction method"</span>)</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">legend</span>(<span class="st">"bottomleft"</span>, <span class="at">bty =</span> <span class="st">"n"</span>, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">cex =</span> <span class="dv">1</span>, <span class="at">inset =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>         <span class="at">col =</span> method_cols, <span class="at">legend =</span> method_labs)</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pcoa</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>The first two PCoA axes explain only about 10% of the variation together, so the plots capture only part of the community differences. Even so, they suggest effects of sampling date, latitude and habitat: northern samples gather in one direction, forest samples spread out along the first axis, and spring samples form a tail of their own. Homogenate and lysate samples overlap in most of the plot, but they are not fully mixed. The spring tail, for example, consists mainly of homogenate samples.</p>
 <hr>
-<p><a href="./insects-03-map.html">← Previous</a> · <a href="./tutorial.html">Overview</a> · <a href="./insects-05-alpha.html">Next →</a></p>
+<p><a href="./insects-04-composition.html">← Previous</a> · <a href="./tutorial.html">Overview</a> · <a href="./insects-06-alpha.html">Next →</a></p>
 
 
 </section>

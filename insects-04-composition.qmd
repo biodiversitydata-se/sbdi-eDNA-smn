@@ -1,5 +1,5 @@
 ---
-title: "6A. Taxonomic composition (track A: insects)"
+title: "4A. Taxonomic composition (track A: insects)"
 format:
   html:
     toc: false
@@ -7,9 +7,18 @@ format:
 
 *Summarise taxonomic composition across habitats and months using stacked barplots.*
 
+### Select samples
+
+We keep the rows of the counts table that belong to the samples selected in [step 3](insects-03-map.qmd). `semi_join()` filters one table by another, and DuckDB does the work without reading the whole table into R:
+
+```r
+selected <- duckdb_tibble(eventID = samples$eventID, .prudence = "stingy")
+counts_selected <- merged$counts |> semi_join(selected, by = "eventID")
+```
+
 ### Sum reads by taxonomy
 
-`sum_clades_long()` from [step 2](tutorial-02-prep.qmd) can be limited to one taxonomic rank and to the samples selected in [step 3](insects-03-map.qmd). The result is small enough to bring into R. We then add the habitat and month of each sample:
+`sum_clades_long()` from [step 2](tutorial-02-prep.qmd) can be limited to one taxonomic rank and to these samples. The result is small enough to bring into R. We then add the habitat and month of each sample:
 
 ```r
 get_composition <- function(rank) {
@@ -74,4 +83,4 @@ Flies (Diptera) dominate the reads in all habitats, especially in the alpine sam
 
 ---
 
-[← Previous](insects-05-alpha.qmd) · [Overview](tutorial.qmd)
+[← Previous](insects-03-map.qmd) · [Overview](tutorial.qmd) · [Next →](insects-05-beta.qmd)

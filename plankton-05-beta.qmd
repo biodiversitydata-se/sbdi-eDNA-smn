@@ -1,5 +1,5 @@
 ---
-title: "4B. Community differences (track B: marine plankton)"
+title: "5B. Community differences (track B: marine plankton)"
 format:
   html:
     toc: false
@@ -77,4 +77,4 @@ The first axis explains about a third of the variation and follows salinity: the
 
 ---
 
-[← Previous](plankton-03-map.qmd) · [Overview](tutorial.qmd) · [Next →](plankton-05-alpha.qmd)
+[← Previous](plankton-04-composition.qmd) · [Overview](tutorial.qmd) · [Next →](plankton-06-alpha.qmd)

@@ -138,4 +138,4 @@ This figure has several panels and can look cramped on a laptop screen. Click **
 
 ---
 
-[← Previous](tutorial-02-prep.qmd) · [Overview](tutorial.qmd) · [Next →](insects-04-beta.qmd)
+[← Previous](tutorial-02-prep.qmd) · [Overview](tutorial.qmd) · [Next →](insects-04-composition.qmd)
