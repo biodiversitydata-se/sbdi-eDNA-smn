@@ -62,9 +62,9 @@ library(lubridate)
 library(ggplot2)
 ```
 
-*Running locally? Follow the installation instructions below before continuing.*
-
 If the packages load without errors and your data files are listed, you are ready for the [next step](tutorial-02-prep.qmd).
+
+*Running locally? Follow the installation instructions below before continuing.*
 
 ::: {.callout-note collapse="true"}
 ## Running the tutorial locally (optional)
