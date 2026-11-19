@@ -90,14 +90,14 @@ install.packages(c(
 ))
 
 remotes::install_github("biodiversitydata-se/asvoccur@v1.3.0")
-remotes::install_github("biodiversitydata-se/ecolongr@0.2.1")
+remotes::install_github("biodiversitydata-se/ecolongr@0.2.2")
 ```
 
 Load the packages using the code above. Check the versions:
 
 ```r
 packageVersion("asvoccur")  # 1.3.0
-packageVersion("ecolongr")  # 0.2.1
+packageVersion("ecolongr")  # 0.2.2
 ```
 
 ### Download example data
