@@ -9,9 +9,9 @@ format:
 
 ### Subsample to a common depth
 
-Samples with more reads may reveal more rare taxa, affecting diversity estimates. We therefore randomly subsample each to the same number of reads (*rarefaction*).
+Samples with more reads may reveal more rare taxa, affecting diversity estimates. We therefore randomly subsample each to the same number of reads (*rarefaction*). We reuse `asv_counts` from [step 5](plankton-05-beta.qmd).
 
-First, inspect the sequencing depth of the samples, using `asv_counts` from [step 5](plankton-05-beta.qmd):
+First, inspect the sequencing depth of the samples:
 
 ```r
 depth <- asv_counts |>

@@ -189,8 +189,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><em>Examine diversity <strong>within</strong> each sample — alpha diversity — using the <a href="https://en.wikipedia.org/wiki/Diversity_index#Shannon_index" target="_blank">Shannon index</a>, and how it varies with salinity.</em></p>
 <section id="subsample-to-a-common-depth" class="level3">
 <h3 class="anchored" data-anchor-id="subsample-to-a-common-depth">Subsample to a common depth</h3>
-<p>Samples with more reads may reveal more rare taxa, affecting diversity estimates. We therefore randomly subsample each to the same number of reads (<em>rarefaction</em>).</p>
-<p>First, inspect the sequencing depth of the samples, using <code>asv_counts</code> from <a href="./plankton-05-beta.html">step 5</a>:</p>
+<p>Samples with more reads may reveal more rare taxa, affecting diversity estimates. We therefore randomly subsample each to the same number of reads (<em>rarefaction</em>). We reuse <code>asv_counts</code> from <a href="./plankton-05-beta.html">step 5</a>.</p>
+<p>First, inspect the sequencing depth of the samples:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>depth <span class="ot">&lt;-</span> asv_counts <span class="sc">|&gt;</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">depth =</span> <span class="fu">sum</span>(quant, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.by =</span> sample) <span class="sc">|&gt;</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>()</span>
