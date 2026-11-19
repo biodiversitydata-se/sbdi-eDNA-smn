@@ -21,7 +21,9 @@ Hu, Y.O.O., Karlson, B., Charvet, S., Andersson, A.F. (2016). [Diversity of pico
 Latz, M.A.C., Andersson, A., Brugel, S., et al. (2024). [A comprehensive dataset on spatiotemporal variation of microbial plankton communities in the Baltic Sea](https://doi.org/10.1038/s41597-023-02825-5). Scientific Data, 11:18.
 
 ## Building the site
-The figures and the scripts `tutorial_insects.R` and `tutorial_plankton.R` are made by running the tutorial code on the real data. The data are not in this repository, so you first download the four zip files from the ASV portal and put them in one folder per track.
+`tutorial_insects.R` and `tutorial_plankton.R` hold all the R code of each track in one file, in the same order as on the website. They are used to run or test a whole track at once, for example on the workshop machine. They are made from the tutorial pages, so do not edit them by hand.
+
+The figures are made by running these scripts on the real data. The data are not in this repository, so you first download the four zip files from the ASV portal and put them in one folder per track.
 
 You also need R with the packages from step 1 of the tutorial, and [Quarto](https://quarto.org/) (included in RStudio).
 
