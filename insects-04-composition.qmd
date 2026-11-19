@@ -77,7 +77,7 @@ Plot the eight most abundant orders:
 plot_barplots(rank = "order", top_x = 8)
 ```
 
-Each bar shows the mean relative abundance of these orders among samples from a given habitat and month. Flies (Diptera) dominate the reads, especially in alpine habitats and early in the season.
+Each bar shows the mean relative abundance of these orders among samples from a given habitat and month. Flies (Diptera) dominate the reads, especially in alpine habitats and early in the season. Bars may not add up to 100% because only the eight most abundant orders are shown.
 
 These are **shares of sequencing reads**, not estimates of the number of individuals or biomass. Empty months indicate that no selected samples were available in that habitat.
 
