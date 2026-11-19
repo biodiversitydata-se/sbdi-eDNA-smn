@@ -1,0 +1,59 @@
+---
+title: "Troubleshooting"
+format:
+  html:
+    toc: true
+---
+
+*Common problems during the tutorial and how to solve them.*
+
+### `object '...' not found`
+
+Each step uses objects created in earlier steps, such as `merged`, `samples` or `clusters`. If R was restarted, or a step was skipped, these objects are missing. Run the code of the earlier steps again, in order, starting with loading the packages in [step 1](tutorial-01-setup.qmd).
+
+### `could not find function "..."`
+
+A package is not loaded. Run the `library()` lines in [step 1](tutorial-01-setup.qmd) again.
+
+### `Materialization is disabled, use collect() or as_tibble() to materialize`
+
+You tried to read a whole lazy table into R, for example with `nrow()`, `View()` or `$`. This is blocked on purpose, so that large tables stay on disk. Summarise or select rows first, and end the query with `as.data.frame()`:
+
+```r
+merged$counts |> count() |> as.data.frame()
+merged$counts |> head(10) |> as.data.frame()
+```
+
+See [Work with lazy tables](tutorial-02-prep.qmd) in step 2.
+
+### `This operation cannot be carried out by DuckDB`
+
+The query uses a function that DuckDB cannot translate, for example from `stringr`. The last line of the message names the function. Use a basic alternative, or filter and summarise first and do the rest on the small result after `as.data.frame()`.
+
+### RStudio's Environment pane only shows `counts`
+
+The pane cannot display lazy tables, so it stops after the first element of the list. The other elements are still there:
+
+```r
+names(merged)
+```
+
+### `figure margins too large`
+
+The Plots pane is too small for figures with many panels. Make the pane larger, or click **Zoom** and run the plotting command again.
+
+### Warning: `6 samples with a total below depth were dropped`
+
+This is expected in step 6 of the plankton track. These samples have fewer than 10,000 reads and get no Shannon value.
+
+### Warning: `Inconsistent ASV taxonomy detected`
+
+Some ASVs have different taxonomy in different datasets, usually because the datasets were downloaded before and after a re-annotation. The affected ASVs are listed in `merged$iasvs`. This should not happen with the workshop data.
+
+### The session is slow or freezes
+
+The workshop machine is shared. Avoid creating large objects, and do not read whole tables into R. If RStudio stops responding, use **Session → Restart R** and run the earlier steps again.
+
+---
+
+[Overview](tutorial.qmd)

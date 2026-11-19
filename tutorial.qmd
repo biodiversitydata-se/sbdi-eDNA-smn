@@ -30,4 +30,6 @@ This tutorial walks through the main steps for importing and analysing ASV porta
 5. [Community differences (beta diversity)](plankton-05-beta.qmd) — Bray-Curtis dissimilarity and PCoA
 6. [Within-sample diversity (alpha diversity)](plankton-06-alpha.qmd) — Shannon diversity along the salinity gradient
 
+If something does not work, see [Troubleshooting](troubleshooting.qmd).
+
 [Get started →](tutorial-01-setup.qmd)
