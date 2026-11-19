@@ -24,7 +24,7 @@ table(events$dataset)
 
 ### Check primers
 
-Different primers may detect different parts of the microbial community. Before comparing ASVs across datasets, we check that the same primers were used:
+Different primers may amplify different parts of the microbial community. We therefore check that both datasets used the same primers before comparing ASVs:
 
 ```r
 unique(events[c("dataset", "pcr_primer_name_forward", "pcr_primer_name_reverse")])
