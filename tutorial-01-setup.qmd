@@ -5,33 +5,27 @@ format:
     toc: false
 ---
 
-*Set up the R environment used in the tutorial, either via the workshop cloud environment or locally on your laptop.*
+*Set up RStudio and check that the required packages and data are available.*
 
-## Option A (recommended): Workshop RStudio environment
+## Workshop RStudio (recommended)
 
-A virtual machine running RStudio Server in PDC Cloud is available during the workshop. You will get a link, a username and a password.
+During the workshop, we use RStudio Server on a virtual machine in PDC Cloud. You will receive a link, username and password.
 
-Resources are shared, so **avoid creating additional large objects**. The machine shuts down after the workshop, so save your work as an R script and download it via the Files pane (More → Export) before you leave.
+All packages and datasets are already prepared, so no installation or downloading is needed.
 
-### Check required packages
+::: {.callout-note}
+The machine is shared and will shut down after the workshop.
 
-All required packages are pre-installed in the workshop environment. Load them and confirm that they are available:
+- Avoid creating unnecessary large objects.
+- Save your code as an R script and download it before you leave (Files → More → Export).
+:::
 
-```r
-library(asvoccur)
-library(duckplyr)
-library(ecolongr)
-library(vegan)
-library(rworldmap)
-library(lubridate)
-library(ggplot2)
-```
+### Choose your track
 
-### Check access to example data {#check-access}
-
-For this tutorial, ASV portal data is pre-downloaded and available on the virtual machine. It has also been prepared once for everyone, in shared folders called *stores*. Choose your track and set the paths:
+Set the paths to the example data and check that the ZIP files are available.
 
 ::: {.panel-tabset}
+
 ## Track A: Insects
 
 ```r
@@ -40,7 +34,7 @@ store_path <- "/srv/course-store/insects"
 list.files(data_path)
 ```
 
-If two (IBA_CO1) zip files are listed, you are ready to [proceed](tutorial-02-prep.qmd).
+You should see two ZIP files (IBA_CO1).
 
 ## Track B: Marine plankton
 
@@ -50,47 +44,15 @@ store_path <- "/srv/course-store/plankton"
 list.files(data_path)
 ```
 
-If two (16S) zip files are listed, you are ready to [proceed](tutorial-02-prep.qmd).
+You should see two ZIP files (16S).
+
 :::
 
-## Option B (fallback): Run RStudio locally on your laptop
+## Check required packages
 
-You will need to install:
-
-1. [R](https://cran.r-project.org/){target="_blank"}<br>
-2. [RStudio](https://posit.co/download/rstudio-desktop/){target="_blank"}
-3. tools for compiling R packages, because `ecolongr` contains C++ code:
-   - **macOS:** run `xcode-select --install` in the Terminal
-   - **Windows:** [Rtools](https://cran.r-project.org/bin/windows/Rtools/){target="_blank"}, in the version that matches your R
-   - **Linux:** usually the `build-essential` and `r-base-dev` packages
-4. the following R packages:
-   - `remotes`
-   - `asvoccur`
-   - `duckplyr`
-   - `ecolongr`
-   - `vegan`
-   - `rworldmap`
-   - `lubridate`
-   - `ggplot2`
-
-To install and load the required R packages:
+Load the packages used in the tutorial:
 
 ```r
-# Install from CRAN
-install.packages(c(
-  "remotes",
-  "duckplyr",
-  "vegan",
-  "rworldmap",
-  "lubridate",
-  "ggplot2"
-))
-
-# Install from GitHub
-remotes::install_github("biodiversitydata-se/asvoccur@v1.3.0")
-remotes::install_github("biodiversitydata-se/ecolongr@0.2.1")
-
-# Load
 library(asvoccur)
 library(duckplyr)
 library(ecolongr)
@@ -98,43 +60,82 @@ library(vegan)
 library(rworldmap)
 library(lubridate)
 library(ggplot2)
-
-# Confirm versions
-packageVersion("asvoccur")  # Should say 1.3.0
-packageVersion("ecolongr")  # Should say 0.2.1
 ```
 
-### Download example data from the ASV portal
+*Running locally? Follow the installation instructions below before continuing.*
 
-In this option, example data is downloaded directly from the ASV portal.
+If the packages load without errors and your data files are listed, you are ready for the [next step](tutorial-02-prep.qmd).
 
-1. Go to the [ASV portal start page](https://asv-portal.biodiversitydata.se/index){target="_blank"}.
+## Running the tutorial on your own computer
 
-   Click **DOWNLOAD**. If you are not already logged in, you will be redirected to the login page.
+::: {.callout-tip collapse="true"}
+## Local installation (optional)
 
-2. If you do not already have an account, either:
-   - sign in with a Google or GitHub account, or
-   - create a new SBDI account.
+You can also run the tutorial locally, but you will need to install R, the required packages and download the example data.
 
-3. On the **Download** page, under **Download link**, download the two datasets of the track you have chosen:
+### Install R and packages
 
-   - **Track A, insects:** IBA_CO1_homogenate_2019_SE and IBA_CO1_lysate_2019_SE
-   - **Track B, marine plankton:** KTH-2013-Baltic-16S and PRJEB55296-16S
+Install [R](https://cran.r-project.org/){target="_blank"} and [RStudio](https://posit.co/download/rstudio-desktop/){target="_blank"}.
 
-4. Place the two zip files in a folder of their own, e.g.:
+You also need tools for compiling R packages because `ecolongr` contains C++ code:
 
-       course-data/
-       └── insects/
-           ├── IBA_CO1_homogenate_2019_SE.zip
-           └── IBA_CO1_lysate_2019_SE.zip
+- **macOS:** Run `xcode-select --install` in Terminal.
+- **Windows:** Install [Rtools](https://cran.r-project.org/bin/windows/Rtools/){target="_blank"} for your R version.
+- **Linux:** Install `build-essential` and `r-base-dev` (or equivalent).
 
-5. Set the paths in R and confirm access. The store is a new folder that is created in the next step:
+Install the packages in R:
+
+```r
+install.packages(c(
+  "remotes", "duckplyr", "vegan",
+  "rworldmap", "lubridate", "ggplot2"
+))
+
+remotes::install_github("biodiversitydata-se/asvoccur@v1.3.0")
+remotes::install_github("biodiversitydata-se/ecolongr@0.2.1")
+```
+
+Load the packages using the code above. Check the versions:
+
+```r
+packageVersion("asvoccur")  # 1.3.0
+packageVersion("ecolongr")  # 0.2.1
+```
+
+### Download example data
+
+1. Open the [ASV portal](https://asv-portal.biodiversitydata.se/index){target="_blank"} and click **DOWNLOAD**.
+2. Sign in with Google or GitHub, or create an SBDI account.
+3. Download the two datasets for your track:
+
+   - **Insects:** `IBA_CO1_homogenate_2019_SE` and `IBA_CO1_lysate_2019_SE`
+   - **Marine plankton:** `KTH-2013-Baltic-16S` and `PRJEB55296-16S`
+
+4. Place the two ZIP files in a folder for your track. Do not unzip them.
+
+For example:
+
+```text
+course-data/
+└── insects/
+    ├── IBA_CO1_homogenate_2019_SE.zip
+    └── IBA_CO1_lysate_2019_SE.zip
+```
+
+### Set data paths
+
+Set the paths to your downloaded ZIP files and to a folder where processed data will be stored:
+
 ```r
 data_path  <- "local/path/to/course-data/insects"
 store_path <- "local/path/to/course-store/insects"
 list.files(data_path)
 ```
 
-If the expected zip file(s) are listed, you are ready to [proceed](tutorial-02-prep.qmd).
+Adjust the paths for your computer and chosen track. The store folder will be created during data preparation.
+
+If the two ZIP files are listed, you are ready to [continue](tutorial-02-prep.qmd).
+
+:::
 
 [Overview](tutorial.qmd) · [Next →](tutorial-02-prep.qmd)

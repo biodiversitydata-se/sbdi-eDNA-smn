@@ -186,126 +186,132 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p><em>Set up the R environment used in the tutorial, either via the workshop cloud environment or locally on your laptop.</em></p>
-<section id="option-a-recommended-workshop-rstudio-environment" class="level2">
-<h2 class="anchored" data-anchor-id="option-a-recommended-workshop-rstudio-environment">Option A (recommended): Workshop RStudio environment</h2>
-<p>A virtual machine running RStudio Server in PDC Cloud is available during the workshop. You will get a link, a username and a password.</p>
-<p>Resources are shared, so <strong>avoid creating additional large objects</strong>. The machine shuts down after the workshop, so save your work as an R script and download it via the Files pane (More → Export) before you leave.</p>
-<section id="check-required-packages" class="level3">
-<h3 class="anchored" data-anchor-id="check-required-packages">Check required packages</h3>
-<p>All required packages are pre-installed in the workshop environment. Load them and confirm that they are available:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(asvoccur)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckplyr)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ecolongr)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(vegan)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rworldmap)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="check-access" class="level3">
-<h3 class="anchored" data-anchor-id="check-access">Check access to example data</h3>
-<p>For this tutorial, ASV portal data is pre-downloaded and available on the virtual machine. It has also been prepared once for everyone, in shared folders called <em>stores</em>. Choose your track and set the paths:</p>
+<p><em>Set up RStudio and check that the required packages and data are available.</em></p>
+<section id="workshop-rstudio-recommended" class="level2">
+<h2 class="anchored" data-anchor-id="workshop-rstudio-recommended">Workshop RStudio (recommended)</h2>
+<p>During the workshop, we use RStudio Server on a virtual machine in PDC Cloud. You will receive a link, username and password.</p>
+<p>All packages and datasets are already prepared, so no installation or downloading is needed.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The machine is shared and will shut down after the workshop.</p>
+<ul>
+<li>Avoid creating unnecessary large objects.</li>
+<li>Save your code as an R script and download it before you leave (Files → More → Export).</li>
+</ul>
+</div>
+</div>
+<section id="choose-your-track" class="level3">
+<h3 class="anchored" data-anchor-id="choose-your-track">Choose your track</h3>
+<p>Set the paths to the example data and check that the ZIP files are available.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Track A: Insects</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Track B: Marine plankton</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>data_path  <span class="ot">&lt;-</span> <span class="st">"/srv/course-data/insects"</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>store_path <span class="ot">&lt;-</span> <span class="st">"/srv/course-store/insects"</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>(data_path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>If two (IBA_CO1) zip files are listed, you are ready to <a href="./tutorial-02-prep.html">proceed</a>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>data_path  <span class="ot">&lt;-</span> <span class="st">"/srv/course-data/insects"</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>store_path <span class="ot">&lt;-</span> <span class="st">"/srv/course-store/insects"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>(data_path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>You should see two ZIP files (IBA_CO1).</p>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>data_path  <span class="ot">&lt;-</span> <span class="st">"/srv/course-data/plankton"</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>store_path <span class="ot">&lt;-</span> <span class="st">"/srv/course-store/plankton"</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>(data_path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>If two (16S) zip files are listed, you are ready to <a href="./tutorial-02-prep.html">proceed</a>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>data_path  <span class="ot">&lt;-</span> <span class="st">"/srv/course-data/plankton"</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>store_path <span class="ot">&lt;-</span> <span class="st">"/srv/course-store/plankton"</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>(data_path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>You should see two ZIP files (16S).</p>
 </div>
 </div>
 </div>
 </section>
 </section>
-<section id="option-b-fallback-run-rstudio-locally-on-your-laptop" class="level2">
-<h2 class="anchored" data-anchor-id="option-b-fallback-run-rstudio-locally-on-your-laptop">Option B (fallback): Run RStudio locally on your laptop</h2>
-<p>You will need to install:</p>
+<section id="check-required-packages" class="level2">
+<h2 class="anchored" data-anchor-id="check-required-packages">Check required packages</h2>
+<p>Load the packages used in the tutorial:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(asvoccur)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckplyr)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ecolongr)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(vegan)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rworldmap)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Running locally? Follow the installation instructions below before continuing.</em></p>
+<p>If the packages load without errors and your data files are listed, you are ready for the <a href="./tutorial-02-prep.html">next step</a>.</p>
+</section>
+<section id="running-the-tutorial-on-your-own-computer" class="level2">
+<h2 class="anchored" data-anchor-id="running-the-tutorial-on-your-own-computer">Running the tutorial on your own computer</h2>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Local installation (optional)
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>You can also run the tutorial locally, but you will need to install R, the required packages and download the example data.</p>
+<section id="install-r-and-packages" class="level3">
+<h3 class="anchored" data-anchor-id="install-r-and-packages">Install R and packages</h3>
+<p>Install <a href="https://cran.r-project.org/" target="_blank">R</a> and <a href="https://posit.co/download/rstudio-desktop/" target="_blank">RStudio</a>.</p>
+<p>You also need tools for compiling R packages because <code>ecolongr</code> contains C++ code:</p>
+<ul>
+<li><strong>macOS:</strong> Run <code>xcode-select --install</code> in Terminal.</li>
+<li><strong>Windows:</strong> Install <a href="https://cran.r-project.org/bin/windows/Rtools/" target="_blank">Rtools</a> for your R version.</li>
+<li><strong>Linux:</strong> Install <code>build-essential</code> and <code>r-base-dev</code> (or equivalent).</li>
+</ul>
+<p>Install the packages in R:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"remotes"</span>, <span class="st">"duckplyr"</span>, <span class="st">"vegan"</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rworldmap"</span>, <span class="st">"lubridate"</span>, <span class="st">"ggplot2"</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"biodiversitydata-se/asvoccur@v1.3.0"</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"biodiversitydata-se/ecolongr@0.2.1"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Load the packages using the code above. Check the versions:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">packageVersion</span>(<span class="st">"asvoccur"</span>)  <span class="co"># 1.3.0</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">packageVersion</span>(<span class="st">"ecolongr"</span>)  <span class="co"># 0.2.1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="download-example-data" class="level3">
+<h3 class="anchored" data-anchor-id="download-example-data">Download example data</h3>
 <ol type="1">
-<li><a href="https://cran.r-project.org/" target="_blank">R</a><br></li>
-<li><a href="https://posit.co/download/rstudio-desktop/" target="_blank">RStudio</a></li>
-<li>tools for compiling R packages, because <code>ecolongr</code> contains C++ code:
+<li><p>Open the <a href="https://asv-portal.biodiversitydata.se/index" target="_blank">ASV portal</a> and click <strong>DOWNLOAD</strong>.</p></li>
+<li><p>Sign in with Google or GitHub, or create an SBDI account.</p></li>
+<li><p>Download the two datasets for your track:</p>
 <ul>
-<li><strong>macOS:</strong> run <code>xcode-select --install</code> in the Terminal</li>
-<li><strong>Windows:</strong> <a href="https://cran.r-project.org/bin/windows/Rtools/" target="_blank">Rtools</a>, in the version that matches your R</li>
-<li><strong>Linux:</strong> usually the <code>build-essential</code> and <code>r-base-dev</code> packages</li>
+<li><strong>Insects:</strong> <code>IBA_CO1_homogenate_2019_SE</code> and <code>IBA_CO1_lysate_2019_SE</code></li>
+<li><strong>Marine plankton:</strong> <code>KTH-2013-Baltic-16S</code> and <code>PRJEB55296-16S</code></li>
 </ul></li>
-<li>the following R packages:
-<ul>
-<li><code>remotes</code></li>
-<li><code>asvoccur</code></li>
-<li><code>duckplyr</code></li>
-<li><code>ecolongr</code></li>
-<li><code>vegan</code></li>
-<li><code>rworldmap</code></li>
-<li><code>lubridate</code></li>
-<li><code>ggplot2</code></li>
-</ul></li>
+<li><p>Place the two ZIP files in a folder for your track. Do not unzip them.</p></li>
 </ol>
-<p>To install and load the required R packages:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Install from CRAN</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"remotes"</span>,</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"duckplyr"</span>,</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"vegan"</span>,</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"rworldmap"</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"lubridate"</span>,</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ggplot2"</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>))</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Install from GitHub</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"biodiversitydata-se/asvoccur@v1.3.0"</span>)</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"biodiversitydata-se/ecolongr@0.2.1"</span>)</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Load</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(asvoccur)</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(duckplyr)</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ecolongr)</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(vegan)</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rworldmap)</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Confirm versions</span></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="fu">packageVersion</span>(<span class="st">"asvoccur"</span>)  <span class="co"># Should say 1.3.0</span></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="fu">packageVersion</span>(<span class="st">"ecolongr"</span>)  <span class="co"># Should say 0.2.1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<section id="download-example-data-from-the-asv-portal" class="level3">
-<h3 class="anchored" data-anchor-id="download-example-data-from-the-asv-portal">Download example data from the ASV portal</h3>
-<p>In this option, example data is downloaded directly from the ASV portal.</p>
-<ol type="1">
-<li><p>Go to the <a href="https://asv-portal.biodiversitydata.se/index" target="_blank">ASV portal start page</a>.</p>
-<p>Click <strong>DOWNLOAD</strong>. If you are not already logged in, you will be redirected to the login page.</p></li>
-<li><p>If you do not already have an account, either:</p>
-<ul>
-<li>sign in with a Google or GitHub account, or</li>
-<li>create a new SBDI account.</li>
-</ul></li>
-<li><p>On the <strong>Download</strong> page, under <strong>Download link</strong>, download the two datasets of the track you have chosen:</p>
-<ul>
-<li><strong>Track A, insects:</strong> IBA_CO1_homogenate_2019_SE and IBA_CO1_lysate_2019_SE</li>
-<li><strong>Track B, marine plankton:</strong> KTH-2013-Baltic-16S and PRJEB55296-16S</li>
-</ul></li>
-<li><p>Place the two zip files in a folder of their own, e.g.:</p>
-<pre><code>course-data/
+<p>For example:</p>
+<pre class="text"><code>course-data/
 └── insects/
     ├── IBA_CO1_homogenate_2019_SE.zip
-    └── IBA_CO1_lysate_2019_SE.zip</code></pre></li>
-<li><p>Set the paths in R and confirm access. The store is a new folder that is created in the next step:</p></li>
-</ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>data_path  <span class="ot">&lt;-</span> <span class="st">"local/path/to/course-data/insects"</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>store_path <span class="ot">&lt;-</span> <span class="st">"local/path/to/course-store/insects"</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>(data_path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>If the expected zip file(s) are listed, you are ready to <a href="./tutorial-02-prep.html">proceed</a>.</p>
+    └── IBA_CO1_lysate_2019_SE.zip</code></pre>
+</section>
+<section id="set-data-paths" class="level3">
+<h3 class="anchored" data-anchor-id="set-data-paths">Set data paths</h3>
+<p>Set the paths to your downloaded ZIP files and to a folder where processed data will be stored:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>data_path  <span class="ot">&lt;-</span> <span class="st">"local/path/to/course-data/insects"</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>store_path <span class="ot">&lt;-</span> <span class="st">"local/path/to/course-store/insects"</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>(data_path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Adjust the paths for your computer and chosen track. The store folder will be created during data preparation.</p>
+<p>If the two ZIP files are listed, you are ready to <a href="./tutorial-02-prep.html">continue</a>.</p>
+</section>
+</div>
+</div>
+</div>
 <p><a href="./tutorial.html">Overview</a> · <a href="./tutorial-02-prep.html">Next →</a></p>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
