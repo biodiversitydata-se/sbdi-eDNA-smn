@@ -49,19 +49,21 @@ Load the data from the `data_path` folder defined in the [previous section](tuto
 loaded <- load_long(data_path, store = store_path)
 ```
 
-`load_long()` converts the data to Parquet files on the first run and reuses them later. These files are already prepared on the workshop machine. `loaded` contains one table per data type, covering all datasets.
+`load_long()` creates Parquet files on the first run and reuses them later. These files are already prepared on the workshop machine. `loaded` contains one table per data type, covering all datasets.
 
 ---
 
 ### Merge the datasets
 
-Merge the datasets for joint analysis:
+Combine the datasets for joint analysis:
 
 ```r
 merged <- merge_long(loaded)
 ```
 
-`merge_long()` checks for duplicate events (error) and conflicting ASV taxonomy between datasets (warning). The resulting `merged` list contains:
+`merge_long()` checks for duplicate events (error) and conflicting ASV taxonomy (warning). ASVs with identical sequences are identified across datasets using SBDI ASV IDs.
+
+The resulting `merged` list contains:
 
 - `counts`: ASV read counts
 - `asvs`: ASV sequences and taxonomy, one row per ASV
@@ -77,7 +79,7 @@ names(loaded)
 names(merged)
 ```
 
-Instead of `iasvs`, `loaded` contains `store`, the path to the Parquet files.
+`loaded` contains `store` (the Parquet file location) instead of `iasvs`.
 
 For function documentation:
 
@@ -90,17 +92,21 @@ For function documentation:
 
 ### Work with lazy tables
 
-The large tables (`counts`, `asvs` and `emof`) are *lazy*: DuckDB reads data from the Parquet files only when needed. The smaller tables (`events`, `datasets` and `iasvs`) are ordinary R data frames.
+The large tables (`counts`, `asvs` and `emof`) are *lazy*: their contents are not loaded into R until needed. The smaller tables (`events`, `datasets` and `iasvs`) are ordinary R data frames.
 
 We use familiar `dplyr` commands through the [`duckplyr`](https://duckplyr.tidyverse.org/){target="_blank"} package. For example, count the rows, samples and ASVs:
 
 ```r
 merged$counts |>
-  summarise(rows = n(), samples = n_distinct(eventID), asvs = n_distinct(taxonID)) |>
+  summarise(
+    rows = n(),
+    samples = n_distinct(eventID),
+    asvs = n_distinct(taxonID)
+  ) |>
   as.data.frame()
 ```
 
-`as.data.frame()` executes the query and brings the result into R. By summarising first, we only retrieve the small result rather than the entire table.
+`as.data.frame()` tells DuckDB to run the query and returns the result as an ordinary R data frame. By summarising first, we avoid loading the entire table.
 
 Inspect a few rows:
 
@@ -115,10 +121,6 @@ See which contextual measurements are available:
 merged$emof |> distinct(measurementType, measurementUnit) |> as.data.frame()
 ```
 
-ASVs with identical sequences are combined across datasets using SBDI ASV IDs (MD5 hashes of the sequences).
-
-If a query cannot be translated to DuckDB, it gives an error rather than silently loading the entire table into R.
-
 ---
 
 ### Aggregate counts by taxonomy
@@ -129,7 +131,7 @@ Sum ASV read counts at different taxonomic levels:
 clades <- sum_clades_long(merged$counts, merged$asvs)
 ```
 
-The result has one row per clade and sample, at levels from kingdom (or domain) to species, including `otu` if available:
+The result has one row per clade and sample, at levels from kingdom (or domain) to species, including `otu` if available.
 
 - `raw`: read counts
 - `norm`: proportion of reads in the sample (relative abundance)

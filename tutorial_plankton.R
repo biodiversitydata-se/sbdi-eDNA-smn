@@ -25,7 +25,11 @@ names(merged)
 ?asvoccur::merge_long
 
 merged$counts |>
-  summarise(rows = n(), samples = n_distinct(eventID), asvs = n_distinct(taxonID)) |>
+  summarise(
+    rows = n(),
+    samples = n_distinct(eventID),
+    asvs = n_distinct(taxonID)
+  ) |>
   as.data.frame()
 
 merged$counts |> head(3) |> as.data.frame()
