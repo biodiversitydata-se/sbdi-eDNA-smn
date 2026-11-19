@@ -3,9 +3,11 @@
 # scripts, the figures and the site in docs/.
 #
 # Usage:
-#   SMN_INSECTS=/path/to/insects SMN_PLANKTON=/path/to/plankton ./build_site.sh
+#   SMN_INSECTS=/path/to/folder-with-insect-zip-files \
+#   SMN_PLANKTON=/path/to/folder-with-plankton-zip-files ./build_site.sh
 #
-# Each folder should hold the two zip files of its track, and nothing else.
+# SMN_INSECTS and SMN_PLANKTON are the folders that hold the data: the two zip
+# files of each track, downloaded from the ASV portal, and nothing else.
 # QUARTO can point at the quarto program if it is not on the PATH.
 set -euo pipefail
 

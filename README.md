@@ -23,9 +23,9 @@ Latz, M.A.C., Andersson, A., Brugel, S., et al. (2024). [A comprehensive dataset
 ## Building the site
 You need R with the packages from step 1 of the tutorial, [Quarto](https://quarto.org/) (included in RStudio), and the four zip files from the ASV portal, in one folder per track.
 
-After a change to the R code in the tutorial, run:
+After a change to the R code in the tutorial, run the command below. `SMN_INSECTS` and `SMN_PLANKTON` tell the script where the data are: replace the paths with the folders on your computer that hold the zip files of each track.
 ```bash
-SMN_INSECTS=/path/to/insects SMN_PLANKTON=/path/to/plankton ./build_site.sh
+SMN_INSECTS=/path/to/folder-with-insect-zip-files SMN_PLANKTON=/path/to/folder-with-plankton-zip-files ./build_site.sh
 ```
 It runs three steps:
 1. `build_tutorial_scripts.R` writes `tutorial_insects.R` and `tutorial_plankton.R` from the R code in the tutorial pages.
