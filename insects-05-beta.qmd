@@ -5,15 +5,15 @@ format:
     toc: false
 ---
 
-*Analyse differences in community composition between samples — beta diversity — using Bray-Curtis dissimilarity and Principal Coordinates Analysis (PCoA).*
+*Compare insect communities between samples using Bray-Curtis dissimilarity and Principal Coordinates Analysis (PCoA).*
 
-We use `counts_selected`, the read counts of the samples selected in [step 3](insects-03-map.qmd), from [step 4](insects-04-composition.qmd).
+We use `counts_selected` from [step 4](insects-04-composition.qmd), containing the samples selected in step 3.
 
 ### Aggregate ASVs to clusters
 
-In addition to ASV taxonomy and BOLD BINs, the IBA data also include project-specific cluster assignments in the `associatedSequences` column. Most pairs of samples share few ASVs, so comparing them at ASV level says rather little. We therefore sum the reads of each cluster in each sample, which is a join followed by a grouped sum.
+Most pairs of samples share few ASVs, making ASV-level comparisons less informative. The IBA datasets include project-specific cluster assignments in `associatedSequences`, allowing us to compare communities at cluster level instead.
 
-The cluster assignments are read from `loaded`, because `merge_long()` keeps only the attributes that describe the ASV itself, and `associatedSequences` is specific to each dataset:
+We retrieve the cluster assignments from `loaded`, since they are specific to each dataset and are not retained by `merge_long()`:
 
 ```r
 clusters <- loaded$asvs |> distinct(taxonID, cluster = associatedSequences)
@@ -24,11 +24,13 @@ cluster_counts <- counts_selected |>
   transmute(sample = eventID, taxon = cluster, quant)
 ```
 
-The new names, `sample`, `taxon` and `quant`, are the ones that [`ecolongr`](https://github.com/biodiversitydata-se/ecolongr){target="_blank"} expects by default. Nothing has been computed yet: `cluster_counts` is still a query.
+The column names `sample`, `taxon` and `quant` are expected by [`ecolongr`](https://github.com/biodiversitydata-se/ecolongr){target="_blank"}. `cluster_counts` is still a lazy query.
 
 ### Calculate Bray-Curtis dissimilarity
 
-Bray-Curtis dissimilarity compares the abundances of taxa in two samples, from 0 for identical communities to 1 for communities with nothing in common. We first turn the counts into relative abundances, so that sequencing depth does not affect the comparison, and then calculate the dissimilarities:
+Bray-Curtis measures differences in taxon abundance between samples, from 0 (identical composition) to 1 (no shared taxa).
+
+We calculate relative abundances to reduce the influence of sequencing depth, then calculate dissimilarities:
 
 ```r
 bray <- cluster_counts |>
@@ -36,11 +38,11 @@ bray <- cluster_counts |>
   el_vegdist("bray", samples = samples$eventID)
 ```
 
-`el_decostand()` and `el_vegdist()` work like `decostand()` and `vegdist()` in the `vegan` package, but on our table, without reading it into R. `samples =` makes the result follow the order of the rows in `samples`, which we rely on when plotting. The result is an ordinary `dist` object, with one value per pair of samples, that `vegan` and base R can use.
+These functions work like `decostand()` and `vegdist()` in `vegan`, but process the large table without loading it into R. The result is an ordinary `dist` object, ordered to match `samples`.
 
 ### Run PCoA
 
-Principal Coordinates Analysis (PCoA) represents the dissimilarities among samples in a smaller number of dimensions:
+Principal Coordinates Analysis (PCoA) places samples in a plot based on their dissimilarities. Samples closer together have more similar communities.
 
 ```r
 pcoa <- cmdscale(bray, k = 2, eig = TRUE)
@@ -50,11 +52,11 @@ axis_share <- pcoa$eig[1:2] / sum(pcoa$eig[pcoa$eig > 0])
 round(100 * axis_share, 1)
 ```
 
-Unlike the distances, PCoA needs the full matrix of dissimilarities in memory, and its run time grows quickly with the number of samples. That is fine for the samples we use here, but for many thousands of samples you may prefer `el_rda()`, a PCA that runs directly on the counts table.
+PCoA requires the full dissimilarity matrix in memory, which can become demanding for very large datasets.
 
 ### Prepare colour scales
 
-`habitat_cols` was already created in [step 3](insects-03-map.qmd). We add continuous colour scales for sampling date and latitude, plus colours for the two extraction methods:
+We reuse `habitat_cols` from step 3 and define colours for sampling date, latitude and extraction method:
 
 ```r
 ramp <- colorRampPalette(rev(c(
@@ -79,7 +81,7 @@ method_labs <- c(
 )
 ```
 
-For the legends, latitude is shown at 2-degree intervals and sampling date by month:
+Define legend labels for latitude and sampling month:
 
 ```r
 lat_ticks <- seq(ceiling(min(lat_range) / 2) * 2, max(lat_range), by = 2)
@@ -90,7 +92,7 @@ month_labels <- month.abb[as.integer(names(month_ticks))]
 
 ### Plot PCoA results
 
-We plot the same PCoA four times, colouring samples by sampling date, habitat, latitude and extraction method:
+We plot the same PCoA four times, colouring samples by date, habitat, latitude and extraction method:
 
 ```r
 plot_pcoa <- function() {
@@ -131,7 +133,11 @@ plot_pcoa <- function() {
 plot_pcoa()
 ```
 
-The first two PCoA axes explain only about 10% of the variation together, so the plots capture only part of the community differences. Even so, they suggest effects of sampling date, latitude and habitat: northern samples gather in one direction, forest samples spread out along the first axis, and spring samples form a tail of their own. Homogenate and lysate samples overlap in most of the plot, but they are not fully mixed. The spring tail, for example, consists mainly of homogenate samples.
+The first two axes together account for only about 10% of the variation, so the plots show only part of the differences among communities.
+
+Nevertheless, patterns are visible: northern samples tend to group in one direction, forest samples spread along the first axis, and spring samples form a distinct tail. Homogenate and lysate samples overlap considerably but are not completely mixed; the spring tail, for example, consists mainly of homogenate samples.
+
+**Consider:** Which factors appear to be associated with community composition? How does the low percentage represented by the first two axes affect our interpretation?
 
 ---
 

@@ -186,41 +186,42 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p><em>Analyse differences in community composition between samples — beta diversity — using Bray-Curtis dissimilarity and Principal Coordinates Analysis (PCoA).</em></p>
-<p>We use <code>counts_selected</code>, the read counts of the samples selected in <a href="./insects-03-map.html">step 3</a>, from <a href="./insects-04-composition.html">step 4</a>.</p>
+<p><em>Compare insect communities between samples using Bray-Curtis dissimilarity and Principal Coordinates Analysis (PCoA).</em></p>
+<p>We use <code>counts_selected</code> from <a href="./insects-04-composition.html">step 4</a>, containing the samples selected in step 3.</p>
 <section id="aggregate-asvs-to-clusters" class="level3">
 <h3 class="anchored" data-anchor-id="aggregate-asvs-to-clusters">Aggregate ASVs to clusters</h3>
-<p>In addition to ASV taxonomy and BOLD BINs, the IBA data also include project-specific cluster assignments in the <code>associatedSequences</code> column. Most pairs of samples share few ASVs, so comparing them at ASV level says rather little. We therefore sum the reads of each cluster in each sample, which is a join followed by a grouped sum.</p>
-<p>The cluster assignments are read from <code>loaded</code>, because <code>merge_long()</code> keeps only the attributes that describe the ASV itself, and <code>associatedSequences</code> is specific to each dataset:</p>
+<p>Most pairs of samples share few ASVs, making ASV-level comparisons less informative. The IBA datasets include project-specific cluster assignments in <code>associatedSequences</code>, allowing us to compare communities at cluster level instead.</p>
+<p>We retrieve the cluster assignments from <code>loaded</code>, since they are specific to each dataset and are not retained by <code>merge_long()</code>:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>clusters <span class="ot">&lt;-</span> loaded<span class="sc">$</span>asvs <span class="sc">|&gt;</span> <span class="fu">distinct</span>(taxonID, <span class="at">cluster =</span> associatedSequences)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>cluster_counts <span class="ot">&lt;-</span> counts_selected <span class="sc">|&gt;</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(clusters, <span class="at">by =</span> <span class="st">"taxonID"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">quant =</span> <span class="fu">sum</span>(organismQuantity, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.by =</span> <span class="fu">c</span>(eventID, cluster)) <span class="sc">|&gt;</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(<span class="at">sample =</span> eventID, <span class="at">taxon =</span> cluster, quant)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The new names, <code>sample</code>, <code>taxon</code> and <code>quant</code>, are the ones that <a href="https://github.com/biodiversitydata-se/ecolongr" target="_blank"><code>ecolongr</code></a> expects by default. Nothing has been computed yet: <code>cluster_counts</code> is still a query.</p>
+<p>The column names <code>sample</code>, <code>taxon</code> and <code>quant</code> are expected by <a href="https://github.com/biodiversitydata-se/ecolongr" target="_blank"><code>ecolongr</code></a>. <code>cluster_counts</code> is still a lazy query.</p>
 </section>
 <section id="calculate-bray-curtis-dissimilarity" class="level3">
 <h3 class="anchored" data-anchor-id="calculate-bray-curtis-dissimilarity">Calculate Bray-Curtis dissimilarity</h3>
-<p>Bray-Curtis dissimilarity compares the abundances of taxa in two samples, from 0 for identical communities to 1 for communities with nothing in common. We first turn the counts into relative abundances, so that sequencing depth does not affect the comparison, and then calculate the dissimilarities:</p>
+<p>Bray-Curtis measures differences in taxon abundance between samples, from 0 (identical composition) to 1 (no shared taxa).</p>
+<p>We calculate relative abundances to reduce the influence of sequencing depth, then calculate dissimilarities:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>bray <span class="ot">&lt;-</span> cluster_counts <span class="sc">|&gt;</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">el_decostand</span>(<span class="st">"total"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">el_vegdist</span>(<span class="st">"bray"</span>, <span class="at">samples =</span> samples<span class="sc">$</span>eventID)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><code>el_decostand()</code> and <code>el_vegdist()</code> work like <code>decostand()</code> and <code>vegdist()</code> in the <code>vegan</code> package, but on our table, without reading it into R. <code>samples =</code> makes the result follow the order of the rows in <code>samples</code>, which we rely on when plotting. The result is an ordinary <code>dist</code> object, with one value per pair of samples, that <code>vegan</code> and base R can use.</p>
+<p>These functions work like <code>decostand()</code> and <code>vegdist()</code> in <code>vegan</code>, but process the large table without loading it into R. The result is an ordinary <code>dist</code> object, ordered to match <code>samples</code>.</p>
 </section>
 <section id="run-pcoa" class="level3">
 <h3 class="anchored" data-anchor-id="run-pcoa">Run PCoA</h3>
-<p>Principal Coordinates Analysis (PCoA) represents the dissimilarities among samples in a smaller number of dimensions:</p>
+<p>Principal Coordinates Analysis (PCoA) places samples in a plot based on their dissimilarities. Samples closer together have more similar communities.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>pcoa <span class="ot">&lt;-</span> <span class="fu">cmdscale</span>(bray, <span class="at">k =</span> <span class="dv">2</span>, <span class="at">eig =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Share of the positive eigenvalues held by each of the first two axes</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>axis_share <span class="ot">&lt;-</span> pcoa<span class="sc">$</span>eig[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>] <span class="sc">/</span> <span class="fu">sum</span>(pcoa<span class="sc">$</span>eig[pcoa<span class="sc">$</span>eig <span class="sc">&gt;</span> <span class="dv">0</span>])</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> axis_share, <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Unlike the distances, PCoA needs the full matrix of dissimilarities in memory, and its run time grows quickly with the number of samples. That is fine for the samples we use here, but for many thousands of samples you may prefer <code>el_rda()</code>, a PCA that runs directly on the counts table.</p>
+<p>PCoA requires the full dissimilarity matrix in memory, which can become demanding for very large datasets.</p>
 </section>
 <section id="prepare-colour-scales" class="level3">
 <h3 class="anchored" data-anchor-id="prepare-colour-scales">Prepare colour scales</h3>
-<p><code>habitat_cols</code> was already created in <a href="./insects-03-map.html">step 3</a>. We add continuous colour scales for sampling date and latitude, plus colours for the two extraction methods:</p>
+<p>We reuse <code>habitat_cols</code> from step 3 and define colours for sampling date, latitude and extraction method:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>ramp <span class="ot">&lt;-</span> <span class="fu">colorRampPalette</span>(<span class="fu">rev</span>(<span class="fu">c</span>(</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"#D73027"</span>, <span class="st">"#FC8D59"</span>, <span class="st">"#FEE090"</span>, <span class="st">"#FFFFBF"</span>, <span class="st">"#E0F3F8"</span>, <span class="st">"#91BFDB"</span>, <span class="st">"#4575B4"</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>)))</span>
@@ -241,7 +242,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">IBA_CO1_homogenate_2019_SE =</span> <span class="st">"homogenate"</span>,</span>
 <span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">IBA_CO1_lysate_2019_SE =</span> <span class="st">"lysate"</span></span>
 <span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>For the legends, latitude is shown at 2-degree intervals and sampling date by month:</p>
+<p>Define legend labels for latitude and sampling month:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>lat_ticks <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">ceiling</span>(<span class="fu">min</span>(lat_range) <span class="sc">/</span> <span class="dv">2</span>) <span class="sc">*</span> <span class="dv">2</span>, <span class="fu">max</span>(lat_range), <span class="at">by =</span> <span class="dv">2</span>)</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>month_ticks  <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">tapply</span>(samples<span class="sc">$</span>yday, samples<span class="sc">$</span>month, min))</span>
@@ -249,7 +250,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="plot-pcoa-results" class="level3">
 <h3 class="anchored" data-anchor-id="plot-pcoa-results">Plot PCoA results</h3>
-<p>We plot the same PCoA four times, colouring samples by sampling date, habitat, latitude and extraction method:</p>
+<p>We plot the same PCoA four times, colouring samples by date, habitat, latitude and extraction method:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>plot_pcoa <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  xlab <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"PC1 ("</span>, <span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> axis_share[<span class="dv">1</span>]), <span class="st">"%)"</span>)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  ylab <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"PC2 ("</span>, <span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> axis_share[<span class="dv">2</span>]), <span class="st">"%)"</span>)</span>
@@ -286,7 +287,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pcoa</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The first two PCoA axes explain only about 10% of the variation together, so the plots capture only part of the community differences. Even so, they suggest effects of sampling date, latitude and habitat: northern samples gather in one direction, forest samples spread out along the first axis, and spring samples form a tail of their own. Homogenate and lysate samples overlap in most of the plot, but they are not fully mixed. The spring tail, for example, consists mainly of homogenate samples.</p>
+<p>The first two axes together account for only about 10% of the variation, so the plots show only part of the differences among communities.</p>
+<p>Nevertheless, patterns are visible: northern samples tend to group in one direction, forest samples spread along the first axis, and spring samples form a distinct tail. Homogenate and lysate samples overlap considerably but are not completely mixed; the spring tail, for example, consists mainly of homogenate samples.</p>
+<p><strong>Consider:</strong> Which factors appear to be associated with community composition? How does the low percentage represented by the first two axes affect our interpretation?</p>
 <hr>
 <p><a href="./insects-04-composition.html">← Previous</a> · <a href="./tutorial.html">Overview</a> · <a href="./insects-06-alpha.html">Next →</a></p>
 
