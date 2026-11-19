@@ -66,12 +66,10 @@ library(ggplot2)
 
 If the packages load without errors and your data files are listed, you are ready for the [next step](tutorial-02-prep.qmd).
 
-## Running the tutorial on your own computer
+::: {.callout-note collapse="true"}
+## Running the tutorial locally (optional)
 
-::: {.callout-tip collapse="true"}
-## Local installation (optional)
-
-You can also run the tutorial locally, but you will need to install R, the required packages and download the example data.
+You can also run the tutorial on your own computer, but you will need to install R, the required packages and download the example data.
 
 ### Install R and packages
 
