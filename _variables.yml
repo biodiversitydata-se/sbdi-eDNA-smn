@@ -1,0 +1,14 @@
+insects:
+  paired_per_method: "814"
+  lysate_samples: "4,380"
+  r2_habitat: "3.7"
+  r2_date: "2.2"
+  r2_latitude: "1.7"
+  r2_method: "1.5"
+  r2_residual: "90"
+plankton:
+  samples_2013: "21"
+  samples_2019_2020: "331"
+  pc1_share: "32"
+  pc1_salinity_cor: "0.96"
+  alpha_dropped: "6"

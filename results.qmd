@@ -13,7 +13,7 @@ format:
 
 ### Sampling sites across Sweden
 
-*One map per month of the paired sampling sites (814 per extraction method), coloured by habitat type.*
+*One map per month of the paired sampling sites ({{< var insects.paired_per_method >}} per extraction method), coloured by habitat type.*
 
 ![](figures/insects_3_map.png)
 
@@ -25,19 +25,19 @@ format:
 
 ### Community differences — beta diversity (PCoA)
 
-*Principal Coordinates Analysis (Bray-Curtis dissimilarity) of cluster-level community composition of the paired samples, coloured by year-day, habitat, latitude and extraction method. In a PERMANOVA with all four variables, habitat explains about 3.7% of the variation, sampling date 2.2%, latitude 1.7% and extraction method 1.5%, while about 90% remains unexplained. The test does not take the pairing of the samples into account, so it is descriptive.*
+*Principal Coordinates Analysis (Bray-Curtis dissimilarity) of cluster-level community composition of the paired samples, coloured by year-day, habitat, latitude and extraction method. In a PERMANOVA with all four variables, habitat explains about {{< var insects.r2_habitat >}}% of the variation, sampling date {{< var insects.r2_date >}}%, latitude {{< var insects.r2_latitude >}}% and extraction method {{< var insects.r2_method >}}%, while about {{< var insects.r2_residual >}}% remains unexplained. The test does not take the pairing of the samples into account, so it is descriptive.*
 
 ![](figures/insects_5_pcoa.png)
 
 ### Within-sample diversity (alpha diversity) — Shannon index
 
-*Diversity within each of the 4,380 lysate samples, by habitat, after rarefying all samples to the same number of reads.*
+*Diversity within each of the {{< var insects.lysate_samples >}} lysate samples, by habitat, after rarefying all samples to the same number of reads.*
 
 ![](figures/insects_6_shannon.png)
 
 ## Marine plankton
 
-*Two Baltic Sea 16S datasets, `KTH-2013-Baltic-16S` (21 samples) and `PRJEB55296-16S` (331 samples).*
+*Two Baltic Sea 16S datasets, `KTH-2013-Baltic-16S` ({{< var plankton.samples_2013 >}} samples) and `PRJEB55296-16S` ({{< var plankton.samples_2019_2020 >}} samples).*
 
 ### Sampling sites across the Baltic Sea
 
@@ -53,12 +53,12 @@ format:
 
 ### Community differences — beta diversity (PCoA)
 
-*Principal Coordinates Analysis (Bray-Curtis dissimilarity) of ASV-level community composition. The first axis holds about a third of the variation and follows salinity closely (correlation 0.96).*
+*Principal Coordinates Analysis (Bray-Curtis dissimilarity) of ASV-level community composition. The first axis holds about {{< var plankton.pc1_share >}}% of the variation and follows salinity closely (correlation {{< var plankton.pc1_salinity_cor >}}).*
 
 ![](figures/plankton_5_pcoa.png)
 
 ### Within-sample diversity (alpha diversity) — Shannon index
 
-*Diversity within each sample against salinity, after rarefying to 10,000 reads. Six samples with fewer reads are left out.*
+*Diversity within each sample against salinity, after rarefying to 10,000 reads. Samples with fewer reads ({{< var plankton.alpha_dropped >}}) are left out.*
 
 ![](figures/plankton_6_shannon.png)

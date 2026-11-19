@@ -45,8 +45,9 @@ cat("Lysate samples for alpha:", nrow(ins$alpha_samples), "\n")
 print(table(ins$alpha_samples$habitat))
 cat("Axis shares (%):", round(100 * ins$axis_share, 1), "\n")
 set.seed(1)
-print(vegan::adonis2(ins$bray ~ habitat + yday + decimalLatitude + method,
-                     data = ins$samples, by = "margin", permutations = 99))
+permanova <- vegan::adonis2(ins$bray ~ habitat + yday + decimalLatitude + method,
+                            data = ins$samples, by = "margin", permutations = 99)
+print(permanova)
 print(round(sapply(split(ins$alpha_samples$shannon, ins$alpha_samples$habitat), summary), 2))
 
 # Marine plankton --------------------------------------------------------------
@@ -68,6 +69,35 @@ cat("Correlation of PC1/PC2 with salinity:",
 cat("Correlation of Shannon with salinity:",
     round(cor(plk$events$shannon, plk$events$salinity, use = "complete.obs"), 2), "\n")
 composition <- plk$get_composition("class")
-overall <- sort(tapply(composition$norm, composition$clade, sum) / sum(!is.na(plk$events$salinity)),
+overall <- sort(tapply(composition$norm, composition$clade, sum) / length(unique(composition$eventID)),
                 decreasing = TRUE)
 print(round(head(overall, 8), 3))
+
+# Numbers quoted on the results page -------------------------------------------
+
+# Written to _variables.yml, which results.qmd reads with {{< var ... >}}, so the
+# text follows the figures whenever the site is rebuilt.
+paired <- unique(as.vector(table(ins$samples$method)))
+if (length(paired) != 1) stop("The extraction methods have different numbers of paired samples")
+r2 <- setNames(100 * permanova$R2, rownames(permanova))
+plk_n <- table(plk$events$dataset)
+pct <- function(x, digits = 1) formatC(x, format = "f", digits = digits)
+
+variables <- c(
+  "insects:",
+  sprintf("  paired_per_method: \"%s\"", format(paired, big.mark = ",")),
+  sprintf("  lysate_samples: \"%s\"", format(nrow(ins$alpha_samples), big.mark = ",")),
+  sprintf("  r2_habitat: \"%s\"", pct(r2[["habitat"]])),
+  sprintf("  r2_date: \"%s\"", pct(r2[["yday"]])),
+  sprintf("  r2_latitude: \"%s\"", pct(r2[["decimalLatitude"]])),
+  sprintf("  r2_method: \"%s\"", pct(r2[["method"]])),
+  sprintf("  r2_residual: \"%s\"", pct(r2[["Residual"]], 0)),
+  "plankton:",
+  sprintf("  samples_2013: \"%s\"", format(plk_n[["2013"]], big.mark = ",")),
+  sprintf("  samples_2019_2020: \"%s\"", format(plk_n[["2019-2020"]], big.mark = ",")),
+  sprintf("  pc1_share: \"%s\"", pct(100 * plk$axis_share[1], 0)),
+  sprintf("  pc1_salinity_cor: \"%s\"",
+          pct(abs(cor(plk$pcoa$points[, 1], plk$events$salinity, use = "complete.obs")), 2)),
+  sprintf("  alpha_dropped: \"%s\"", nrow(plk$events) - length(plk$shannon))
+)
+writeLines(variables, "_variables.yml")

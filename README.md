@@ -21,7 +21,7 @@ The files `tutorial_insects.R` and `tutorial_plankton.R` contain the R code from
 
 The scripts are built from the code in steps 2–6. Step 1 is not included: the package and data path lines at the top of each script are defined in `build_tutorial_scripts.R`, so update them there if you change the packages in step 1.
 
-The figures in `figures/` are also generated automatically by running the tutorial code on real data.
+The figures in `figures/` are also generated automatically by running the tutorial code on real data. So are the numbers quoted on the results page: they are written to `_variables.yml` and inserted in `results.qmd` with `{{< var ... >}}`.
 
 ## Building the site
 
@@ -48,7 +48,7 @@ export SMN_PLANKTON=/path/to/plankton-zip-files
 The build script:
 
 1. Generates `tutorial_insects.R` and `tutorial_plankton.R` from the tutorial code.
-2. Runs both tracks and saves the figures in `figures/`.
+2. Runs both tracks, saves the figures in `figures/` and the numbers for the results page in `_variables.yml`.
 3. Builds the website in `docs/` using Quarto.
 
 The data paths only need to be set once per terminal session. Subsequent builds only need `./build_site.sh`.
