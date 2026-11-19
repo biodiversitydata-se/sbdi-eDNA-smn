@@ -69,13 +69,14 @@ merged$emof |>
 salinity <- merged$emof |>
   filter(grepl("salinity", measurementType)) |>
   as.data.frame()
+
 salinity$measurementType <- trimws(salinity$measurementType)
 salinity <- salinity[salinity$measurementType %in% c("salinity", "salinity_average"), ]
 
 events$salinity <- as.numeric(salinity$measurementValue[match(events$eventID, salinity$eventID)])
 summary(events$salinity)
 
-# Point size grows with salinity; samples without salinity get the smallest size
+# Point size grows with salinity; missing values get the smallest size
 point_size <- function(salinity, base, step) base + ifelse(is.na(salinity), 0, salinity / step)
 
 color_yday <- colorRampPalette(

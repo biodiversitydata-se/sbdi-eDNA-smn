@@ -5,13 +5,13 @@ format:
     toc: false
 ---
 
-*Explore the spatial and seasonal distribution of the Baltic Sea samples, and their salinity.*
+*Explore where and when Baltic Sea samples were collected, and how salinity varies.*
 
-The two datasets are 16S metabarcoding data of bacterioplankton from the Baltic Sea: a transect sampled in July 2013 (`KTH-2013-Baltic-16S`) and monitoring stations sampled in 2019–2020 (`PRJEB55296-16S`).
+The two datasets contain 16S metabarcoding data of bacterioplankton from a transect sampled in July 2013 (`KTH-2013-Baltic-16S`) and monitoring stations sampled in 2019–2020 (`PRJEB55296-16S`).
 
-### Inspect contextual data
+### Inspect sample metadata
 
-Core sample-level metadata is available in `merged$events`, an ordinary data frame with one row per sample. We note which dataset each sample comes from:
+`merged$events` contains one row per sample. We label the datasets to distinguish them in the analyses:
 
 ```r
 events <- merged$events
@@ -24,7 +24,7 @@ table(events$dataset)
 
 ### Check primers
 
-Datasets can only be compared at ASV level if they were sequenced with the same primers:
+Different primers may detect different parts of the microbial community. Before comparing ASVs across datasets, we check that the same primers were used:
 
 ```r
 unique(events[c("dataset", "pcr_primer_name_forward", "pcr_primer_name_reverse")])
@@ -34,9 +34,9 @@ Both datasets use the same primers.
 
 ---
 
-### Extract temporal variables
+### Prepare dates
 
-`eventDate` holds the date and time of sampling. We extract month and day of year:
+Extract the month and day of year from `eventDate`:
 
 ```r
 event_start <- lubridate::parse_date_time(
@@ -52,7 +52,7 @@ events$yday  <- lubridate::yday(event_start)
 
 ### Extract salinity
 
-Salinity is one of the contextual measurements in `emof`, which has one row per measurement. The two datasets name it differently, so we first look at the names:
+Salinity is stored in `merged$emof`, which contains one row per contextual measurement. The two datasets use different names for salinity:
 
 ```r
 merged$emof |>
@@ -61,12 +61,13 @@ merged$emof |>
   as.data.frame()
 ```
 
-Some names end with a space, so we remove spaces at the ends before we pick out the salinity of each sample. This table is small, so we bring it into R first:
+We select the relevant measurements, remove trailing spaces from their names and match them to samples:
 
 ```r
 salinity <- merged$emof |>
   filter(grepl("salinity", measurementType)) |>
   as.data.frame()
+
 salinity$measurementType <- trimws(salinity$measurementType)
 salinity <- salinity[salinity$measurementType %in% c("salinity", "salinity_average"), ]
 
@@ -74,16 +75,16 @@ events$salinity <- as.numeric(salinity$measurementValue[match(events$eventID, sa
 summary(events$salinity)
 ```
 
-Some samples have no salinity measurement. They are drawn with the smallest point size, and left out of the comparisons with salinity below.
+Some samples lack salinity measurements. They are shown with the smallest point size and excluded from later comparisons involving salinity.
 
 ---
 
 ### Map samples
 
-Point colour shows the day of year, point size the salinity, and the shape the dataset:
+Plot the samples by month. Point colour indicates day of year, point size indicates salinity, and point shape distinguishes the datasets.
 
 ```r
-# Point size grows with salinity; samples without salinity get the smallest size
+# Point size grows with salinity; missing values get the smallest size
 point_size <- function(salinity, base, step) base + ifelse(is.na(salinity), 0, salinity / step)
 
 color_yday <- colorRampPalette(
@@ -120,13 +121,15 @@ plot_maps <- function(dataset) {
 plot_maps("2019-2020")
 ```
 
-The same function shows the 2013 transect:
+Use the same function to map the 2013 transect:
 
 ```r
 plot_maps("2013")
 ```
 
-These figures have several panels and can look cramped on a laptop screen. Click **Zoom** above the Plots pane for a larger view.
+Click **Zoom** in RStudio's Plots pane for a larger view.
+
+**Consider:** How do the sampling locations and seasons differ between the two datasets? What patterns do you see in salinity, and how might these differences affect comparisons of microbial communities?
 
 ---
 
