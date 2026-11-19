@@ -21,18 +21,30 @@ Hu, Y.O.O., Karlson, B., Charvet, S., Andersson, A.F. (2016). [Diversity of pico
 Latz, M.A.C., Andersson, A., Brugel, S., et al. (2024). [A comprehensive dataset on spatiotemporal variation of microbial plankton communities in the Baltic Sea](https://doi.org/10.1038/s41597-023-02825-5). Scientific Data, 11:18.
 
 ## Building the site
-You need R with the packages from step 1 of the tutorial, [Quarto](https://quarto.org/) (included in RStudio), and the four zip files from the ASV portal, in one folder per track.
+The figures and the scripts `tutorial_insects.R` and `tutorial_plankton.R` are made by running the tutorial code on the real data. The data are not in this repository, so you first download the four zip files from the ASV portal and put them in one folder per track.
 
-After a change to the R code in the tutorial, run the command below. `SMN_INSECTS` and `SMN_PLANKTON` tell the script where the data are: replace the paths with the folders on your computer that hold the zip files of each track.
+You also need R with the packages from step 1 of the tutorial, and [Quarto](https://quarto.org/) (included in RStudio).
+
+### After a change to the R code
+
+In a terminal in the repository folder, tell the script where your data folders are, and run it:
 ```bash
-SMN_INSECTS=/path/to/folder-with-insect-zip-files SMN_PLANKTON=/path/to/folder-with-plankton-zip-files ./build_site.sh
+export SMN_INSECTS=/path/to/folder-with-insect-zip-files
+export SMN_PLANKTON=/path/to/folder-with-plankton-zip-files
+./build_site.sh
 ```
-It runs three steps:
+The `export` lines last until you close the terminal window, so later runs only need `./build_site.sh`.
+
+The script runs three steps:
 1. `build_tutorial_scripts.R` writes `tutorial_insects.R` and `tutorial_plankton.R` from the R code in the tutorial pages.
 2. `generate_figures.R` runs both scripts on the data and saves the figures in `figures/`.
 3. `quarto render` builds the site in `docs/`.
 
-After a change to the text only, `quarto render` is enough. Commit and push `docs/` to publish the site with GitHub Pages.
+### After a change to the text only
+
+`quarto render` is enough.
+
+Commit and push to publish the site with GitHub Pages.
 
 ## License
 
