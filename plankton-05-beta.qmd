@@ -5,13 +5,13 @@ format:
     toc: false
 ---
 
-*Analyse differences in community composition between samples — beta diversity — using Bray-Curtis dissimilarity and Principal Coordinates Analysis (PCoA).*
+*Compare microbial communities between samples using Bray-Curtis dissimilarity and Principal Coordinates Analysis (PCoA).*
 
 ### Calculate Bray-Curtis dissimilarity
 
-Bray-Curtis dissimilarity compares the abundances of taxa in two samples, from 0 for identical communities to 1 for communities with nothing in common. Both datasets use the same primers, so we can compare them at ASV level.
+Bray-Curtis dissimilarity measures differences in taxon abundance between samples, from 0 (identical composition) to 1 (no shared taxa). Both datasets use the same primers, allowing ASV-level comparisons.
 
-We give the columns the names that [`ecolongr`](https://github.com/biodiversitydata-se/ecolongr){target="_blank"} expects by default, turn the counts into relative abundances so that sequencing depth does not affect the comparison, and calculate the dissimilarities:
+We first calculate relative abundances to reduce the influence of sequencing depth, then calculate Bray-Curtis dissimilarities. The column names are those expected by [`ecolongr`](https://github.com/biodiversitydata-se/ecolongr){target="_blank"}:
 
 ```r
 asv_counts <- merged$counts |>
@@ -22,11 +22,11 @@ bray <- asv_counts |>
   el_vegdist("bray", samples = events$eventID)
 ```
 
-`el_decostand()` and `el_vegdist()` work like `decostand()` and `vegdist()` in the `vegan` package, but on our table, without reading it into R. `samples =` makes the result follow the order of the rows in `events`, which we rely on when plotting. The result is an ordinary `dist` object that `vegan` and base R can use.
+These functions work like `decostand()` and `vegdist()` in `vegan`, but process the large table without loading it into R. The result is an ordinary `dist` object, ordered to match `events`.
 
 ### Run PCoA
 
-Principal Coordinates Analysis (PCoA) represents the dissimilarities among samples in a smaller number of dimensions:
+Principal Coordinates Analysis (PCoA) places samples in a plot based on their dissimilarities. **Samples closer together have more similar communities.**
 
 ```r
 pcoa <- cmdscale(bray, k = 2, eig = TRUE)
@@ -38,7 +38,7 @@ round(100 * axis_share, 1)
 
 ### Plot PCoA results
 
-We plot the PCoA once per dataset, with all samples in grey in the background. Colour shows the day of year and size the salinity, as on the maps:
+We plot each dataset separately, with all samples shown in grey for reference. As in the maps from step 3, colour indicates day of year and point size indicates salinity.
 
 ```r
 plot_pcoa <- function() {
@@ -73,7 +73,11 @@ plot_pcoa <- function() {
 plot_pcoa()
 ```
 
-The first axis explains about a third of the variation and follows salinity: the samples from the brackish Baltic Sea are on the left, and those from the saltier Kattegat and Skagerrak on the right. Within each group, the second axis follows the season. The samples from the 2013 transect fall in the same pattern as the later ones, which suggests that the two datasets can be compared.
+The first axis accounts for about a third of the variation and is associated with salinity: samples from the brackish Baltic Sea lie to the left, while those from the saltier Kattegat and Skagerrak lie to the right. Within these groups, the second axis appears to reflect seasonal differences.
+
+The 2013 samples follow a similar pattern to the later samples, supporting comparisons between the datasets, although other differences in sampling and methods may still matter.
+
+**Consider:** Which appears to be more strongly associated with community composition: salinity or season? What can the PCoA plot tell us, and what can it not tell us?
 
 ---
 

@@ -186,22 +186,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p><em>Analyse differences in community composition between samples — beta diversity — using Bray-Curtis dissimilarity and Principal Coordinates Analysis (PCoA).</em></p>
+<p><em>Compare microbial communities between samples using Bray-Curtis dissimilarity and Principal Coordinates Analysis (PCoA).</em></p>
 <section id="calculate-bray-curtis-dissimilarity" class="level3">
 <h3 class="anchored" data-anchor-id="calculate-bray-curtis-dissimilarity">Calculate Bray-Curtis dissimilarity</h3>
-<p>Bray-Curtis dissimilarity compares the abundances of taxa in two samples, from 0 for identical communities to 1 for communities with nothing in common. Both datasets use the same primers, so we can compare them at ASV level.</p>
-<p>We give the columns the names that <a href="https://github.com/biodiversitydata-se/ecolongr" target="_blank"><code>ecolongr</code></a> expects by default, turn the counts into relative abundances so that sequencing depth does not affect the comparison, and calculate the dissimilarities:</p>
+<p>Bray-Curtis dissimilarity measures differences in taxon abundance between samples, from 0 (identical composition) to 1 (no shared taxa). Both datasets use the same primers, allowing ASV-level comparisons.</p>
+<p>We first calculate relative abundances to reduce the influence of sequencing depth, then calculate Bray-Curtis dissimilarities. The column names are those expected by <a href="https://github.com/biodiversitydata-se/ecolongr" target="_blank"><code>ecolongr</code></a>:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>asv_counts <span class="ot">&lt;-</span> merged<span class="sc">$</span>counts <span class="sc">|&gt;</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(<span class="at">sample =</span> eventID, <span class="at">taxon =</span> taxonID, <span class="at">quant =</span> organismQuantity)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>bray <span class="ot">&lt;-</span> asv_counts <span class="sc">|&gt;</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">el_decostand</span>(<span class="st">"total"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">el_vegdist</span>(<span class="st">"bray"</span>, <span class="at">samples =</span> events<span class="sc">$</span>eventID)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><code>el_decostand()</code> and <code>el_vegdist()</code> work like <code>decostand()</code> and <code>vegdist()</code> in the <code>vegan</code> package, but on our table, without reading it into R. <code>samples =</code> makes the result follow the order of the rows in <code>events</code>, which we rely on when plotting. The result is an ordinary <code>dist</code> object that <code>vegan</code> and base R can use.</p>
+<p>These functions work like <code>decostand()</code> and <code>vegdist()</code> in <code>vegan</code>, but process the large table without loading it into R. The result is an ordinary <code>dist</code> object, ordered to match <code>events</code>.</p>
 </section>
 <section id="run-pcoa" class="level3">
 <h3 class="anchored" data-anchor-id="run-pcoa">Run PCoA</h3>
-<p>Principal Coordinates Analysis (PCoA) represents the dissimilarities among samples in a smaller number of dimensions:</p>
+<p>Principal Coordinates Analysis (PCoA) places samples in a plot based on their dissimilarities. <strong>Samples closer together have more similar communities.</strong></p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pcoa <span class="ot">&lt;-</span> <span class="fu">cmdscale</span>(bray, <span class="at">k =</span> <span class="dv">2</span>, <span class="at">eig =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Share of the positive eigenvalues held by each of the first two axes</span></span>
@@ -210,7 +210,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="plot-pcoa-results" class="level3">
 <h3 class="anchored" data-anchor-id="plot-pcoa-results">Plot PCoA results</h3>
-<p>We plot the PCoA once per dataset, with all samples in grey in the background. Colour shows the day of year and size the salinity, as on the maps:</p>
+<p>We plot each dataset separately, with all samples shown in grey for reference. As in the maps from step 3, colour indicates day of year and point size indicates salinity.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>plot_pcoa <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  xlab <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"PC1 ("</span>, <span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> axis_share[<span class="dv">1</span>]), <span class="st">"%)"</span>)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  ylab <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"PC2 ("</span>, <span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> axis_share[<span class="dv">2</span>]), <span class="st">"%)"</span>)</span>
@@ -241,7 +241,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_pcoa</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The first axis explains about a third of the variation and follows salinity: the samples from the brackish Baltic Sea are on the left, and those from the saltier Kattegat and Skagerrak on the right. Within each group, the second axis follows the season. The samples from the 2013 transect fall in the same pattern as the later ones, which suggests that the two datasets can be compared.</p>
+<p>The first axis accounts for about a third of the variation and is associated with salinity: samples from the brackish Baltic Sea lie to the left, while those from the saltier Kattegat and Skagerrak lie to the right. Within these groups, the second axis appears to reflect seasonal differences.</p>
+<p>The 2013 samples follow a similar pattern to the later samples, supporting comparisons between the datasets, although other differences in sampling and methods may still matter.</p>
+<p><strong>Consider:</strong> Which appears to be more strongly associated with community composition: salinity or season? What can the PCoA plot tell us, and what can it not tell us?</p>
 <hr>
 <p><a href="./plankton-04-composition.html">← Previous</a> · <a href="./tutorial.html">Overview</a> · <a href="./plankton-06-alpha.html">Next →</a></p>
 
