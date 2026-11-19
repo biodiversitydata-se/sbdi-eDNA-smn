@@ -21,9 +21,18 @@ Hu, Y.O.O., Karlson, B., Charvet, S., Andersson, A.F. (2016). [Diversity of pico
 Latz, M.A.C., Andersson, A., Brugel, S., et al. (2024). [A comprehensive dataset on spatiotemporal variation of microbial plankton communities in the Baltic Sea](https://doi.org/10.1038/s41597-023-02825-5). Scientific Data, 11:18.
 
 ## Building the site
-- `build_tutorial_scripts.R` writes `tutorial_insects.R` and `tutorial_plankton.R` from the R code in the tutorial pages.
-- `generate_figures.R` runs both scripts on local copies of the data and saves the figures in `figures/`. Set `SMN_INSECTS` and `SMN_PLANKTON` to folders with the two zip files of each track.
-- `quarto render` builds the site in `docs/`, which GitHub Pages serves.
+You need R with the packages from step 1 of the tutorial, [Quarto](https://quarto.org/) (included in RStudio), and the four zip files from the ASV portal, in one folder per track.
+
+After a change to the R code in the tutorial, run:
+```bash
+SMN_INSECTS=/path/to/insects SMN_PLANKTON=/path/to/plankton ./build_site.sh
+```
+It runs three steps:
+1. `build_tutorial_scripts.R` writes `tutorial_insects.R` and `tutorial_plankton.R` from the R code in the tutorial pages.
+2. `generate_figures.R` runs both scripts on the data and saves the figures in `figures/`.
+3. `quarto render` builds the site in `docs/`.
+
+After a change to the text only, `quarto render` is enough. Commit and push `docs/` to publish the site with GitHub Pages.
 
 ## License
 
