@@ -10,6 +10,16 @@ website:
         text: Home
       - href: tutorial.qmd
         text: Hands-on tutorial
+    right:
+      - href: https://metabarcoding.se/
+        text: '<img src="images/logos/smn-white.png" class="navbar-partner-logo logo-smn" alt="Swedish Metabarcoding Network">'
+        target: _blank
+      - href: https://biodiversitydata.se/
+        text: '<img src="images/logos/sbdi-white.svg" class="navbar-partner-logo logo-sbdi" alt="Swedish Biodiversity Data Infrastructure">'
+        target: _blank
+      - href: https://nf-co.re/
+        text: '<img src="images/logos/nf-core-white.svg" class="navbar-partner-logo logo-nfcore" alt="nf-core">'
+        target: _blank
 
 format:
   html:

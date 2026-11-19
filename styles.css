@@ -1,1 +1,18 @@
 /* css styles */
+
+/* Partner logos on the right of the navbar, centred vertically */
+.navbar-nav .nav-link:has(.navbar-partner-logo) {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+/* The same slight transparency gives all logos the same soft white */
+.navbar-partner-logo {
+  display: block;
+  height: 38px;
+  width: auto;
+  opacity: 0.85;
+}
+.navbar-partner-logo.logo-nfcore { height: 26px; }
+/* The SBDI symbol sits low and to the left in its image */
+.navbar-partner-logo.logo-sbdi { position: relative; top: -5px; left: 3px; }
