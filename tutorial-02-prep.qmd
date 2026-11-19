@@ -92,14 +92,6 @@ For function documentation:
 
 The large tables (`counts`, `asvs` and `emof`) are *lazy*: DuckDB reads data from the Parquet files only when needed. The smaller tables (`events`, `datasets` and `iasvs`) are ordinary R data frames.
 
-Inspect the tables:
-
-```r
-sapply(merged, \(x) class(x)[1])  # lazy tables are "prudent_duckplyr_df"
-colnames(merged$asvs)
-dim(merged$events)                # an ordinary data frame: samples and columns
-```
-
 We use familiar `dplyr` commands through the [`duckplyr`](https://duckplyr.tidyverse.org/){target="_blank"} package. For example, count the rows, samples and ASVs:
 
 ```r
@@ -108,7 +100,7 @@ merged$counts |>
   as.data.frame()
 ```
 
-`as.data.frame()` executes the query and brings the result into R. Summarising or selecting rows first avoids loading the entire table.
+`as.data.frame()` executes the query and brings the result into R. By summarising first, we only retrieve the small result rather than the entire table.
 
 Inspect a few rows:
 
