@@ -5,11 +5,7 @@ format:
     toc: false
 ---
 
-This tutorial walks through the main steps for importing and analysing data from the [ASV portal](https://asv-portal.biodiversitydata.se/index){target="_blank"} in R.
-
-### Choose your track
-
-Both tracks cover the same analysis steps, but use different datasets and different ways of handling the data. Choose the one that best matches your interests and experience.
+This tutorial covers the main steps for importing and analysing data from the [ASV portal](https://asv-portal.biodiversitydata.se/index){target="_blank"} in R. You can choose between two tracks, marine plankton and insects, which follow the same analysis steps but use different datasets and approaches to data handling. Choose the one that best matches your interests and experience.
 
 - **Track A: Marine plankton — traditional R workflow.** Analyse 16S metabarcoding data of bacterioplankton from the Baltic Sea, sampled along the salinity gradient from the Bothnian Bay to the Skagerrak in 2013 and 2019–2020. The data are handled as wide, sparse matrices with familiar R tools. A good starting point if you are new to metabarcoding data analysis.
 

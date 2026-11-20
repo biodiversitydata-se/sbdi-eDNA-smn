@@ -151,15 +151,11 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>This tutorial walks through the main steps for importing and analysing data from the <a href="https://asv-portal.biodiversitydata.se/index" target="_blank">ASV portal</a> in R.</p>
-<section id="choose-your-track" class="level3">
-<h3 class="anchored" data-anchor-id="choose-your-track">Choose your track</h3>
-<p>Both tracks cover the same analysis steps, but use different datasets and different ways of handling the data. Choose the one that best matches your interests and experience.</p>
+<p>This tutorial covers the main steps for importing and analysing data from the <a href="https://asv-portal.biodiversitydata.se/index" target="_blank">ASV portal</a> in R. You can choose between two tracks, marine plankton and insects, which follow the same analysis steps but use different datasets and approaches to data handling. Choose the one that best matches your interests and experience.</p>
 <ul>
 <li><p><strong>Track A: Marine plankton — traditional R workflow.</strong> Analyse 16S metabarcoding data of bacterioplankton from the Baltic Sea, sampled along the salinity gradient from the Bothnian Bay to the Skagerrak in 2013 and 2019–2020. The data are handled as wide, sparse matrices with familiar R tools. A good starting point if you are new to metabarcoding data analysis.</p></li>
 <li><p><strong>Track B: Insects — working with large datasets.</strong> Analyse COI metabarcoding data from the <a href="https://www.insectbiomeatlas.org/" target="_blank">Insect Biome Atlas</a> (IBA), which sampled arthropods with Malaise traps at 200 sites across six habitat types in Sweden, using two extraction protocols (homogenate and lysate). The data are handled as long tables with Parquet and DuckDB, tools for datasets too large to fit comfortably in R’s memory.</p></li>
 </ul>
-</section>
 <section id="common-step" class="level3">
 <h3 class="anchored" data-anchor-id="common-step">Common step</h3>
 <ol type="1">
