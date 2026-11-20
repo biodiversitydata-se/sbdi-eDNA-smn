@@ -1,0 +1,22 @@
+ASV read counts can be organised in *wide* format, with one row per ASV and one column per sample, or in *long* format, with one row per ASV–sample combination. The tables below show the same read counts in the two formats.
+
+:::: {.format-compare}
+::: {}
+**Wide**
+
+| taxonID | sample 1 | sample 2 |
+|---|---:|---:|
+| ASV a | 620 | 251 |
+| ASV b | 14 | 0 |
+:::
+
+::: {}
+**Long**
+
+| eventID | taxonID | organismQuantity |
+|---|---|---:|
+| sample 1 | ASV a | 620 |
+| sample 1 | ASV b | 14 |
+| sample 2 | ASV a | 251 |
+:::
+::::

@@ -22,11 +22,20 @@ The machine is shared and will shut down after the workshop.
 
 ### Choose your track
 
-Set the paths to the example data and check that the ZIP files are available.
+Choose the track you want to follow. The [overview](tutorial.qmd) describes the tracks. Set the paths to the example data and check that the ZIP files are available.
 
 ::: {.panel-tabset}
 
-## Track A: Insects
+## Track A: Marine plankton
+
+```r
+data_path <- "/srv/course-data/plankton"
+list.files(data_path)
+```
+
+You should see two ZIP files (16S).
+
+## Track B: Insects
 
 ```r
 data_path  <- "/srv/course-data/insects"
@@ -36,15 +45,6 @@ list.files(data_path)
 
 You should see two ZIP files (IBA_CO1).
 
-## Track B: Marine plankton
-
-```r
-data_path <- "/srv/course-data/plankton"
-list.files(data_path)
-```
-
-You should see two ZIP files (16S).
-
 :::
 
 ## Check required packages
@@ -53,7 +53,19 @@ Load the packages used in your track:
 
 ::: {.panel-tabset}
 
-## Track A: Insects
+## Track A: Marine plankton
+
+```r
+library(asvoccur)
+library(vegan)
+library(rworldmap)
+library(lubridate)
+library(ggplot2)
+```
+
+If the packages load without errors and your data files are listed, you are ready for the [next step](plankton-02-prep.qmd).
+
+## Track B: Insects
 
 ```r
 library(asvoccur)
@@ -65,18 +77,6 @@ library(ggplot2)
 ```
 
 If the packages load without errors and your data files are listed, you are ready for the [next step](insects-02-prep.qmd).
-
-## Track B: Marine plankton
-
-```r
-library(asvoccur)
-library(vegan)
-library(rworldmap)
-library(lubridate)
-library(ggplot2)
-```
-
-If the packages load without errors and your data files are listed, you are ready for the [next step](plankton-02-prep.qmd).
 
 :::
 
@@ -122,8 +122,8 @@ packageVersion("ecolongr")  # 0.2.2
 2. Sign in with Google or GitHub, or create an SBDI account.
 3. Download the two datasets for your track:
 
-   - **Insects:** `IBA_CO1_homogenate_2019_SE` and `IBA_CO1_lysate_2019_SE`
    - **Marine plankton:** `KTH-2013-Baltic-16S` and `PRJEB55296-16S`
+   - **Insects:** `IBA_CO1_homogenate_2019_SE` and `IBA_CO1_lysate_2019_SE`
 
 4. Place the two ZIP files in a folder for your track. Do not unzip them.
 
@@ -148,8 +148,8 @@ list.files(data_path)
 
 Adjust the paths for your computer and chosen track. The store folder will be created during data preparation.
 
-If the two ZIP files are listed, you are ready to continue with [track A](insects-02-prep.qmd) or [track B](plankton-02-prep.qmd).
+If the two ZIP files are listed, you are ready to continue with [track A](plankton-02-prep.qmd) or [track B](insects-02-prep.qmd).
 
 :::
 
-[Overview](tutorial.qmd) · Next, choose one track: [Track A: Insects →](insects-02-prep.qmd) or [Track B: Marine plankton →](plankton-02-prep.qmd)
+[Overview](tutorial.qmd) · Next, choose one track: [Track A: Marine plankton →](plankton-02-prep.qmd) or [Track B: Insects →](insects-02-prep.qmd)

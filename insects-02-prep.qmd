@@ -1,5 +1,5 @@
 ---
-title: "2A. Data preparation (track A: insects)"
+title: "2B. Data preparation (track B: insects)"
 format:
   html:
     toc: false
@@ -7,7 +7,13 @@ format:
 
 *Load and combine the insect data in long format, and summarise read counts by taxonomy.*
 
-{{< include _data-formats.qmd >}}
+### How the data look
+
+::: {.uses-long}
+{{< include _format-tables.qmd >}}
+:::
+
+This track uses *long* format, as delivered by the ASV portal. It omits the many zeros and works well with database tools, so we can analyse the large insect datasets without loading them into R.
 
 ---
 
@@ -50,11 +56,8 @@ The resulting `merged` list contains:
 Some tables may not appear in RStudio's Environment pane. Use `names()` to see all elements:
 
 ```r
-names(loaded)
 names(merged)
 ```
-
-`loaded` contains `store` (the Parquet file location) instead of `iasvs`.
 
 For function documentation:
 
@@ -65,7 +68,7 @@ For function documentation:
 
 ---
 
-### Work with lazy tables
+### Inspect the data
 
 The large tables (`counts`, `asvs` and `emof`) are *lazy*: their contents are not loaded into R until needed. The smaller tables (`events`, `datasets` and `iasvs`) are ordinary R data frames.
 
@@ -121,6 +124,8 @@ clades |>
 ```
 
 ASVs missing an annotation at a given level are grouped as `Unclassified`. Existing annotation names such as `unclassified.Acrididae` are preserved.
+
+The data are now ready for analysis. In the next steps, we explore sampling locations, taxonomic composition and diversity.
 
 ---
 

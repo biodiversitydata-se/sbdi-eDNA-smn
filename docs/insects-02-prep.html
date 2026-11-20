@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>2A. Data preparation (track A: insects) – SMN hands-on workshop 2026</title>
+<title>2B. Data preparation (track B: insects) – SMN hands-on workshop 2026</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -169,7 +169,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">2A. Data preparation (track A: insects)</h1>
+<h1 class="title">2B. Data preparation (track B: insects)</h1>
 </div>
 
 
@@ -187,9 +187,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p><em>Load and combine the insect data in long format, and summarise read counts by taxonomy.</em></p>
-<section id="wide-and-long-format" class="level3">
-<h3 class="anchored" data-anchor-id="wide-and-long-format">Wide and long format</h3>
-<p>ASV read counts can be stored in <em>wide</em> format, with one row per ASV and one column per sample, or in <em>long</em> format, with one row per ASV–sample combination. The ASV portal delivers the data in long format.</p>
+<section id="how-the-data-look" class="level3">
+<h3 class="anchored" data-anchor-id="how-the-data-look">How the data look</h3>
+<div class="uses-long">
+<p>ASV read counts can be organised in <em>wide</em> format, with one row per ASV and one column per sample, or in <em>long</em> format, with one row per ASV–sample combination. The tables below show the same read counts in the two formats.</p>
 <div class="format-compare">
 <div>
 <p><strong>Wide</strong></p>
@@ -245,13 +246,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 </div>
 </div>
-<p>Wide format is simple to work with, and many R packages, such as <a href="https://vegandevs.github.io/vegan/" target="_blank"><code>vegan</code></a>, expect it. But most ASVs occur in only a few samples, so a wide table of a large dataset is mostly zeros and may not fit in memory. Long format omits the zeros.</p>
-<p>The two tracks therefore use different formats:</p>
-<ul>
-<li><strong>Track A, insects</strong>, uses long format, because the insect files are large.</li>
-<li><strong>Track B, marine plankton</strong>, uses wide format, because these datasets are small enough to load into R.</li>
-</ul>
-<p><code>asvoccur</code> has functions for both: <code>load_data()</code> and <code>merge_data()</code> for wide format, and <code>load_long()</code> and <code>merge_long()</code> for long format.</p>
+</div>
+<p>This track uses <em>long</em> format, as delivered by the ASV portal. It omits the many zeros and works well with database tools, so we can analyse the large insect datasets without loading them into R.</p>
 <hr>
 </section>
 <section id="load-the-datasets" class="level3">
@@ -281,16 +277,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><code>iasvs</code>: ASVs with conflicting taxonomy, or <code>NULL</code> if none</li>
 </ul>
 <p>Some tables may not appear in RStudio’s Environment pane. Use <code>names()</code> to see all elements:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(loaded)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(merged)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><code>loaded</code> contains <code>store</code> (the Parquet file location) instead of <code>iasvs</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(merged)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>For function documentation:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>?asvoccur<span class="sc">::</span>load_long</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>?asvoccur<span class="sc">::</span>merge_long</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <hr>
 </section>
-<section id="work-with-lazy-tables" class="level3">
-<h3 class="anchored" data-anchor-id="work-with-lazy-tables">Work with lazy tables</h3>
+<section id="inspect-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="inspect-the-data">Inspect the data</h3>
 <p>The large tables (<code>counts</code>, <code>asvs</code> and <code>emof</code>) are <em>lazy</em>: their contents are not loaded into R until needed. The smaller tables (<code>events</code>, <code>datasets</code> and <code>iasvs</code>) are ordinary R data frames.</p>
 <p>We use familiar <code>dplyr</code> commands through the <a href="https://duckplyr.tidyverse.org/" target="_blank"><code>duckplyr</code></a> package. For example, count the rows, samples and ASVs:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>merged<span class="sc">$</span>counts <span class="sc">|&gt;</span></span>
@@ -323,6 +317,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">3</span>) <span class="sc">|&gt;</span></span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>ASVs missing an annotation at a given level are grouped as <code>Unclassified</code>. Existing annotation names such as <code>unclassified.Acrididae</code> are preserved.</p>
+<p>The data are now ready for analysis. In the next steps, we explore sampling locations, taxonomic composition and diversity.</p>
 <hr>
 <p><a href="./tutorial-01-setup.html">← Previous</a> · <a href="./tutorial.html">Overview</a> · <a href="./insects-03-map.html">Next →</a></p>
 

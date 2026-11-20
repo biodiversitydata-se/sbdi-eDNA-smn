@@ -13,9 +13,13 @@
   width: auto;
   opacity: 0.85;
 }
-.navbar-partner-logo.logo-nfcore { height: 26px; }
+.navbar-partner-logo.logo-nfcore { height: 26px; position: relative; top: 6px; }
 /* The SBDI symbol sits low and to the left in its image */
 .navbar-partner-logo.logo-sbdi { position: relative; top: -5px; left: 3px; }
+
+/* The format a track does not use is greyed out */
+.uses-wide .format-compare > :nth-child(2),
+.uses-long .format-compare > :nth-child(1) { opacity: 0.4; }
 
 /* Wide and long example tables side by side, at their natural width */
 .format-compare {

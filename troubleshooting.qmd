@@ -24,7 +24,7 @@ merged$counts |> count() |> as.data.frame()
 merged$counts |> head(10) |> as.data.frame()
 ```
 
-See [Work with lazy tables](insects-02-prep.qmd) in step 2A.
+See [Inspect the data](insects-02-prep.qmd) in step 2B.
 
 ### `This operation cannot be carried out by DuckDB`
 

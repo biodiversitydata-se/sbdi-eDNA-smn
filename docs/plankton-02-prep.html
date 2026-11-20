@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>2B. Data preparation (track B: marine plankton) – SMN hands-on workshop 2026</title>
+<title>2A. Data preparation (track A: marine plankton) – SMN hands-on workshop 2026</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -169,7 +169,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">2B. Data preparation (track B: marine plankton)</h1>
+<h1 class="title">2A. Data preparation (track A: marine plankton)</h1>
 </div>
 
 
@@ -187,9 +187,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p><em>Load and combine the plankton data in wide format, and summarise read counts by taxonomy.</em></p>
-<section id="wide-and-long-format" class="level3">
-<h3 class="anchored" data-anchor-id="wide-and-long-format">Wide and long format</h3>
-<p>ASV read counts can be stored in <em>wide</em> format, with one row per ASV and one column per sample, or in <em>long</em> format, with one row per ASV–sample combination. The ASV portal delivers the data in long format.</p>
+<section id="how-the-data-look" class="level3">
+<h3 class="anchored" data-anchor-id="how-the-data-look">How the data look</h3>
+<div class="uses-wide">
+<p>ASV read counts can be organised in <em>wide</em> format, with one row per ASV and one column per sample, or in <em>long</em> format, with one row per ASV–sample combination. The tables below show the same read counts in the two formats.</p>
 <div class="format-compare">
 <div>
 <p><strong>Wide</strong></p>
@@ -245,13 +246,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 </div>
 </div>
-<p>Wide format is simple to work with, and many R packages, such as <a href="https://vegandevs.github.io/vegan/" target="_blank"><code>vegan</code></a>, expect it. But most ASVs occur in only a few samples, so a wide table of a large dataset is mostly zeros and may not fit in memory. Long format omits the zeros.</p>
-<p>The two tracks therefore use different formats:</p>
-<ul>
-<li><strong>Track A, insects</strong>, uses long format, because the insect files are large.</li>
-<li><strong>Track B, marine plankton</strong>, uses wide format, because these datasets are small enough to load into R.</li>
-</ul>
-<p><code>asvoccur</code> has functions for both: <code>load_data()</code> and <code>merge_data()</code> for wide format, and <code>load_long()</code> and <code>merge_long()</code> for long format.</p>
+</div>
+<p>This track uses <em>wide</em> format, which many R packages, such as <a href="https://vegandevs.github.io/vegan/" target="_blank"><code>vegan</code></a>, work with. Since most counts are zero, we store them in a <em>sparse</em> matrix: not a third format, but a way of storing a matrix that keeps only the non-zero values.</p>
 <hr>
 </section>
 <section id="load-the-datasets" class="level3">
@@ -283,7 +279,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="inspect-the-data" class="level3">
 <h3 class="anchored" data-anchor-id="inspect-the-data">Inspect the data</h3>
-<p><code>counts</code> is a <em>sparse matrix</em>, which stores only the non-zero values to save memory. Check its size (ASVs × samples) and look at a corner of it:</p>
+<p><code>counts</code> is the sparse matrix. Check its size (ASVs × samples) and look at a corner of it:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(merged<span class="sc">$</span>counts)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>merged<span class="sc">$</span>counts[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>The dots are zeros. The other tables are ordinary data frames:</p>
@@ -303,6 +299,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>To inspect class-level shares in the first two samples:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>clades<span class="sc">$</span>norm<span class="sc">$</span>class[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>ASVs missing an annotation at a given level are grouped as <code>Unclassified</code>.</p>
+<p>The data are now ready for analysis. In the next steps, we explore sampling locations, taxonomic composition and diversity.</p>
 <hr>
 <p><a href="./tutorial-01-setup.html">← Previous</a> · <a href="./tutorial.html">Overview</a> · <a href="./plankton-03-map.html">Next →</a></p>
 

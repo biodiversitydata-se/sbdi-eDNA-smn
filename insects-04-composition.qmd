@@ -1,5 +1,5 @@
 ---
-title: "4A. Taxonomic composition (track A: insects)"
+title: "4B. Taxonomic composition (track B: insects)"
 format:
   html:
     toc: false

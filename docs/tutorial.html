@@ -151,35 +151,39 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>This tutorial walks through the main steps for importing and analysing ASV portal data in R. After a common first step, you choose <strong>one</strong> of two alternative tracks, which follow the same steps with different data:</p>
+<p>This tutorial walks through the main steps for importing and analysing ASV portal data in R.</p>
+<section id="choose-your-track" class="level3">
+<h3 class="anchored" data-anchor-id="choose-your-track">Choose your track</h3>
+<p>Both tracks cover the same analysis steps, but use different datasets and different ways of handling the data. Choose the one that best matches your interests and experience.</p>
 <ul>
-<li><p><strong>Track A, insects:</strong> COI metabarcoding data from the <a href="https://www.insectbiomeatlas.org/" target="_blank">Insect Biome Atlas</a> (IBA) project, which sampled arthropods with Malaise traps at 200 sites across six habitat types in Sweden. We combine two datasets generated with different extraction protocols, homogenate and lysate. The files are large, so this track works with the data in long format.</p></li>
-<li><p><strong>Track B, marine plankton:</strong> 16S metabarcoding data of bacterioplankton from the Baltic Sea, from a transect sampled in 2013 and monitoring stations sampled in 2019–2020, along the salinity gradient from the Bothnian Bay to the Skagerrak. The files are small, so this track uses the simpler wide format.</p></li>
+<li><p><strong>Track A: Marine plankton — traditional R workflow.</strong> Analyse 16S metabarcoding data of bacterioplankton from the Baltic Sea, sampled along the salinity gradient from the Bothnian Bay to the Skagerrak in 2013 and 2019–2020. The data are handled as wide, sparse matrices with familiar R tools. A good starting point if you are new to metabarcoding data analysis.</p></li>
+<li><p><strong>Track B: Insects — working with large datasets.</strong> Analyse COI metabarcoding data from the <a href="https://www.insectbiomeatlas.org/" target="_blank">Insect Biome Atlas</a> (IBA), which sampled arthropods with Malaise traps at 200 sites across six habitat types in Sweden, using two extraction protocols (homogenate and lysate). The data are handled as long tables with Parquet and DuckDB, tools for datasets too large to fit comfortably in R’s memory.</p></li>
 </ul>
+</section>
 <section id="common-step" class="level3">
 <h3 class="anchored" data-anchor-id="common-step">Common step</h3>
 <ol type="1">
 <li><a href="./tutorial-01-setup.html">Environment setup</a> — Access the workshop RStudio environment (or run locally), and choose your data</li>
 </ol>
 </section>
-<section id="track-a-insects" class="level3">
-<h3 class="anchored" data-anchor-id="track-a-insects">Track A: Insects</h3>
+<section id="track-a-marine-plankton" class="level3">
+<h3 class="anchored" data-anchor-id="track-a-marine-plankton">Track A: Marine plankton</h3>
 <ol start="2" type="1">
-<li><a href="./insects-02-prep.html">Data preparation</a> — Load, merge and aggregate the data in long format</li>
-<li><a href="./insects-03-map.html">Sample mapping</a> — Filter, pair and map samples across Sweden and habitat types</li>
-<li><a href="./insects-04-composition.html">Taxonomic composition</a> — Barplots across habitats, months and extraction methods</li>
-<li><a href="./insects-05-beta.html">Community differences (beta diversity)</a> — Bray-Curtis dissimilarity and PCoA</li>
-<li><a href="./insects-06-alpha.html">Within-sample diversity (alpha diversity)</a> — Shannon diversity across habitat types</li>
-</ol>
-</section>
-<section id="track-b-marine-plankton" class="level3">
-<h3 class="anchored" data-anchor-id="track-b-marine-plankton">Track B: Marine plankton</h3>
-<ol start="2" type="1">
-<li><a href="./plankton-02-prep.html">Data preparation</a> — Load, merge and aggregate the data in wide format</li>
+<li><a href="./plankton-02-prep.html">Data preparation</a> — Load, merge and aggregate the data as wide matrices</li>
 <li><a href="./plankton-03-map.html">Sample mapping</a> — Map samples and their salinity across the Baltic Sea</li>
 <li><a href="./plankton-04-composition.html">Taxonomic composition</a> — Barplots across salinity and months</li>
 <li><a href="./plankton-05-beta.html">Community differences (beta diversity)</a> — Bray-Curtis dissimilarity and PCoA</li>
 <li><a href="./plankton-06-alpha.html">Within-sample diversity (alpha diversity)</a> — Shannon diversity along the salinity gradient</li>
+</ol>
+</section>
+<section id="track-b-insects" class="level3">
+<h3 class="anchored" data-anchor-id="track-b-insects">Track B: Insects</h3>
+<ol start="2" type="1">
+<li><a href="./insects-02-prep.html">Data preparation</a> — Load, merge and aggregate the data as long tables</li>
+<li><a href="./insects-03-map.html">Sample mapping</a> — Filter, pair and map samples across Sweden and habitat types</li>
+<li><a href="./insects-04-composition.html">Taxonomic composition</a> — Barplots across habitats, months and extraction methods</li>
+<li><a href="./insects-05-beta.html">Community differences (beta diversity)</a> — Bray-Curtis dissimilarity and PCoA</li>
+<li><a href="./insects-06-alpha.html">Within-sample diversity (alpha diversity)</a> — Shannon diversity across habitat types</li>
 </ol>
 <p>If something does not work, see <a href="./troubleshooting.html">Troubleshooting</a>.</p>
 <p><a href="./tutorial-01-setup.html">Get started →</a></p>

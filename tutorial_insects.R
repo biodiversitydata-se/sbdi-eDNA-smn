@@ -17,7 +17,6 @@ loaded <- load_long(data_path, store = store_path)
 
 merged <- merge_long(loaded)
 
-names(loaded)
 names(merged)
 
 ?asvoccur::load_long

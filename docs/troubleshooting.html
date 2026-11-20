@@ -215,7 +215,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>You tried to read a whole lazy table into R, for example with <code>nrow()</code>, <code>View()</code> or <code>$</code>. This is blocked on purpose, so that large tables stay on disk. Summarise or select rows first, and end the query with <code>as.data.frame()</code>:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>merged<span class="sc">$</span>counts <span class="sc">|&gt;</span> <span class="fu">count</span>() <span class="sc">|&gt;</span> <span class="fu">as.data.frame</span>()</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>merged<span class="sc">$</span>counts <span class="sc">|&gt;</span> <span class="fu">head</span>(<span class="dv">10</span>) <span class="sc">|&gt;</span> <span class="fu">as.data.frame</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>See <a href="./insects-02-prep.html">Work with lazy tables</a> in step 2A.</p>
+<p>See <a href="./insects-02-prep.html">Inspect the data</a> in step 2B.</p>
 </section>
 <section id="this-operation-cannot-be-carried-out-by-duckdb" class="level3">
 <h3 class="anchored" data-anchor-id="this-operation-cannot-be-carried-out-by-duckdb"><code>This operation cannot be carried out by DuckDB</code></h3>

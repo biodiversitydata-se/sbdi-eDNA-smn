@@ -7,34 +7,6 @@ format:
 
 *Example results from running the two tracks of the tutorial on data downloaded from the ASV portal in November 2026.*
 
-## Insects
-
-*Two IBA COI datasets, `IBA_CO1_homogenate_2019_SE` and `IBA_CO1_lysate_2019_SE`, after the republication of the IBA datasets in October 2026.*
-
-### Sampling sites across Sweden
-
-*One map per month of the paired sampling sites ({{< var insects.paired_per_method >}} per extraction method), coloured by habitat type.*
-
-![](figures/insects_3_map.png)
-
-### Taxonomic composition by habitat and extraction method
-
-*Mean monthly share of reads of the most common insect orders in each habitat type, for the paired homogenate and lysate samples.*
-
-![](figures/insects_4_barplots.png)
-
-### Community differences — beta diversity (PCoA)
-
-*Principal Coordinates Analysis (Bray-Curtis dissimilarity) of cluster-level community composition of the paired samples, coloured by year-day, habitat, latitude and extraction method. In a PERMANOVA with all four variables, habitat explains about {{< var insects.r2_habitat >}}% of the variation, sampling date {{< var insects.r2_date >}}%, latitude {{< var insects.r2_latitude >}}% and extraction method {{< var insects.r2_method >}}%, while about {{< var insects.r2_residual >}}% remains unexplained. The test does not take the pairing of the samples into account, so it is descriptive.*
-
-![](figures/insects_5_pcoa.png)
-
-### Within-sample diversity (alpha diversity) — Shannon index
-
-*Diversity within each of the {{< var insects.lysate_samples >}} lysate samples, by habitat, after rarefying all samples to the same number of reads.*
-
-![](figures/insects_6_shannon.png)
-
 ## Marine plankton
 
 *Two Baltic Sea 16S datasets, `KTH-2013-Baltic-16S` ({{< var plankton.samples_2013 >}} samples) and `PRJEB55296-16S` ({{< var plankton.samples_2019_2020 >}} samples).*
@@ -62,3 +34,31 @@ format:
 *Diversity within each sample against salinity, after rarefying to 10,000 reads. Samples with fewer reads ({{< var plankton.alpha_dropped >}}) are left out.*
 
 ![](figures/plankton_6_shannon.png)
+
+## Insects
+
+*Two IBA COI datasets, `IBA_CO1_homogenate_2019_SE` and `IBA_CO1_lysate_2019_SE`, after the republication of the IBA datasets in October 2026.*
+
+### Sampling sites across Sweden
+
+*One map per month of the paired sampling sites ({{< var insects.paired_per_method >}} per extraction method), coloured by habitat type.*
+
+![](figures/insects_3_map.png)
+
+### Taxonomic composition by habitat and extraction method
+
+*Mean monthly share of reads of the most common insect orders in each habitat type, for the paired homogenate and lysate samples.*
+
+![](figures/insects_4_barplots.png)
+
+### Community differences — beta diversity (PCoA)
+
+*Principal Coordinates Analysis (Bray-Curtis dissimilarity) of cluster-level community composition of the paired samples, coloured by year-day, habitat, latitude and extraction method. In a PERMANOVA with all four variables, habitat explains about {{< var insects.r2_habitat >}}% of the variation, sampling date {{< var insects.r2_date >}}%, latitude {{< var insects.r2_latitude >}}% and extraction method {{< var insects.r2_method >}}%, while about {{< var insects.r2_residual >}}% remains unexplained. The test does not take the pairing of the samples into account, so it is descriptive.*
+
+![](figures/insects_5_pcoa.png)
+
+### Within-sample diversity (alpha diversity) — Shannon index
+
+*Diversity within each of the {{< var insects.lysate_samples >}} lysate samples, by habitat, after rarefying all samples to the same number of reads.*
+
+![](figures/insects_6_shannon.png)

@@ -1,5 +1,5 @@
 ---
-title: "6B. Within-sample diversity (track B: marine plankton)"
+title: "6A. Within-sample diversity (track A: marine plankton)"
 format:
   html:
     toc: false

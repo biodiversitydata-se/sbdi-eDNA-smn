@@ -5,31 +5,35 @@ format:
     toc: false
 ---
 
-This tutorial walks through the main steps for importing and analysing ASV portal data in R. After a common first step, you choose **one** of two alternative tracks, which follow the same steps with different data:
+This tutorial walks through the main steps for importing and analysing ASV portal data in R.
 
-- **Track A, insects:** COI metabarcoding data from the [Insect Biome Atlas](https://www.insectbiomeatlas.org/){target="_blank"} (IBA) project, which sampled arthropods with Malaise traps at 200 sites across six habitat types in Sweden. We combine two datasets generated with different extraction protocols, homogenate and lysate. The files are large, so this track works with the data in long format.
+### Choose your track
 
-- **Track B, marine plankton:** 16S metabarcoding data of bacterioplankton from the Baltic Sea, from a transect sampled in 2013 and monitoring stations sampled in 2019–2020, along the salinity gradient from the Bothnian Bay to the Skagerrak. The files are small, so this track uses the simpler wide format.
+Both tracks cover the same analysis steps, but use different datasets and different ways of handling the data. Choose the one that best matches your interests and experience.
+
+- **Track A: Marine plankton — traditional R workflow.** Analyse 16S metabarcoding data of bacterioplankton from the Baltic Sea, sampled along the salinity gradient from the Bothnian Bay to the Skagerrak in 2013 and 2019–2020. The data are handled as wide, sparse matrices with familiar R tools. A good starting point if you are new to metabarcoding data analysis.
+
+- **Track B: Insects — working with large datasets.** Analyse COI metabarcoding data from the [Insect Biome Atlas](https://www.insectbiomeatlas.org/){target="_blank"} (IBA), which sampled arthropods with Malaise traps at 200 sites across six habitat types in Sweden, using two extraction protocols (homogenate and lysate). The data are handled as long tables with Parquet and DuckDB, tools for datasets too large to fit comfortably in R's memory.
 
 ### Common step
 
 1. [Environment setup](tutorial-01-setup.qmd) — Access the workshop RStudio environment (or run locally), and choose your data
 
-### Track A: Insects
+### Track A: Marine plankton
 
-2. [Data preparation](insects-02-prep.qmd) — Load, merge and aggregate the data in long format
-3. [Sample mapping](insects-03-map.qmd) — Filter, pair and map samples across Sweden and habitat types
-4. [Taxonomic composition](insects-04-composition.qmd) — Barplots across habitats, months and extraction methods
-5. [Community differences (beta diversity)](insects-05-beta.qmd) — Bray-Curtis dissimilarity and PCoA
-6. [Within-sample diversity (alpha diversity)](insects-06-alpha.qmd) — Shannon diversity across habitat types
-
-### Track B: Marine plankton
-
-2. [Data preparation](plankton-02-prep.qmd) — Load, merge and aggregate the data in wide format
+2. [Data preparation](plankton-02-prep.qmd) — Load, merge and aggregate the data as wide matrices
 3. [Sample mapping](plankton-03-map.qmd) — Map samples and their salinity across the Baltic Sea
 4. [Taxonomic composition](plankton-04-composition.qmd) — Barplots across salinity and months
 5. [Community differences (beta diversity)](plankton-05-beta.qmd) — Bray-Curtis dissimilarity and PCoA
 6. [Within-sample diversity (alpha diversity)](plankton-06-alpha.qmd) — Shannon diversity along the salinity gradient
+
+### Track B: Insects
+
+2. [Data preparation](insects-02-prep.qmd) — Load, merge and aggregate the data as long tables
+3. [Sample mapping](insects-03-map.qmd) — Filter, pair and map samples across Sweden and habitat types
+4. [Taxonomic composition](insects-04-composition.qmd) — Barplots across habitats, months and extraction methods
+5. [Community differences (beta diversity)](insects-05-beta.qmd) — Bray-Curtis dissimilarity and PCoA
+6. [Within-sample diversity (alpha diversity)](insects-06-alpha.qmd) — Shannon diversity across habitat types
 
 If something does not work, see [Troubleshooting](troubleshooting.qmd).
 

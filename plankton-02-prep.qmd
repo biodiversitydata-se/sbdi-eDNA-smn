@@ -1,5 +1,5 @@
 ---
-title: "2B. Data preparation (track B: marine plankton)"
+title: "2A. Data preparation (track A: marine plankton)"
 format:
   html:
     toc: false
@@ -7,7 +7,13 @@ format:
 
 *Load and combine the plankton data in wide format, and summarise read counts by taxonomy.*
 
-{{< include _data-formats.qmd >}}
+### How the data look
+
+::: {.uses-wide}
+{{< include _format-tables.qmd >}}
+:::
+
+This track uses *wide* format, which many R packages, such as [`vegan`](https://vegandevs.github.io/vegan/){target="_blank"}, work with. Since most counts are zero, we store them in a *sparse* matrix: not a third format, but a way of storing a matrix that keeps only the non-zero values.
 
 ---
 
@@ -55,7 +61,7 @@ For function documentation:
 
 ### Inspect the data
 
-`counts` is a *sparse matrix*, which stores only the non-zero values to save memory. Check its size (ASVs × samples) and look at a corner of it:
+`counts` is the sparse matrix. Check its size (ASVs × samples) and look at a corner of it:
 
 ```r
 dim(merged$counts)
@@ -91,6 +97,8 @@ clades$norm$class[1:3, 1:2]
 ```
 
 ASVs missing an annotation at a given level are grouped as `Unclassified`.
+
+The data are now ready for analysis. In the next steps, we explore sampling locations, taxonomic composition and diversity.
 
 ---
 

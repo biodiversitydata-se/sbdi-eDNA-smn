@@ -2,7 +2,7 @@
 
 Tutorial for the [Swedish Metabarcoding Network (SMN) meeting](https://metabarcoding.se/meeting-2026/) in Uppsala, 8–9 December 2026.
 
-The workshop demonstrates how eDNA/metabarcoding data from the [Swedish Biodiversity Data Infrastructure (SBDI)](https://biodiversitydata.se/) can be downloaded from the ASV portal and analysed in R, using insects or marine plankton as alternative tracks.
+The workshop demonstrates how eDNA/metabarcoding data from the [Swedish Biodiversity Data Infrastructure (SBDI)](https://biodiversitydata.se/) can be downloaded from the ASV portal and analysed in R, using marine plankton or insects as alternative tracks.
 
 **Website:** https://biodiversitydata-se.github.io/sbdi-eDNA-smn/
 
@@ -12,8 +12,8 @@ The website is built with [Quarto](https://quarto.org/). The tutorial pages are 
 
 - `index.qmd` and `tutorial.qmd`: homepage and tutorial overview
 - `tutorial-01-setup.qmd`: common first step
-- `insects-*.qmd` and `plankton-*.qmd`: the two tutorial tracks, from step 2
-- `_data-formats.qmd`: introduction to wide and long format, included in both step 2 pages
+- `plankton-*.qmd` and `insects-*.qmd`: the two tutorial tracks (A and B), from step 2
+- `_format-tables.qmd`: wide and long example tables, included in both step 2 pages
 - `_quarto.yml` and `styles.css`: website configuration and styling
 
 **Edit the `.qmd` files, not the generated output.**
