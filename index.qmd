@@ -5,11 +5,18 @@ format:
     toc: false
 ---
 
-A hands-on tutorial for the [first in-person Swedish Metabarcoding Network (SMN) meeting](https://metabarcoding.se/meeting-2026/){target="_blank"}: Wednesday 9 December 2026, 09:00–12:00, Evolutionary Biology Centre (EBC), Uppsala.
+Part of the [first in-person Swedish Metabarcoding Network (SMN) meeting](https://metabarcoding.se/meeting-2026/){target="_blank"}.
 
-You will explore eDNA/metabarcoding data from the ASV portal of the [Swedish Biodiversity Data Infrastructure (SBDI)](https://biodiversitydata.se/){target="_blank"} in R, in one of two tracks: marine plankton or insects.
+In this hands-on workshop, we follow metabarcoding data from raw sequencing reads to biodiversity patterns. We first process reads into ASVs using nf-core/ampliseq, then explore ASV data from the SBDI portal in R, choosing between marine plankton and insects.
 
-[Start the tutorial →](tutorial.qmd)
+## Programme
+
+Wednesday 9 December 2026, 09:00–12:45, Evolutionary Biology Centre (EBC), Uppsala
+
+- **09:00–09:10** Introduction
+- **09:10–10:30** From raw reads to ASVs with [nf-core/ampliseq](https://nf-co.re/ampliseq){target="_blank"}
+- **10:30–11:00** Fika
+- **11:00–12:45** Analyse data from the [SBDI](https://biodiversitydata.se/){target="_blank"} ASV portal in R — [Open the tutorial](tutorial.qmd)
 
 ## Instructors
 - Dr. Tobias Andermann — SBDI & Uppsala University

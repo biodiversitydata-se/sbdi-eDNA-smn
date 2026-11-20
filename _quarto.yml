@@ -9,7 +9,7 @@ website:
       - href: index.qmd
         text: Home
       - href: tutorial.qmd
-        text: Hands-on tutorial
+        text: R tutorial
     right:
       - href: https://metabarcoding.se/
         text: '<img src="images/logos/smn-white.png" class="navbar-partner-logo logo-smn" alt="Swedish Metabarcoding Network">'
