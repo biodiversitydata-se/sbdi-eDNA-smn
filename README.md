@@ -2,7 +2,7 @@
 
 Tutorial for the [Swedish Metabarcoding Network (SMN) meeting](https://metabarcoding.se/meeting-2026/) in Uppsala, 8–9 December 2026.
 
-The workshop demonstrates how eDNA/metabarcoding data from the [Swedish Biodiversity Data Infrastructure (SBDI)](https://biodiversitydata.se/) can be downloaded from the ASV portal and analysed in R, using marine plankton or insects as alternative tracks.
+The workshop demonstrates how eDNA/metabarcoding data from the [Swedish Biodiversity Data Infrastructure (SBDI)](https://biodiversitydata.se/) can be downloaded from the [ASV portal](https://asv-portal.biodiversitydata.se/index) and analysed in R, using marine plankton or insects as alternative tracks.
 
 **Website:** https://biodiversitydata-se.github.io/sbdi-eDNA-smn/
 
