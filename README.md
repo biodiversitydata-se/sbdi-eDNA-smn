@@ -11,15 +11,16 @@ The workshop demonstrates how eDNA/metabarcoding data from the [Swedish Biodiver
 The website is built with [Quarto](https://quarto.org/). The tutorial pages are written in `.qmd` files in the repository root.
 
 - `index.qmd` and `tutorial.qmd`: homepage and tutorial overview
-- `tutorial-01-setup.qmd` and `tutorial-02-prep.qmd`: common steps
-- `insects-*.qmd` and `plankton-*.qmd`: the two tutorial tracks
+- `tutorial-01-setup.qmd`: common first step
+- `insects-*.qmd` and `plankton-*.qmd`: the two tutorial tracks, from step 2
+- `_data-formats.qmd`: introduction to wide and long format, included in both step 2 pages
 - `_quarto.yml` and `styles.css`: website configuration and styling
 
 **Edit the `.qmd` files, not the generated output.**
 
 The files `tutorial_insects.R` and `tutorial_plankton.R` contain the R code from each track, in the same order as on the website. They are generated automatically for running or testing an entire track on the workshop machine. Do not edit them manually.
 
-The scripts are built from the code in steps 2–6. Step 1 is not included: the package and data path lines at the top of each script are defined in `build_tutorial_scripts.R`, so update them there if you change the packages in step 1.
+The scripts are built from the code in steps 2–6. Step 1 is not included: the package and data path lines at the top of each script are defined in `build_tutorial_scripts.R`, so update them there if you change the packages or paths in step 1.
 
 The figures in `figures/` are also generated automatically by running the tutorial code on real data. So are the numbers quoted on the results page: they are written to `_variables.yml` and inserted in `results.qmd` with `{{< var ... >}}`.
 

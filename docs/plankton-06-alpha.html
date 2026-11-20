@@ -189,23 +189,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><em>Examine diversity <strong>within</strong> each sample — alpha diversity — using the <a href="https://en.wikipedia.org/wiki/Diversity_index#Shannon_index" target="_blank">Shannon index</a>, and how it varies with salinity.</em></p>
 <section id="subsample-to-a-common-depth" class="level3">
 <h3 class="anchored" data-anchor-id="subsample-to-a-common-depth">Subsample to a common depth</h3>
-<p>Samples with more reads may reveal more rare taxa, affecting diversity estimates. We therefore randomly subsample each to the same number of reads (<em>rarefaction</em>). We reuse <code>asv_counts</code> from <a href="./plankton-05-beta.html">step 5</a>.</p>
-<p>First, inspect the sequencing depth of the samples:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>depth <span class="ot">&lt;-</span> asv_counts <span class="sc">|&gt;</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">depth =</span> <span class="fu">sum</span>(quant, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.by =</span> sample) <span class="sc">|&gt;</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>()</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(depth<span class="sc">$</span>depth)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(depth<span class="sc">$</span>depth)[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]  <span class="co"># the shallowest samples</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>One sample has only 20 reads, and a few others have fewer than 10,000. Rarefying to the minimum depth would discard almost all information, so we choose 10,000 reads instead:</p>
+<p>Samples with more reads may reveal more rare taxa, affecting diversity estimates. We therefore randomly subsample each to the same number of reads (<em>rarefaction</em>). We reuse <code>asv_table</code> from <a href="./plankton-05-beta.html">step 5</a>.</p>
+<p>First, inspect the sequencing depth (total reads) of the samples:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>depth <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(asv_table)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(depth)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(depth)[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>]  <span class="co"># the shallowest samples</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>One sample has only 20 reads, and a few others have fewer than 10,000. Rarefying to the minimum depth would discard almost all information, so we choose 10,000 reads instead, and leave out the samples with fewer reads. These samples will have no Shannon value.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>asv_rarefied <span class="ot">&lt;-</span> <span class="fu">el_rrarefy</span>(asv_counts, <span class="at">depth =</span> <span class="dv">10000</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><code>el_rrarefy()</code> works like <code>rrarefy()</code> in <code>vegan</code> but excludes samples below the chosen depth, with a warning. These samples will have no Shannon value. <code>set.seed()</code> makes the random subsampling reproducible.</p>
-<p>Unlike the other <code>ecolongr</code> functions used here, <code>el_rrarefy()</code> loads the data into R, which is manageable for this dataset.</p>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>asv_rarefied <span class="ot">&lt;-</span> <span class="fu">rrarefy</span>(asv_table[depth <span class="sc">&gt;=</span> <span class="dv">10000</span>, ], <span class="dv">10000</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>set.seed()</code> makes the random subsampling reproducible.</p>
 </section>
 <section id="calculate-shannon-diversity" class="level3">
 <h3 class="anchored" data-anchor-id="calculate-shannon-diversity">Calculate Shannon diversity</h3>
 <p>The Shannon index measures both the number of ASVs and how evenly their abundances are distributed. Higher values indicate greater within-sample diversity.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>shannon <span class="ot">&lt;-</span> <span class="fu">el_diversity</span>(asv_rarefied, <span class="st">"shannon"</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>shannon <span class="ot">&lt;-</span> <span class="fu">diversity</span>(asv_rarefied, <span class="st">"shannon"</span>)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>events<span class="sc">$</span>shannon <span class="ot">&lt;-</span> shannon[events<span class="sc">$</span>eventID]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="plot-shannon-diversity-against-salinity" class="level3">

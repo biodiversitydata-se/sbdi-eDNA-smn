@@ -39,8 +39,7 @@ You should see two ZIP files (IBA_CO1).
 ## Track B: Marine plankton
 
 ```r
-data_path  <- "/srv/course-data/plankton"
-store_path <- "/srv/course-store/plankton"
+data_path <- "/srv/course-data/plankton"
 list.files(data_path)
 ```
 
@@ -50,7 +49,11 @@ You should see two ZIP files (16S).
 
 ## Check required packages
 
-Load the packages used in the tutorial:
+Load the packages used in your track:
+
+::: {.panel-tabset}
+
+## Track A: Insects
 
 ```r
 library(asvoccur)
@@ -61,7 +64,21 @@ library(lubridate)
 library(ggplot2)
 ```
 
-If the packages load without errors and your data files are listed, you are ready for the [next step](tutorial-02-prep.qmd).
+If the packages load without errors and your data files are listed, you are ready for the [next step](insects-02-prep.qmd).
+
+## Track B: Marine plankton
+
+```r
+library(asvoccur)
+library(vegan)
+library(rworldmap)
+library(lubridate)
+library(ggplot2)
+```
+
+If the packages load without errors and your data files are listed, you are ready for the [next step](plankton-02-prep.qmd).
+
+:::
 
 *Running locally? Follow the installation instructions below before continuing.*
 
@@ -74,7 +91,7 @@ You can also run the tutorial on your own computer, but you will need to install
 
 Install [R](https://cran.r-project.org/){target="_blank"} and [RStudio](https://posit.co/download/rstudio-desktop/){target="_blank"}.
 
-You also need tools for compiling R packages because `ecolongr` contains C++ code:
+For the insect track, you also need tools for compiling R packages because `ecolongr` contains C++ code:
 
 - **macOS:** Run `xcode-select --install` in Terminal.
 - **Windows:** Install [Rtools](https://cran.r-project.org/bin/windows/Rtools/){target="_blank"} for your R version.
@@ -84,7 +101,7 @@ Install the packages in R:
 
 ```r
 install.packages(c(
-  "remotes", "duckplyr",
+  "remotes", "duckplyr", "vegan",
   "rworldmap", "lubridate", "ggplot2"
 ))
 
@@ -121,7 +138,7 @@ course-data/
 
 ### Set data paths
 
-Set the paths to your downloaded ZIP files and to a folder where processed data will be stored:
+Set the path to your downloaded ZIP files. For the insect track, also set a folder where processed data will be stored:
 
 ```r
 data_path  <- "local/path/to/course-data/insects"
@@ -131,8 +148,8 @@ list.files(data_path)
 
 Adjust the paths for your computer and chosen track. The store folder will be created during data preparation.
 
-If the two ZIP files are listed, you are ready to [continue](tutorial-02-prep.qmd).
+If the two ZIP files are listed, you are ready to continue with [track A](insects-02-prep.qmd) or [track B](plankton-02-prep.qmd).
 
 :::
 
-[Overview](tutorial.qmd) · [Next →](tutorial-02-prep.qmd)
+[Overview](tutorial.qmd) · Next, choose one track: [Track A: Insects →](insects-02-prep.qmd) or [Track B: Marine plankton →](plankton-02-prep.qmd)

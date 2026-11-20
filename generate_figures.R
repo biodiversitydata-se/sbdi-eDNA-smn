@@ -37,7 +37,7 @@ save_png("insects_3_map.png", ins$plot_monthly_maps, width = 1100, height = 950)
 save_png("insects_5_pcoa.png", ins$plot_pcoa, width = 1200, height = 1000, res = 110)
 save_png("insects_6_shannon.png", ins$plot_shannon, width = 800, height = 650, res = 110)
 ggplot2::ggsave(fig("insects_4_barplots.png"), ins$plot_barplots(rank = "order", top_x = 8),
-                width = 9, height = 8, dpi = 130)
+                width = 10, height = 12, dpi = 130)
 
 cat("\n=== Insects\nPaired samples per method:\n")
 print(table(ins$samples$method))
@@ -68,9 +68,8 @@ cat("Correlation of PC1/PC2 with salinity:",
     round(cor(plk$pcoa$points, plk$events$salinity, use = "complete.obs"), 2), "\n")
 cat("Correlation of Shannon with salinity:",
     round(cor(plk$events$shannon, plk$events$salinity, use = "complete.obs"), 2), "\n")
-composition <- plk$get_composition("class")
-overall <- sort(tapply(composition$norm, composition$clade, sum) / length(unique(composition$eventID)),
-                decreasing = TRUE)
+keep <- !is.na(plk$events$salinity_class)
+overall <- sort(Matrix::rowMeans(plk$clades$norm$class[, keep]), decreasing = TRUE)
 print(round(head(overall, 8), 3))
 
 # Numbers quoted on the results page -------------------------------------------

@@ -11,12 +11,12 @@ The two datasets contain 16S metabarcoding data of bacterioplankton from a trans
 
 ### Inspect sample metadata
 
-`merged$events` contains one row per sample. We label the datasets to distinguish them in the analyses:
+`merged$events` contains one row per sample. We copy it to an ordinary data frame and label the datasets, using the dataset ID at the start of each `eventID`:
 
 ```r
-events <- merged$events
+events <- as.data.frame(merged$events)
 dataset_labels <- c("KTH-2013-Baltic-16S" = "2013", "PRJEB55296-16S" = "2019-2020")
-events$dataset <- unname(dataset_labels[events$datasetID])
+events$dataset <- unname(dataset_labels[sub(":.*", "", events$eventID)])
 table(events$dataset)
 ```
 
@@ -52,26 +52,18 @@ events$yday  <- lubridate::yday(event_start)
 
 ### Extract salinity
 
-Salinity is stored in `merged$emof`, which contains one row per contextual measurement. The two datasets use different names for salinity:
+Salinity is stored in `merged$emof`, which has one row per sample and one column per contextual measurement. The two datasets use different names for salinity:
 
 ```r
-merged$emof |>
-  filter(grepl("salinity", measurementType)) |>
-  distinct(measurementType, measurementUnit) |>
-  as.data.frame()
+grep("salinity", colnames(merged$emof), value = TRUE)
 ```
 
-We select the relevant measurements, remove trailing spaces from their names and match them to samples:
+We take salinity from `salinity (psu)` for the 2013 samples and from `salinity_average (psu)` for the 2019–2020 samples. The rows of `emof` are in the same order as those of `events`:
 
 ```r
-salinity <- merged$emof |>
-  filter(grepl("salinity", measurementType)) |>
-  as.data.frame()
-
-salinity$measurementType <- trimws(salinity$measurementType)
-salinity <- salinity[salinity$measurementType %in% c("salinity", "salinity_average"), ]
-
-events$salinity <- as.numeric(salinity$measurementValue[match(events$eventID, salinity$eventID)])
+emof <- merged$emof
+events$salinity <- ifelse(events$dataset == "2013",
+                          emof$`salinity (psu)`, emof$`salinity_average (psu)`)
 summary(events$salinity)
 ```
 
@@ -133,4 +125,4 @@ Click **Zoom** in RStudio's Plots pane for a larger view.
 
 ---
 
-[← Previous](tutorial-02-prep.qmd) · [Overview](tutorial.qmd) · [Next →](plankton-04-composition.qmd)
+[← Previous](plankton-02-prep.qmd) · [Overview](tutorial.qmd) · [Next →](plankton-04-composition.qmd)

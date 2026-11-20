@@ -17,9 +17,9 @@ format:
 
 ![](figures/insects_3_map.png)
 
-### Taxonomic composition by habitat
+### Taxonomic composition by habitat and extraction method
 
-*Mean monthly share of reads of the most common insect orders in each habitat type.*
+*Mean monthly share of reads of the most common insect orders in each habitat type, for the paired homogenate and lysate samples.*
 
 ![](figures/insects_4_barplots.png)
 

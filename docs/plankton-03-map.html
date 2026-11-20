@@ -190,10 +190,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The two datasets contain 16S metabarcoding data of bacterioplankton from a transect sampled in July 2013 (<code>KTH-2013-Baltic-16S</code>) and monitoring stations sampled in 2019–2020 (<code>PRJEB55296-16S</code>).</p>
 <section id="inspect-sample-metadata" class="level3">
 <h3 class="anchored" data-anchor-id="inspect-sample-metadata">Inspect sample metadata</h3>
-<p><code>merged$events</code> contains one row per sample. We label the datasets to distinguish them in the analyses:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>events <span class="ot">&lt;-</span> merged<span class="sc">$</span>events</span>
+<p><code>merged$events</code> contains one row per sample. We copy it to an ordinary data frame and label the datasets, using the dataset ID at the start of each <code>eventID</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>events <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(merged<span class="sc">$</span>events)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>dataset_labels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"KTH-2013-Baltic-16S"</span> <span class="ot">=</span> <span class="st">"2013"</span>, <span class="st">"PRJEB55296-16S"</span> <span class="ot">=</span> <span class="st">"2019-2020"</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>events<span class="sc">$</span>dataset <span class="ot">&lt;-</span> <span class="fu">unname</span>(dataset_labels[events<span class="sc">$</span>datasetID])</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>events<span class="sc">$</span>dataset <span class="ot">&lt;-</span> <span class="fu">unname</span>(dataset_labels[<span class="fu">sub</span>(<span class="st">":.*"</span>, <span class="st">""</span>, events<span class="sc">$</span>eventID)])</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(events<span class="sc">$</span>dataset)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <hr>
 </section>
@@ -218,21 +218,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="extract-salinity" class="level3">
 <h3 class="anchored" data-anchor-id="extract-salinity">Extract salinity</h3>
-<p>Salinity is stored in <code>merged$emof</code>, which contains one row per contextual measurement. The two datasets use different names for salinity:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>merged<span class="sc">$</span>emof <span class="sc">|&gt;</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">grepl</span>(<span class="st">"salinity"</span>, measurementType)) <span class="sc">|&gt;</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(measurementType, measurementUnit) <span class="sc">|&gt;</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>We select the relevant measurements, remove trailing spaces from their names and match them to samples:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>salinity <span class="ot">&lt;-</span> merged<span class="sc">$</span>emof <span class="sc">|&gt;</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">grepl</span>(<span class="st">"salinity"</span>, measurementType)) <span class="sc">|&gt;</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>()</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>salinity<span class="sc">$</span>measurementType <span class="ot">&lt;-</span> <span class="fu">trimws</span>(salinity<span class="sc">$</span>measurementType)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>salinity <span class="ot">&lt;-</span> salinity[salinity<span class="sc">$</span>measurementType <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"salinity"</span>, <span class="st">"salinity_average"</span>), ]</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>events<span class="sc">$</span>salinity <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(salinity<span class="sc">$</span>measurementValue[<span class="fu">match</span>(events<span class="sc">$</span>eventID, salinity<span class="sc">$</span>eventID)])</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(events<span class="sc">$</span>salinity)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Salinity is stored in <code>merged$emof</code>, which has one row per sample and one column per contextual measurement. The two datasets use different names for salinity:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span>(<span class="st">"salinity"</span>, <span class="fu">colnames</span>(merged<span class="sc">$</span>emof), <span class="at">value =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>We take salinity from <code>salinity (psu)</code> for the 2013 samples and from <code>salinity_average (psu)</code> for the 2019–2020 samples. The rows of <code>emof</code> are in the same order as those of <code>events</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>emof <span class="ot">&lt;-</span> merged<span class="sc">$</span>emof</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>events<span class="sc">$</span>salinity <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(events<span class="sc">$</span>dataset <span class="sc">==</span> <span class="st">"2013"</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                          emof<span class="sc">$</span><span class="st">`</span><span class="at">salinity (psu)</span><span class="st">`</span>, emof<span class="sc">$</span><span class="st">`</span><span class="at">salinity_average (psu)</span><span class="st">`</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(events<span class="sc">$</span>salinity)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Some samples lack salinity measurements. They are shown with the smallest point size and excluded from later comparisons involving salinity.</p>
 <hr>
 </section>
@@ -279,7 +271,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Click <strong>Zoom</strong> in RStudio’s Plots pane for a larger view.</p>
 <p><strong>Consider:</strong> How do the sampling locations and seasons differ between the two datasets? What patterns do you see in salinity, and how might these differences affect comparisons of microbial communities?</p>
 <hr>
-<p><a href="./tutorial-02-prep.html">← Previous</a> · <a href="./tutorial.html">Overview</a> · <a href="./plankton-04-composition.html">Next →</a></p>
+<p><a href="./plankton-02-prep.html">← Previous</a> · <a href="./tutorial.html">Overview</a> · <a href="./plankton-04-composition.html">Next →</a></p>
 
 
 </section>

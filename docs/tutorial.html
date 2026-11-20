@@ -151,30 +151,31 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>This tutorial walks through the main steps for importing and analysing ASV portal data in R. The first two steps are the same for everyone. Then you choose <strong>one</strong> of two alternative tracks, which follow the same steps with different data:</p>
+<p>This tutorial walks through the main steps for importing and analysing ASV portal data in R. After a common first step, you choose <strong>one</strong> of two alternative tracks, which follow the same steps with different data:</p>
 <ul>
-<li><p><strong>Track A, insects:</strong> COI metabarcoding data from the <a href="https://www.insectbiomeatlas.org/" target="_blank">Insect Biome Atlas</a> (IBA) project, which sampled arthropods with Malaise traps at 200 sites across six habitat types in Sweden. We combine two datasets generated with different extraction protocols, homogenate and lysate.</p></li>
-<li><p><strong>Track B, marine plankton:</strong> 16S metabarcoding data of bacterioplankton from the Baltic Sea, from a transect sampled in 2013 and monitoring stations sampled in 2019–2020, along the salinity gradient from the Bothnian Bay to the Skagerrak.</p></li>
+<li><p><strong>Track A, insects:</strong> COI metabarcoding data from the <a href="https://www.insectbiomeatlas.org/" target="_blank">Insect Biome Atlas</a> (IBA) project, which sampled arthropods with Malaise traps at 200 sites across six habitat types in Sweden. We combine two datasets generated with different extraction protocols, homogenate and lysate. The files are large, so this track works with the data in long format.</p></li>
+<li><p><strong>Track B, marine plankton:</strong> 16S metabarcoding data of bacterioplankton from the Baltic Sea, from a transect sampled in 2013 and monitoring stations sampled in 2019–2020, along the salinity gradient from the Bothnian Bay to the Skagerrak. The files are small, so this track uses the simpler wide format.</p></li>
 </ul>
-<section id="common-steps" class="level3">
-<h3 class="anchored" data-anchor-id="common-steps">Common steps</h3>
+<section id="common-step" class="level3">
+<h3 class="anchored" data-anchor-id="common-step">Common step</h3>
 <ol type="1">
 <li><a href="./tutorial-01-setup.html">Environment setup</a> — Access the workshop RStudio environment (or run locally), and choose your data</li>
-<li><a href="./tutorial-02-prep.html">Data preparation</a> — Load, merge and aggregate data from the ASV portal</li>
 </ol>
 </section>
 <section id="track-a-insects" class="level3">
 <h3 class="anchored" data-anchor-id="track-a-insects">Track A: Insects</h3>
-<ol start="3" type="1">
+<ol start="2" type="1">
+<li><a href="./insects-02-prep.html">Data preparation</a> — Load, merge and aggregate the data in long format</li>
 <li><a href="./insects-03-map.html">Sample mapping</a> — Filter, pair and map samples across Sweden and habitat types</li>
-<li><a href="./insects-04-composition.html">Taxonomic composition</a> — Barplots across habitats and months</li>
+<li><a href="./insects-04-composition.html">Taxonomic composition</a> — Barplots across habitats, months and extraction methods</li>
 <li><a href="./insects-05-beta.html">Community differences (beta diversity)</a> — Bray-Curtis dissimilarity and PCoA</li>
 <li><a href="./insects-06-alpha.html">Within-sample diversity (alpha diversity)</a> — Shannon diversity across habitat types</li>
 </ol>
 </section>
 <section id="track-b-marine-plankton" class="level3">
 <h3 class="anchored" data-anchor-id="track-b-marine-plankton">Track B: Marine plankton</h3>
-<ol start="3" type="1">
+<ol start="2" type="1">
+<li><a href="./plankton-02-prep.html">Data preparation</a> — Load, merge and aggregate the data in wide format</li>
 <li><a href="./plankton-03-map.html">Sample mapping</a> — Map samples and their salinity across the Baltic Sea</li>
 <li><a href="./plankton-04-composition.html">Taxonomic composition</a> — Barplots across salinity and months</li>
 <li><a href="./plankton-05-beta.html">Community differences (beta diversity)</a> — Bray-Curtis dissimilarity and PCoA</li>

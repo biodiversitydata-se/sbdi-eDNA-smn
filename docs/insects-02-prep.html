@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>2. Data preparation – SMN hands-on workshop 2026</title>
+<title>2A. Data preparation (track A: insects) – SMN hands-on workshop 2026</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -169,7 +169,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">2. Data preparation</h1>
+<h1 class="title">2A. Data preparation (track A: insects)</h1>
 </div>
 
 
@@ -186,10 +186,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p><em>Load and combine ASV portal data, and summarise read counts by taxonomy.</em></p>
-<section id="how-the-data-look" class="level3">
-<h3 class="anchored" data-anchor-id="how-the-data-look">How the data look</h3>
-<p>ASV read counts are often stored in <em>wide</em> format, with one row per ASV and one column per sample. The ASV portal instead uses <em>long</em> format, with one row per ASV–sample combination.</p>
+<p><em>Load and combine the insect data in long format, and summarise read counts by taxonomy.</em></p>
+<section id="wide-and-long-format" class="level3">
+<h3 class="anchored" data-anchor-id="wide-and-long-format">Wide and long format</h3>
+<p>ASV read counts can be stored in <em>wide</em> format, with one row per ASV and one column per sample, or in <em>long</em> format, with one row per ASV–sample combination. The ASV portal delivers the data in long format.</p>
 <div class="format-compare">
 <div>
 <p><strong>Wide</strong></p>
@@ -245,7 +245,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 </div>
 </div>
-<p>Most ASVs occur in only a few samples. Long format lets us omit the many zeros, making it suitable for large datasets.</p>
+<p>Wide format is simple to work with, and many R packages, such as <a href="https://vegandevs.github.io/vegan/" target="_blank"><code>vegan</code></a>, expect it. But most ASVs occur in only a few samples, so a wide table of a large dataset is mostly zeros and may not fit in memory. Long format omits the zeros.</p>
+<p>The two tracks therefore use different formats:</p>
+<ul>
+<li><strong>Track A, insects</strong>, uses long format, because the insect files are large.</li>
+<li><strong>Track B, marine plankton</strong>, uses wide format, because these datasets are small enough to load into R.</li>
+</ul>
+<p><code>asvoccur</code> has functions for both: <code>load_data()</code> and <code>merge_data()</code> for wide format, and <code>load_long()</code> and <code>merge_long()</code> for long format.</p>
 <hr>
 </section>
 <section id="load-the-datasets" class="level3">
@@ -318,7 +324,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>ASVs missing an annotation at a given level are grouped as <code>Unclassified</code>. Existing annotation names such as <code>unclassified.Acrididae</code> are preserved.</p>
 <hr>
-<p><a href="./tutorial-01-setup.html">← Previous</a> · <a href="./tutorial.html">Overview</a> · Next, choose one track: <a href="./insects-03-map.html">Track A: Insects →</a> or <a href="./plankton-03-map.html">Track B: Marine plankton →</a></p>
+<p><a href="./tutorial-01-setup.html">← Previous</a> · <a href="./tutorial.html">Overview</a> · <a href="./insects-03-map.html">Next →</a></p>
 
 
 </section>

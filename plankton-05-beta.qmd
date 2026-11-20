@@ -11,18 +11,21 @@ format:
 
 Bray-Curtis dissimilarity measures differences in taxon abundance between samples, from 0 (identical composition) to 1 (no shared taxa). Both datasets use the same primers, allowing ASV-level comparisons.
 
-We first calculate relative abundances to reduce the influence of sequencing depth, then calculate Bray-Curtis dissimilarities. The column names are those expected by [`ecolongr`](https://github.com/biodiversitydata-se/ecolongr){target="_blank"}:
+[`vegan`](https://vegandevs.github.io/vegan/){target="_blank"} expects one row per sample, so we first turn the sparse count matrix into an ordinary matrix with samples as rows:
 
 ```r
-asv_counts <- merged$counts |>
-  transmute(sample = eventID, taxon = taxonID, quant = organismQuantity)
-
-bray <- asv_counts |>
-  el_decostand("total") |>
-  el_vegdist("bray", samples = events$eventID)
+asv_table <- t(as.matrix(merged$counts))
+dim(asv_table)
 ```
 
-These functions work like `decostand()` and `vegdist()` in `vegan`, but process the large table without loading it into R. The result is an ordinary `dist` object, ordered to match `events`.
+We then calculate relative abundances to reduce the influence of sequencing depth, and Bray-Curtis dissimilarities between all samples:
+
+```r
+asv_shares <- decostand(asv_table, "total")
+bray <- vegdist(asv_shares, "bray")
+```
+
+The result is a `dist` object, ordered to match `events`.
 
 ### Run PCoA
 

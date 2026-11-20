@@ -11,7 +11,7 @@ library(ggplot2)
 data_path  <- "/srv/course-data/insects"
 store_path <- "/srv/course-store/insects"
 
-# --- tutorial-02-prep.qmd ---
+# --- insects-02-prep.qmd ---
 
 loaded <- load_long(data_path, store = store_path)
 
@@ -124,7 +124,7 @@ counts_selected <- merged$counts |> semi_join(selected, by = "eventID")
 get_composition <- function(rank) {
   composition <- sum_clades_long(counts_selected, merged$asvs, ranks = rank) |>
     as.data.frame()
-  merge(composition, samples[c("eventID", "habitat", "month")], by = "eventID")
+  merge(composition, samples[c("eventID", "habitat", "month", "method")], by = "eventID")
 }
 
 plot_barplots <- function(rank, top_x = 10) {
@@ -134,8 +134,8 @@ plot_barplots <- function(rank, top_x = 10) {
   totals <- tapply(composition$norm, composition$clade, sum)
   top <- names(sort(totals / nrow(samples), decreasing = TRUE))[1:top_x]
 
-  monthly <- aggregate(norm ~ clade + habitat + month, composition[composition$clade %in% top, ], sum)
-  n_samples <- aggregate(eventID ~ habitat + month, samples, length)
+  monthly <- aggregate(norm ~ clade + habitat + method + month, composition[composition$clade %in% top, ], sum)
+  n_samples <- aggregate(eventID ~ habitat + method + month, samples, length)
   monthly <- merge(monthly, n_samples)
   monthly$share <- monthly$norm / monthly$eventID
 
@@ -143,6 +143,7 @@ plot_barplots <- function(rank, top_x = 10) {
   monthly$clade <- factor(monthly$clade, levels = rev(top))
   monthly$month <- factor(monthly$month, levels = 1:12, labels = month.abb)
   monthly$habitat <- factor(monthly$habitat, levels = names(habitat_cols))
+  monthly$method <- ifelse(grepl("homogenate", monthly$method), "homogenate", "lysate")
 
   mycols <- colorRampPalette(c(
     "#a6cee3", "#1f78b4", "#b2df8a", "#33a02c",
@@ -152,7 +153,7 @@ plot_barplots <- function(rank, top_x = 10) {
 
   ggplot(monthly, aes(x = month, y = share, fill = clade)) +
     geom_col(colour = "grey20", linewidth = 0.2) +
-    facet_wrap(~habitat, ncol = 2) +
+    facet_grid(habitat ~ method) +
     scale_x_discrete(drop = FALSE) +
     scale_fill_manual(values = setNames(mycols(top_x), top), breaks = top, name = rank) +
     labs(x = NULL, y = "Mean share of reads") +

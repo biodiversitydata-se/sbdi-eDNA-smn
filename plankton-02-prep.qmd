@@ -1,0 +1,97 @@
+---
+title: "2B. Data preparation (track B: marine plankton)"
+format:
+  html:
+    toc: false
+---
+
+*Load and combine the plankton data in wide format, and summarise read counts by taxonomy.*
+
+{{< include _data-formats.qmd >}}
+
+---
+
+### Load the datasets
+
+Load the data from the `data_path` folder defined in the [previous section](tutorial-01-setup.qmd):
+
+```r
+loaded <- load_data(data_path)
+```
+
+`load_data()` reads the ZIP files and converts the read counts to wide format. `loaded` contains one list per data type, with one element per dataset.
+
+---
+
+### Merge the datasets
+
+Combine the datasets for joint analysis:
+
+```r
+merged <- merge_data(loaded)
+names(merged)
+```
+
+`merge_data()` stops if the same sample occurs in more than one dataset. ASVs with identical sequences are identified across datasets using SBDI ASV IDs.
+
+The resulting `merged` list contains:
+
+- `counts`: ASV read counts, with one row per ASV and one column per sample
+- `asvs`: ASV sequences and taxonomy, one row per ASV
+- `events`: sample metadata (*where, when, how, who*), one row per sample
+- `emof`: contextual measurements (*extended measurement or fact*), one row per sample and one column per measurement
+- `datasets`: dataset metadata
+
+The tables are in the same order: the columns of `counts` follow the rows of `events` and `emof`, and the rows of `counts` follow the rows of `asvs`.
+
+For function documentation:
+
+```r
+?asvoccur::load_data
+?asvoccur::merge_data
+```
+
+---
+
+### Inspect the data
+
+`counts` is a *sparse matrix*, which stores only the non-zero values to save memory. Check its size (ASVs × samples) and look at a corner of it:
+
+```r
+dim(merged$counts)
+merged$counts[1:3, 1:2]
+```
+
+The dots are zeros. The other tables are ordinary data frames:
+
+```r
+head(merged$asvs[, c("taxonID", "phylum", "class", "genus")], 3)
+```
+
+---
+
+### Aggregate counts by taxonomy
+
+Sum ASV read counts at different taxonomic levels:
+
+```r
+clades <- sum_by_clade(merged$counts, merged$asvs)
+names(clades$norm)
+```
+
+The result has one matrix per level, from kingdom (or domain) to species, including `otu` if available. Each matrix has one row per clade and one column per sample.
+
+- `raw`: read counts
+- `norm`: proportion of reads in the sample (relative abundance)
+
+To inspect class-level shares in the first two samples:
+
+```r
+clades$norm$class[1:3, 1:2]
+```
+
+ASVs missing an annotation at a given level are grouped as `Unclassified`.
+
+---
+
+[← Previous](tutorial-01-setup.qmd) · [Overview](tutorial.qmd) · [Next →](plankton-03-map.qmd)

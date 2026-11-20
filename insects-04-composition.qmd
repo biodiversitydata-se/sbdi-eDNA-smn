@@ -5,7 +5,7 @@ format:
     toc: false
 ---
 
-*Compare the relative abundance of insect groups across habitats and months.*
+*Compare the relative abundance of insect groups across habitats, months and extraction methods.*
 
 ### Select samples
 
@@ -18,13 +18,13 @@ counts_selected <- merged$counts |> semi_join(selected, by = "eventID")
 
 ### Sum reads by taxonomy
 
-We use `sum_clades_long()` from [step 2](tutorial-02-prep.qmd) to aggregate reads at a chosen taxonomic rank, then add habitat and month:
+We use `sum_clades_long()` from [step 2](insects-02-prep.qmd) to aggregate reads at a chosen taxonomic rank, then add habitat, month and extraction method:
 
 ```r
 get_composition <- function(rank) {
   composition <- sum_clades_long(counts_selected, merged$asvs, ranks = rank) |>
     as.data.frame()
-  merge(composition, samples[c("eventID", "habitat", "month")], by = "eventID")
+  merge(composition, samples[c("eventID", "habitat", "month", "method")], by = "eventID")
 }
 ```
 
@@ -32,7 +32,7 @@ Available ranks are kingdom, phylum, class, order, family, genus, species and ot
 
 ### Plot taxonomic composition
 
-The function below selects the most abundant taxa across all selected samples and plots their **mean share of reads** for each habitat and month using [`ggplot2`](https://ggplot2.tidyverse.org/){target="_blank"}.
+The function below selects the most abundant taxa across all selected samples and plots their **mean share of reads** for each habitat, month and extraction method using [`ggplot2`](https://ggplot2.tidyverse.org/){target="_blank"}.
 
 ```r
 plot_barplots <- function(rank, top_x = 10) {
@@ -42,8 +42,8 @@ plot_barplots <- function(rank, top_x = 10) {
   totals <- tapply(composition$norm, composition$clade, sum)
   top <- names(sort(totals / nrow(samples), decreasing = TRUE))[1:top_x]
 
-  monthly <- aggregate(norm ~ clade + habitat + month, composition[composition$clade %in% top, ], sum)
-  n_samples <- aggregate(eventID ~ habitat + month, samples, length)
+  monthly <- aggregate(norm ~ clade + habitat + method + month, composition[composition$clade %in% top, ], sum)
+  n_samples <- aggregate(eventID ~ habitat + method + month, samples, length)
   monthly <- merge(monthly, n_samples)
   monthly$share <- monthly$norm / monthly$eventID
 
@@ -51,6 +51,7 @@ plot_barplots <- function(rank, top_x = 10) {
   monthly$clade <- factor(monthly$clade, levels = rev(top))
   monthly$month <- factor(monthly$month, levels = 1:12, labels = month.abb)
   monthly$habitat <- factor(monthly$habitat, levels = names(habitat_cols))
+  monthly$method <- ifelse(grepl("homogenate", monthly$method), "homogenate", "lysate")
 
   mycols <- colorRampPalette(c(
     "#a6cee3", "#1f78b4", "#b2df8a", "#33a02c",
@@ -60,7 +61,7 @@ plot_barplots <- function(rank, top_x = 10) {
 
   ggplot(monthly, aes(x = month, y = share, fill = clade)) +
     geom_col(colour = "grey20", linewidth = 0.2) +
-    facet_wrap(~habitat, ncol = 2) +
+    facet_grid(habitat ~ method) +
     scale_x_discrete(drop = FALSE) +
     scale_fill_manual(values = setNames(mycols(top_x), top), breaks = top, name = rank) +
     labs(x = NULL, y = "Mean share of reads") +
@@ -77,11 +78,13 @@ Plot the eight most abundant orders:
 plot_barplots(rank = "order", top_x = 8)
 ```
 
-Each bar shows the mean relative abundance of these orders among samples from a given habitat and month. Flies (Diptera) dominate the reads, especially in alpine habitats and early in the season. Bars may not add up to 100% because only the eight most abundant orders are shown.
+Each row is a habitat, with the homogenate samples on the left and the paired lysate samples on the right. Each bar shows the mean relative abundance of these orders among samples from a given habitat, month and method. Flies (Diptera) dominate the reads, especially in alpine habitats and early in the season. Bars may not add up to 100% because only the eight most abundant orders are shown.
 
 These are **shares of sequencing reads**, not estimates of the number of individuals or biomass. Empty months indicate that no selected samples were available in that habitat.
 
 **Consider:** How does taxonomic composition vary across habitats and seasons? Could differences in read abundance reflect factors other than the abundance of organisms?
+
+**Discuss:** How do the homogenate and lysate protocols differ? Which insects would you expect each method to favour, and does the plot support this?
 
 ---
 

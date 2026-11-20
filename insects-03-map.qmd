@@ -148,4 +148,4 @@ Click **Zoom** in RStudio's Plots pane for a larger view. Paired samples overlap
 
 ---
 
-[← Previous](tutorial-02-prep.qmd) · [Overview](tutorial.qmd) · [Next →](insects-04-composition.qmd)
+[← Previous](insects-02-prep.qmd) · [Overview](tutorial.qmd) · [Next →](insects-04-composition.qmd)

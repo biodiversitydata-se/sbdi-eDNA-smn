@@ -9,35 +9,31 @@ format:
 
 ### Subsample to a common depth
 
-Samples with more reads may reveal more rare taxa, affecting diversity estimates. We therefore randomly subsample each to the same number of reads (*rarefaction*). We reuse `asv_counts` from [step 5](plankton-05-beta.qmd).
+Samples with more reads may reveal more rare taxa, affecting diversity estimates. We therefore randomly subsample each to the same number of reads (*rarefaction*). We reuse `asv_table` from [step 5](plankton-05-beta.qmd).
 
-First, inspect the sequencing depth of the samples:
+First, inspect the sequencing depth (total reads) of the samples:
 
 ```r
-depth <- asv_counts |>
-  summarise(depth = sum(quant, na.rm = TRUE), .by = sample) |>
-  as.data.frame()
-summary(depth$depth)
-sort(depth$depth)[1:10]  # the shallowest samples
+depth <- rowSums(asv_table)
+summary(depth)
+sort(depth)[1:10]  # the shallowest samples
 ```
 
-One sample has only 20 reads, and a few others have fewer than 10,000. Rarefying to the minimum depth would discard almost all information, so we choose 10,000 reads instead:
+One sample has only 20 reads, and a few others have fewer than 10,000. Rarefying to the minimum depth would discard almost all information, so we choose 10,000 reads instead, and leave out the samples with fewer reads. These samples will have no Shannon value.
 
 ```r
 set.seed(1)
-asv_rarefied <- el_rrarefy(asv_counts, depth = 10000)
+asv_rarefied <- rrarefy(asv_table[depth >= 10000, ], 10000)
 ```
 
-`el_rrarefy()` works like `rrarefy()` in `vegan` but excludes samples below the chosen depth, with a warning. These samples will have no Shannon value. `set.seed()` makes the random subsampling reproducible.
-
-Unlike the other `ecolongr` functions used here, `el_rrarefy()` loads the data into R, which is manageable for this dataset.
+`set.seed()` makes the random subsampling reproducible.
 
 ### Calculate Shannon diversity
 
 The Shannon index measures both the number of ASVs and how evenly their abundances are distributed. Higher values indicate greater within-sample diversity.
 
 ```r
-shannon <- el_diversity(asv_rarefied, "shannon")
+shannon <- diversity(asv_rarefied, "shannon")
 events$shannon <- shannon[events$eventID]
 ```
 

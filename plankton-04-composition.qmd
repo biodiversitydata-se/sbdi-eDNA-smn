@@ -7,44 +7,34 @@ format:
 
 *Compare the relative abundance of plankton groups across salinity and months.*
 
-### Sum reads by taxonomy
+### Group samples by salinity
 
-We use `sum_clades_long()` from [step 2](tutorial-02-prep.qmd) to aggregate reads at a chosen taxonomic rank, then add month and group salinity into intervals. Samples without salinity measurements or outside the selected salinity intervals are excluded from the comparison. The intervals are chosen for the figure, not as a biological classification.
+We use the relative abundances in `clades$norm` from [step 2](plankton-02-prep.qmd), and group the samples into salinity intervals. Samples without salinity measurements or outside the intervals are excluded from the comparison. The intervals are chosen for the figure, not as a biological classification.
 
 ```r
 salinity_breaks <- c(0, 3, 6, 12, 20, 35)
-
-get_composition <- function(rank) {
-  composition <- sum_clades_long(merged$counts, merged$asvs, ranks = rank) |>
-    as.data.frame()
-  composition <- merge(composition, events[c("eventID", "salinity", "month")], by = "eventID")
-  composition$salinity_class <- cut(composition$salinity, salinity_breaks, right = FALSE)
-  composition[!is.na(composition$salinity_class), ]
-}
+events$salinity_class <- cut(events$salinity, salinity_breaks, right = FALSE)
+table(events$salinity_class)
 ```
-
-Available ranks are kingdom, phylum, class, order, family, genus, species and otu.
 
 ### Plot taxonomic composition
 
-The function below selects the most abundant taxa and plots their **mean share of reads** for each salinity interval and month using [`ggplot2`](https://ggplot2.tidyverse.org/){target="_blank"}.
+The function below selects the most abundant taxa at a chosen rank and plots their **mean share of reads** for each salinity interval and month using [`ggplot2`](https://ggplot2.tidyverse.org/){target="_blank"}.
 
 ```r
 plot_barplots <- function(rank, top_x = 10) {
-  composition <- get_composition(rank)
-  sampled <- events
-  sampled$salinity_class <- cut(sampled$salinity, salinity_breaks, right = FALSE)
-  sampled <- sampled[!is.na(sampled$salinity_class), ]
+  keep <- !is.na(events$salinity_class)
+  shares <- as.matrix(clades$norm[[rank]][, keep])
+  top <- names(sort(rowMeans(shares), decreasing = TRUE))[1:top_x]
 
-  # Absent taxa have no rows, so a mean is the sum divided by the number of samples
-  totals <- tapply(composition$norm, composition$clade, sum)
-  top <- names(sort(totals / nrow(sampled), decreasing = TRUE))[1:top_x]
-
-  monthly <- aggregate(norm ~ clade + salinity_class + month,
-                       composition[composition$clade %in% top, ], sum)
-  n_samples <- aggregate(eventID ~ salinity_class + month, sampled, length)
-  monthly <- merge(monthly, n_samples)
-  monthly$share <- monthly$norm / monthly$eventID
+  # One row per taxon and sample, then the mean share per salinity interval and month
+  composition <- data.frame(
+    clade = rep(top, times = sum(keep)),
+    salinity_class = rep(events$salinity_class[keep], each = top_x),
+    month = rep(events$month[keep], each = top_x),
+    share = as.vector(shares[top, ])
+  )
+  monthly <- aggregate(share ~ clade + salinity_class + month, composition, mean)
 
   # Reversed levels put the most abundant taxon at the bottom of each bar
   monthly$clade <- factor(monthly$clade, levels = rev(top))
@@ -66,6 +56,8 @@ plot_barplots <- function(rank, top_x = 10) {
     theme(panel.grid.major.x = element_blank())
 }
 ```
+
+Available ranks are kingdom, phylum, class, order, family, genus, species and otu.
 
 ### Example: plot top classes
 

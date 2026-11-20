@@ -24,7 +24,7 @@ merged$counts |> count() |> as.data.frame()
 merged$counts |> head(10) |> as.data.frame()
 ```
 
-See [Work with lazy tables](tutorial-02-prep.qmd) in step 2.
+See [Work with lazy tables](insects-02-prep.qmd) in step 2A.
 
 ### `This operation cannot be carried out by DuckDB`
 
@@ -41,10 +41,6 @@ names(merged)
 ### `figure margins too large`
 
 The Plots pane is too small for figures with many panels. Make the pane larger, or click **Zoom** and run the plotting command again.
-
-### Warning: `6 samples with a total below depth were dropped`
-
-This is expected in step 6 of the plankton track. These samples have fewer than 10,000 reads and get no Shannon value.
 
 ### Warning: `Inconsistent ASV taxonomy detected`
 
