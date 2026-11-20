@@ -4,7 +4,6 @@
 library(asvoccur)
 library(duckplyr)
 library(ecolongr)
-library(vegan)
 library(rworldmap)
 library(lubridate)
 library(ggplot2)

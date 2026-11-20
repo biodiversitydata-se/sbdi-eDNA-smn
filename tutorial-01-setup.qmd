@@ -56,7 +56,6 @@ Load the packages used in the tutorial:
 library(asvoccur)
 library(duckplyr)
 library(ecolongr)
-library(vegan)
 library(rworldmap)
 library(lubridate)
 library(ggplot2)
@@ -85,7 +84,7 @@ Install the packages in R:
 
 ```r
 install.packages(c(
-  "remotes", "duckplyr", "vegan",
+  "remotes", "duckplyr",
   "rworldmap", "lubridate", "ggplot2"
 ))
 
