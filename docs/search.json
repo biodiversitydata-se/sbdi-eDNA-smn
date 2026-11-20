@@ -95,7 +95,7 @@
     "href": "index.html",
     "title": "SMN hands-on workshop in Uppsala",
     "section": "",
-    "text": "Part of the first in-person Swedish Metabarcoding Network (SMN) meeting.\nIn this hands-on workshop, we follow metabarcoding data from raw sequencing reads to biodiversity patterns. First, we process the reads into ASVs using nf-core/ampliseq. Then, we use R to analyse data from the ASV portal, provided by the Swedish Biodiversity Data Infrastructure (SBDI)."
+    "text": "Part of the first in-person Swedish Metabarcoding Network (SMN) meeting.\nIn this hands-on workshop, we explore metabarcoding data from raw sequencing reads to biodiversity patterns. We process reads into ASVs using nf-core/ampliseq, then analyse data from the ASV portal in R with asvoccur and ecolongr. These tools are developed by, or with contributions from, the Swedish Biodiversity Data Infrastructure (SBDI)."
   },
   {
     "objectID": "index.html#programme",

@@ -7,16 +7,16 @@ format:
 
 Part of the [first in-person Swedish Metabarcoding Network (SMN) meeting](https://metabarcoding.se/meeting-2026/){target="_blank"}.
 
-In this hands-on workshop, we follow metabarcoding data from raw sequencing reads to biodiversity patterns. First, we process the reads into ASVs using nf-core/ampliseq. Then, we use R to analyse data from the ASV portal, provided by the [Swedish Biodiversity Data Infrastructure (SBDI)](https://biodiversitydata.se/){target="_blank"}.
+In this hands-on workshop, we explore metabarcoding data from raw sequencing reads to biodiversity patterns. We process reads into ASVs using [nf-core/ampliseq](https://nf-co.re/ampliseq){target="_blank"}, then analyse data from the [ASV portal](https://asv-portal.biodiversitydata.se/index){target="_blank"} in R with [asvoccur](https://github.com/biodiversitydata-se/asvoccur){target="_blank"} and [ecolongr](https://github.com/biodiversitydata-se/ecolongr){target="_blank"}. These tools are developed by, or with contributions from, the [Swedish Biodiversity Data Infrastructure (SBDI)](https://biodiversitydata.se/){target="_blank"}.
 
 ## Programme
 
 Wednesday 9 December 2026, Evolutionary Biology Centre (EBC), Uppsala
 
 - **09:00–09:10** Introduction
-- **09:10–10:30** From raw reads to ASVs with [nf-core/ampliseq](https://nf-co.re/ampliseq){target="_blank"}
+- **09:10–10:30** From raw reads to ASVs with nf-core/ampliseq
 - **10:30–11:00** Fika
-- **11:00–12:45** Analyse data from the [ASV portal](https://asv-portal.biodiversitydata.se/index){target="_blank"} in R — [Open the tutorial](tutorial.qmd)
+- **11:00–12:45** Analyse data from the ASV portal in R — [Open the tutorial](tutorial.qmd)
 
 ## Instructors
 - Dr. Tobias Andermann — SBDI & Uppsala University
