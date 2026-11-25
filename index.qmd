@@ -15,9 +15,9 @@ Wednesday 9 December 2026, Evolutionary Biology Centre (EBC), Uppsala
 
 - **09:00–09:10** Introduction
 - **09:10–10:30** From raw reads to ASVs with nf-core/ampliseq
-- **10:30–11:00** Fika
-- **11:00–11:15** Share, find and reuse metabarcoding data with SBDI
-- **11:15–12:45** Analyse data from the ASV portal in R — [Open the tutorial](tutorial.qmd)
+- **10:30–10:45** Fika
+- **10:45–11:00** Share, find and reuse metabarcoding data with SBDI
+- **11:00–12:30** Analyse data from the ASV portal in R — [Open the tutorial](tutorial.qmd)
 
 ## Instructors
 - Dr. Tobias Andermann — SBDI & Uppsala University
