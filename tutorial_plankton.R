@@ -48,9 +48,9 @@ events$yday  <- lubridate::yday(event_start)
 
 grep("salinity", colnames(merged$emof), value = TRUE)
 
-emof <- merged$emof
 events$salinity <- ifelse(events$dataset == "2013",
-                          emof$`salinity (psu)`, emof$`salinity_average (psu)`)
+                          merged$emof$`salinity (psu)`,
+                          merged$emof$`salinity_average (psu)`)
 summary(events$salinity)
 
 # Point size grows with salinity; missing values get the smallest size

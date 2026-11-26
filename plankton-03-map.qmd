@@ -61,9 +61,9 @@ grep("salinity", colnames(merged$emof), value = TRUE)
 We take salinity from `salinity (psu)` for the 2013 samples and from `salinity_average (psu)` for the 2019–2020 samples. The rows of `emof` are in the same order as those of `events`:
 
 ```r
-emof <- merged$emof
 events$salinity <- ifelse(events$dataset == "2013",
-                          emof$`salinity (psu)`, emof$`salinity_average (psu)`)
+                          merged$emof$`salinity (psu)`,
+                          merged$emof$`salinity_average (psu)`)
 summary(events$salinity)
 ```
 
