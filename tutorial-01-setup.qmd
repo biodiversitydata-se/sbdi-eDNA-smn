@@ -82,7 +82,7 @@ If the packages load without errors and your data files are listed, you are read
 
 :::
 
-*Running locally? Follow the installation instructions below before continuing.*
+*Running locally? Click and follow the installation instructions below before continuing.*
 
 ::: {.callout-note collapse="true"}
 ## Running the tutorial locally (optional)
