@@ -9,7 +9,9 @@ format:
 
 ## Workshop RStudio (recommended)
 
-During the workshop, we use RStudio Server on a virtual machine in PDC Cloud. You will receive a link, username and password.
+During the workshop, we use RStudio Server on a virtual machine in PDC Cloud. Log in with the username and password you receive at the workshop:
+
+[RStudio Server](http://193.10.159.164:8787){target="_blank"}
 
 All packages and datasets are already prepared, so no installation or downloading is needed.
 
