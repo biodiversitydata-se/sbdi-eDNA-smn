@@ -306,7 +306,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="aggregate-counts-by-taxonomy">Aggregate counts by taxonomy</h3>
 <p>Sum ASV read counts at different taxonomic levels:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>clades <span class="ot">&lt;-</span> <span class="fu">sum_clades_long</span>(merged<span class="sc">$</span>counts, merged<span class="sc">$</span>asvs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The result has one row per clade and sample, at levels from kingdom (or domain) to species, including <code>otu</code> if available.</p>
+<p>The result has one row per clade and sample, at levels from kingdom (or domain) to species, including <code>otu</code> if available (for example, BOLD ID for CO1 data).</p>
 <ul>
 <li><code>raw</code>: read counts</li>
 <li><code>norm</code>: proportion of reads in the sample (relative abundance)</li>

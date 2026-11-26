@@ -109,7 +109,7 @@ Sum ASV read counts at different taxonomic levels:
 clades <- sum_clades_long(merged$counts, merged$asvs)
 ```
 
-The result has one row per clade and sample, at levels from kingdom (or domain) to species, including `otu` if available.
+The result has one row per clade and sample, at levels from kingdom (or domain) to species, including `otu` if available (for example, BOLD ID for CO1 data).
 
 - `raw`: read counts
 - `norm`: proportion of reads in the sample (relative abundance)

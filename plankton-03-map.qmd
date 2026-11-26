@@ -67,7 +67,7 @@ events$salinity <- ifelse(events$dataset == "2013",
 summary(events$salinity)
 ```
 
-Some samples lack salinity measurements. They are shown with the smallest point size and excluded from later comparisons involving salinity.
+Some samples lack salinity measurements. They are shown with the smallest point size on the maps below and excluded from later comparisons involving salinity.
 
 ---
 

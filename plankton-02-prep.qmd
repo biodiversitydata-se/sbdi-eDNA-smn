@@ -85,7 +85,7 @@ clades <- sum_by_clade(merged$counts, merged$asvs)
 names(clades$norm)
 ```
 
-The result has one matrix per level, from kingdom (or domain) to species, including `otu` if available. Each matrix has one row per clade and one column per sample.
+The result has one matrix per level, from kingdom (or domain) to species, including `otu` if available (for example, BOLD ID for CO1 data). Each matrix has one row per clade and one column per sample.
 
 - `raw`: read counts
 - `norm`: proportion of reads in the sample (relative abundance)

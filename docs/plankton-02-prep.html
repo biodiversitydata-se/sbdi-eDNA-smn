@@ -291,7 +291,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Sum ASV read counts at different taxonomic levels:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>clades <span class="ot">&lt;-</span> <span class="fu">sum_by_clade</span>(merged<span class="sc">$</span>counts, merged<span class="sc">$</span>asvs)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(clades<span class="sc">$</span>norm)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The result has one matrix per level, from kingdom (or domain) to species, including <code>otu</code> if available. Each matrix has one row per clade and one column per sample.</p>
+<p>The result has one matrix per level, from kingdom (or domain) to species, including <code>otu</code> if available (for example, BOLD ID for CO1 data). Each matrix has one row per clade and one column per sample.</p>
 <ul>
 <li><code>raw</code>: read counts</li>
 <li><code>norm</code>: proportion of reads in the sample (relative abundance)</li>
